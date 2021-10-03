@@ -1,0 +1,141 @@
+.event-scheduler-main {
+    padding: 10px;
+    width: 100%;
+    vertical-align: middle;
+}
+
+.scheduler_main *, .scheduler_main ::before, .scheduler_main ::after {
+    box-sizing: content-box;
+}
+
+.scheduler_main {
+    box-sizing: content-box;
+    font-family: Tahoma, Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(192, 192, 192);
+    border-image: initial;
+}
+
+.scheduler_divider_horizontal, .scheduler_resourcedivider, .scheduler_divider, .scheduler_splitter {
+    background-color: rgb(192, 192, 192);
+}
+
+.scheduler_rowheader_scroll {
+    cursor: default;
+}
+
+.scheduler_rowheader, .scheduler_corner, .scheduler_timeheadergroup, .scheduler_timeheadercol {
+    color: rgb(51, 51, 51);
+    background: rgb(243, 243, 243);
+}
+
+.scheduler_rowheader_inner {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    border-right: 1px solid rgb(224, 224, 224);
+    padding: 2px;
+}
+
+.scheduler_timeheadergroup_inner {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid rgb(192, 192, 192);
+    border-bottom: 1px solid rgb(192, 192, 192);
+}
+
+.scheduler_cell {
+    background-color: rgb(249, 249, 249);
+}
+
+.scheduler_cell {
+    background-color: rgb(249, 249, 249);
+}
+
+.scheduler_cell-mouseup {
+    background-color: #0dcfb0;
+}
+
+.scheduler_matrix_vertical_line {
+    background-color: rgb(238, 238, 238);
+}
+
+.scheduler_main .scheduler_header_icon {
+    box-sizing: border-box;
+    background-color: rgb(245, 245, 245);
+    color: rgb(0, 0, 0);
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(192, 192, 192);
+    border-image: initial;
+}
+
+.scheduler_event_inner {
+    background: -webkit-linear-gradient(top, rgb(255, 255, 255) 0%, rgb(238, 238, 238));
+}
+
+.scheduler_event_bar {
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-color: rgb(157, 200, 232);
+}
+
+.scheduler_event {
+    font-size: 12px;
+    color: rgb(51, 51, 51);
+    background: #00574b;
+}
+
+.scheduler_event_bar_inner {
+    position: absolute;
+    height: 4px;
+    background-color: #000;
+}
+
+.scheduler_event_inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.scheduler_timeheadercol_inner {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid rgb(192, 192, 192);
+}
+
+.scheduler_matrix_horizontal_line {
+    background-color: rgb(238, 238, 238);
+}
+
+/*.scheduler_cell:hover {*/
+/*    background: #00574b;*/
+/*}*/
+.clr{
+    clear:both;
+}

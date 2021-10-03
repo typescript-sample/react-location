@@ -1,0 +1,73 @@
+.m6 .react-date-picker {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  outline: 0;
+  overflow: visible;
+  width: 100%;
+  height: 24px;
+  line-height: inherit;
+  margin-top: 10px;
+  font-size: 15px !important;
+  font-weight: 500;
+  word-spacing: normal;
+  text-transform: none;
+  text-indent: 0;
+  text-shadow: none;
+  padding: 2px 0 0;
+  padding-left: 0;
+  padding-bottom: 0;
+  border-width: 0 0 1px 0;
+  border-radius: 0;
+  background-color: inherit;
+  z-index: 20000;
+  border-bottom: #ebebeb;
+}
+
+.react-date-picker__wrapper:-webkit-autofill,
+.react-date-picker__wrapper:-webkit-autofill:hover,
+.react-date-picker__wrapper:-webkit-autofill:focus,
+.react-date-picker__wrapper:-webkit-autofill:active,
+.react-date-picker__wrapper:-moz-autofill,
+.react-date-picker__wrapper:-moz-autofill:hover,
+.react-date-picker__wrapper:-moz-autofill:focus,
+.react-date-picker__wrapper:-moz-autofill:active {
+  transition: all 5000s ease-in-out 0s;
+  transition-property: background-color, color;
+}
+
+.react-date-picker__wrapper {
+  display: flex;
+  outline: 0;
+  width: 100%;
+  height: 24px;
+}
+
+.react-date-picker__wrapper {
+  border: 0;
+  border-radius: 0;
+  border-bottom: 1px solid #ebebeb;
+}
+
+.react-date-picker__inputGroup {
+  margin-top: -14px;
+}
+
+/*Show diglog Datepicker top*/
+.react-date-picker__calendar--open {
+  bottom: 100%;
+  top: auto;
+}
+
+.react-date-picker__inputGroup__leadingZero{
+  color: initial;
+}
+
+.react-date-picker__inputGroup__input--hasLeadingZero {
+  padding-left: 8px!important;
+}
+
+.react-date-picker > span.span-error {
+  margin-top: 22px!important;
+  margin-left: -10px;
+}

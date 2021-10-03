@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no,user-scalable=no,initial-scale=1,maximum-scale=1"/>
+  <meta name="theme-color" content="#000000">
+  <base href="%PUBLIC_URL%/">
+  <!--
+    manifest.json provides metadata used when your web app is added to the
+    homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
+  -->
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
+  <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+  <!-- <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/semantic.min.css"></link> -->
+  <!-- <link href="https://fonts.googleapis.com/css?family=Ubuntu:400,500,700" rel="stylesheet"> -->
+  <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
+  <!-- <link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet">-->
+  <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP"-->
+  <!-- crossorigin="anonymous">-->
+  <!--
+  Notice the use of %PUBLIC_URL% in the tags above.
+  It will be replaced with the URL of the `public` folder during the build.
+  Only files inside the `public` folder can be referenced from the HTML.
+
+  Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+  work correctly both with client-side routing and a non-root public URL.
+  Learn how to configure a non-root public URL by running `npm run build`.
+  -->
+  <title id="sysTitle">React App</title>
+</head>
+
+<body id="sysBody" class="full-header classic top-menu2">
+  <noscript>
+    You need to enable JavaScript to run this app.
+  </noscript>
+  <div id="sysToast" class="toast-message alert-success"></div>
+  <div id="sysLoading" class="loader-wrapper" style="display: none;">
+    <div class="loader-sign">
+      <div class="loader"></div>
+      <!-- <div class="loader-text">Please wait</div> -->
+    </div>
+  </div>
+  <div id="sysAlert" class="alert-wrapper">
+    <div class="alert">
+      <div>
+        <div id="sysIcon" class="alert-icon"></div>
+        <h4 id="sysMessageHeader"></h4>
+        <p id="sysMessage"></p>
+      </div>
+      <!--
+      <div class="sa-error-detail-caret" style="display: none">
+        <a href="javascript:void(0)" onclick="toggleErrorDetail()">Detail
+          <span id="sysErrorDetailCaret" class="fa fa-caret-up"></span>
+        </a>
+      </div>
+      <div id="sysErrorDetail" class="sa-error-container">
+        <div class="icon"></div>
+        <p id="sysErrorDetailText"></p>
+      </div>
+      -->
+      <footer>
+        <button type='button' class='btn-cancel' id='sysNo' name='btnCancel' onclick="noOnClick()" />
+        <button type='submit' class='btn-accept' id='sysYes' name='btnAccept' onclick="yesOnClick()" />
+      </footer>
+    </div>
+  </div>
+  <div id="root"></div>
+  <!--
+  This HTML file is a template.
+  If you open it directly in the browser, you will see an empty page.
+
+  You can add webfonts, meta tags, or analytics to this file.
+  The build step will place the bundled scripts into the <body> tag.
+
+  To begin the development, run `npm start` or `yarn start`.
+  To create a production bundle, use `npm run build` or `yarn build`.
+-->
+  <script>
+    var sysTitle, sysBody, sysLoading, sysToast, sysAlert, sysMessageHeader, sysMessage, sysErrorDetail, sysErrorDetailText,
+      sysYes, sysNo, sysErrorDetailCaret;
+
+    function initDoc() {
+      sysTitle = document.getElementById("sysTitle");
+      sysBody = document.getElementById("sysBody");
+      sysLoading = document.getElementById("sysLoading");
+      sysToast = document.getElementById("sysToast");
+      sysAlert = document.getElementById("sysAlert");
+      sysMessageHeader = document.getElementById("sysMessageHeader");
+      sysMessage = document.getElementById("sysMessage");
+      sysErrorDetail = document.getElementById("sysErrorDetail");
+      sysErrorDetailText = document.getElementById("sysErrorDetailText");
+      sysYes = document.getElementById("sysYes");
+      sysNo = document.getElementById("sysNo");
+      sysErrorDetailCaret = document.getElementById("sysErrorDetailCaret");
+    }
+
+    initDoc();
+    var yesOnClick = function () {
+      sysAlert.style.display = 'none';
+      if (window.fyesOnClick) {
+        window.fyesOnClick();
+      }
+      const input = sysYes['activeElement'];
+      if (input) {
+        try {
+          input.focus();
+        } catch (err) {}
+      }
+      sysYes['activeElement'] = null;
+    };
+    var noOnClick = function () {
+      sysAlert.style.display = 'none';
+      if (window.fnoOnClick) {
+        window.fnoOnClick();
+      }
+      const input = sysYes['activeElement'];
+      if (input) {
+        try {
+          input.focus();
+        } catch (err) {}
+      }
+      sysYes['activeElement'] = null;
+    };
+    var callCount = 0;
+  </script>
+</body>
+
+</html>

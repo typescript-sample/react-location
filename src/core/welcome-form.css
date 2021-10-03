@@ -1,0 +1,61 @@
+.view-container.menu { 
+  min-height: calc(100vh - 44px);
+}
+.row.welcome {
+  overflow-y: auto;
+  max-height: calc(100vh - 44px - 44px);
+}
+.welcome ul {
+  margin-block-end: 0;
+}
+
+.welcome a > div > i:first-child {
+  margin-right: 4px;
+  color: rgb(50, 129, 90);
+  font-size: 25px;
+}
+.welcome a > div > span {
+  font-size: 12pt;
+  color: rgb(50, 129, 90);
+}
+.welcome label div {
+    display: flex;
+}
+.welcome label div > span,
+.welcome label > i:first-child,
+.welcome label div > i:first-child{
+    align-self: center;
+}
+.welcome-span
+{
+    display:inline-block;
+    width: 65%;
+    text-align: left;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+    padding: 5px;
+}
+
+@media only screen and (max-width: 800px) {
+  .welcome a > i:first-child {
+    font-size: 40px;
+    display: block;
+  }
+  .welcome-span
+  {
+    text-align: center;
+  }
+}
+
+.menu-type
+{
+  color: green;
+  font-size: 15pt;
+  padding: 2px;
+}
+.menu-ul
+{
+  text-align: left;
+  padding: 0;
+}

@@ -1,0 +1,30 @@
+
+body {
+  height: 100%;
+  width: 100%;
+  font-family: 'Roboto';
+  -webkit-overflow-scrolling: touch;
+  margin: 0;
+  padding: 0;
+}
+
+/* body {
+  font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+body.fontLoaded {
+  font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+} */
+*{
+  font-family: 'Roboto';
+}
+
+/* body > div, */
+/*
+body > div > div,
+body > div > div > div,
+body > div > div > div > div.login-form {
+  height: 100%;
+}*/
+
+.btn-warning{color:#fff;background-color:#f0ad4e !important;border-color:#eea236; margin-top: 10px;}

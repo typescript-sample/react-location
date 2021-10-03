@@ -1,0 +1,406 @@
+﻿.top-banner {
+  display: none;
+}
+
+.sidebar-parent {
+  position: relative;
+}
+
+.sidebar {
+  height: 100%;
+  position: fixed;
+  padding: 0px;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  overflow-x: hidden;
+  transition: 0.25s;
+  width: 246px;
+}
+
+.sidebar .toggle-menu {
+  display: none;
+}
+
+.page-container {
+  height: 100%;
+  margin-left: 246px;
+  transition: 0.25s;
+}
+
+.icon-down,
+.icon-up {
+  position: absolute;
+  right: -12px;
+}
+
+.icon-down:before {
+  content: "\f107"
+}
+
+.icon-up:before {
+  content: "\f106"
+}
+
+.list-child {
+  overflow: hidden;
+  max-height: 0;
+  -webkit-transition: max-height 0.8s;
+  -moz-transition: max-height 0.8s;
+  transition: max-height 0.8s;
+}
+
+.list-child.expanded {
+  max-height: 500px;
+  display: block;
+}
+
+.sidebar nav ul li a {
+  position: relative;
+  /*display: block;*/
+  display: flex;
+  height: 38px;
+  padding-top: 10px;
+  padding-left: 9px;
+  padding-right: 9px;
+  white-space: nowrap;
+  font-size: 13px;
+  text-transform: uppercase;
+  outline: none;
+  box-sizing: border-box;
+  color: white;
+}
+
+.sidebar nav ul {
+  white-space: normal;
+  margin: 0;
+  padding-left: 0;
+  list-style-type: none;
+}
+
+.sidebar nav ul li {
+  list-style-type: none;
+  text-align: -webkit-match-parent;
+}
+
+.sidebar nav ul li a.sidebar-off-menu > i {
+  margin-right: 5px;
+}
+
+.sidebar nav ul li a i {
+  /*margin-right: 10px;*/
+  width: 28px;
+  font-size: 18px;
+  text-align: center;
+}
+
+.sidebar > nav > ul > li > ul > li > a,
+.sidebar > nav > ul > li > a {
+  color: inherit;
+  background-color: inherit;
+}
+
+.sidebar-off .sidebar > nav > ul > li > ul > li > a > span,
+.sidebar-off .sidebar > nav > ul > li > a > span {
+  display: none;
+}
+
+.sidebar > nav > ul > li {
+  position: inherit;
+}
+
+.sidebar > nav > ul > li > ul > li {
+  position: relative;
+  padding-left: 20px;
+}
+.sidebar-off .sidebar > nav > ul > li > ul > li {
+  padding-left: 0;
+}
+
+.sidebar > nav > ul > li.open > ul {
+  display: block;
+}
+
+@media screen and (min-width: 601px) {
+  .sidebar-off .sidebar {
+    width: 46px;
+  }
+
+  .sidebar-off .page-container {
+    margin-left: 46px;
+  }
+
+  .sidebar-off .sidebar > nav > ul > li > a {
+    padding-left: 9px;
+  }
+
+  .sidebar-off .sidebar > nav > ul > li > a > i.entity-icon.down,
+  .sidebar-off .sidebar > nav > ul > li > a > i.entity-icon.up {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 768px) and (min-width: 601px) {
+  .sidebar {
+    width: 46px;
+  }
+
+  .page-container {
+    margin-left: 46px;
+  }
+
+  .sidebar nav ul li a i {
+    margin-left: 6px;
+    margin-right: 13px;
+  }
+
+  .sidebar > nav > ul > li > a {
+    padding-left: 9px;
+  }
+
+  .sidebar > nav > ul > li > ul > li {
+    padding-left: 0;
+  }
+
+  .sidebar > nav > ul > li > ul.list-child > li:hover {
+    transition: 0.3s;
+  }
+  .sidebar > nav > ul > li > ul.list-child > li:hover > a > span {
+    position: fixed;
+    padding: 10px;
+    margin-top: -11px;
+    min-width: 200px;
+  }
+
+  .top-menu .entity-icon.down,
+  .top-menu .entity-icon.up,
+  .top-menu .sidebar-off-menu,
+  .entity-icon.down,
+  .entity-icon.up{
+    display: none;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .sidebar .toggle-menu {
+    display: block;
+  }
+
+  .sidebar .sidebar-off-menu {
+    display: none;
+  }
+
+  .sidebar {
+    width: 0;
+  }
+
+  .menu-on .sidebar {
+    display: block;
+    width: 246px;
+  }
+
+  .page-container {
+    margin-left: 0;
+  }
+
+  .sidebar-off .sidebar > nav > ul > li > ul > li > a > span,
+  .sidebar-off .sidebar > nav > ul > li > a > span {
+    display: inline-block;
+  }
+}
+
+@media screen and (min-width: 601px) {
+  .sidebar > nav > ul > li.open > ul {
+    display: block;
+  }
+}
+
+@media screen and (min-width: 769px) {
+  .top-menu .menu.sidebar {
+    top: 0;
+    height: 46px;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .top-menu .menu.sidebar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .top-menu .menu.sidebar::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background: #747978;
+  }
+  
+  .top-menu .menu.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 3px;
+  }
+
+  .top-menu .menu.sidebar .list-child {
+    -webkit-transition: max-height 0.12s;
+    -moz-transition: max-height 0.12s;
+    transition: max-height 0.12s;
+  }
+
+  .top-menu .page-container {
+    height: calc(100vh - 46px);
+    margin-left: 0;
+  }
+
+  .top-menu .menu.sidebar .toggle-menu,
+  .top-menu .menu.sidebar .sidebar-off-menu {
+    display: none;
+  }
+
+  .top-menu .menu.sidebar > nav > ul > li {
+    display: inline-block;
+    padding-right: 4px;
+  }
+
+  .top-menu .menu.sidebar > nav > ul > li > a {
+    height: 46px;
+    padding-top: 14px;
+  }
+
+  .top-menu .menu.sidebar > nav > ul > li > a > i.fa:first-child {
+    display: none;
+  }
+
+  .top-menu .menu.sidebar > nav > ul > li > ul > li {
+    padding-left: 0;
+  }
+
+  .top-menu .menu.sidebar > nav > ul > li > ul {
+    position: absolute;
+  }
+/*
+  .top-menu .menu.sidebar > nav > ul > li > ul.list-child.expanded {
+    display: none;
+  }
+*/
+  .top-menu .menu.sidebar > nav > ul > li > ul.list-child > li:hover > ul.list-child
+  .top-menu .menu.sidebar > nav > ul > li:hover > ul.list-child.expanded,
+  .top-menu .menu.sidebar > nav > ul > li > ul > li:hover > ul,
+  .top-menu .menu.sidebar > nav > ul > li:hover > ul {
+    display: inline;
+  }
+
+  .top-menu .menu.sidebar > nav > ul > li:hover .list-child {
+    max-height: 500px;
+  }
+
+  /* Level 2 menu */
+  .top-menu .menu.sidebar > nav > ul > li > ul.list-child > li > a .icon-down,
+  .top-menu .menu.sidebar > nav > ul > li > ul.list-child > li > a .icon-up {
+    right: -11px;
+  }
+
+  .top-menu .menu.sidebar > nav > ul > li > ul.list-child > li:hover > ul.list-child {
+    display: inline;
+    position: fixed;
+    margin-left: 192px;
+    margin-top: -37px;
+  }
+
+  .top-menu .menu.sidebar > nav > ul > li > ul.list-child > li > ul.list-child {
+    display: none;
+  }
+
+  .top-menu .menu.sidebar > nav > ul > li > ul.list-child > li > ul.list-child > li {
+    border-left: 1px outset lightgreen;
+    border-bottom: 1px solid lightgreen;
+  }
+
+  .top-menu .menu.sidebar > nav > ul > li > ul.list-child > li > ul.list-child > li > a {
+    color: white;
+  }
+  /* End level 2 menu */
+
+  .top-menu .menu.sidebar > nav > ul {
+    display: flex;
+  }
+
+  .top-menu .icon-down,
+  .top-menu .icon-up {
+    right: -22px;
+  }
+
+  .logo-banner-wrapper {
+    height: 67px;
+  }
+  .banner-logo-title {
+    width: 194px;
+  }
+
+  .top-menu .sidebar-parent {
+    display: flex;
+    flex-direction: column;
+  }
+  .top-menu .top-banner {
+    display: none;
+  }
+
+  .classic.top-menu .modal-portal-content {
+    top: 55%;
+  }
+  .top-menu .modal-portal-content {
+    top: 54%;
+    height: 89%;
+  }
+
+  .classic.top-menu .top-banner {
+    display: block;
+    height: 67px;
+  }
+  .top-menu .sidebar {
+    position: static;
+  }
+
+  .classic.top-menu .page-container {
+    margin-top: 46px;
+    margin-left: 0;
+    height: calc(100vh - 46px);
+  }
+  .classic.top-menu .sidebar-parent {
+    height: 100vh;
+  }
+
+  .classic.top-menu .page-container {
+    margin-top: 0;
+    height: calc(100vh - 120px);
+  }
+  .classic.top-menu .page-body,
+  .classic.top-menu .view-container {
+    height: auto;
+  }
+  .classic.top-menu .page-container > .page-body .view-container > .view-body > form:last-child,
+  .classic.top-menu .page-container > .page-body .view-container > form > div,
+  .classic.top-menu .page-container > .page-body .view-container,
+  .classic.top-menu .page-container > .page-body .view-container > form,
+  .classic.top-menu .page-container > .page-body .view-container > div,
+  .classic.top-menu .page-container > .page-body .view-container > .view-body,
+  .classic > .page-body .view-container > .view-body,
+  .classic > .page-body .view-container > div,
+  .classic > .view-container > div,
+  .classic.top-menu .view-body {
+    max-height: none;
+    height: auto;
+  }
+
+  .classic.top-menu .view-body {
+    overflow-y: hidden;
+  }
+}
+
+@media screen and (min-width: 601px) {
+  .top-menu .menu.sidebar {
+    transition: none;
+  }
+
+  .top-menu .page-container {
+    transition: none;
+  }
+}

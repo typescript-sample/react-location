@@ -1,0 +1,80 @@
+.view-container > form > div.diff {
+  margin-left: 16px;
+  margin-right: 16px;
+}
+
+.view-container > form > div.diff > h4 {
+  background-color: unset;
+  width: calc(100% - 32px);
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.view-container > form > div.diff > h4 > span {
+  margin-left: 0;
+  margin-right: 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.view-container > form > div.diff > h4 > span:first-child {
+  width: 24%;
+}
+
+.view-container > form > div.diff > p {
+  display: inline-flex;
+  width: calc(100% - 32px);
+  margin-top: 1px;
+  margin-bottom: 2px;
+  border-bottom: 1px solid #ebebeb;
+}
+.view-container > form > div.diff > hr {
+  margin-top: 2px;
+  margin-bottom: 3px;
+}
+
+.diff > p > ul,
+.diff > p > span {
+  display: inline-block;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.diff > h4 > label,
+.diff > p > label {
+  width: 24%;
+  padding-left: 0;
+  font-size: 15px;
+  font-weight: 400;
+}
+.diff > h4 > span,
+.diff > p > span,
+.diff > p > ul {
+  width: 38%;
+}
+
+.diff > p > ul {
+  padding-left: 15px;
+  margin-block-end: 0;
+}
+
+.diff .row .col .section-header {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.diff .row .col p {
+  padding-top: 2px;
+  margin-block-end: 0;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.diff .row .col .row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.diff .detail header > div {
+  font-weight: 600;
+}

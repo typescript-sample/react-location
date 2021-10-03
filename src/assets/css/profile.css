@@ -1,0 +1,377 @@
+@media only screen and (min-width: 601px) {
+  .profile.view-container {
+    padding: 10px 5%;
+  }
+
+  .profile.view-container > form > header {
+    width: calc(100% - 30px);
+    margin-left: 15px;
+  }
+}
+
+.profile.view-container > form > header {
+  position: relative;
+  height: 314px; /* 394px */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  border: none;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.18);
+}
+
+@media screen and (max-width: 600px) {
+  .page-body > .profile.view-container > form > header {
+    background-image: none;
+  }
+}
+
+.profile.view-container > form > header > .btn-camera {
+  position: absolute;
+  top: 9px;
+  right: 12px;
+}
+.profile.view-container > form > header .btn-follow {
+  position: absolute;
+  bottom: 20px;
+  right: 18px;
+  min-width: 110px;
+  height: 35px;
+  border-radius: 20px;
+  font-size: 14px;
+  background-color: transparent;
+  border: 1px solid;
+  color: #c9b500;
+}
+
+.profile.view-container > form > header .contact-group {
+  display: flex;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+}
+.profile.view-container > form > header .contact-group > button {
+  width: 35px;
+  height: 35px;
+  border: 1px solid;
+  background-color: transparent;
+  border-radius: 20px;
+  font-size: 22px;
+  font-style: normal;
+  color: #fff;
+}
+.profile.view-container > form > header .contact-group > button:not(:first-child)  {
+  margin-left: 20px;
+}
+
+.profile.view-container > form > header > nav {
+  width: 100%;
+}
+.profile.view-container > form > header > nav > ul {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding-inline-start: 0;
+  margin-block-end: 0;
+}
+.profile.view-container > form > header > nav > ul > li {
+  display: inline-flex;
+  height: 38px;
+  align-items: center;
+  font-size: 16px;
+  margin-left: 11px;
+  margin-right: 11px;
+}
+.profile.view-container > form > header > nav > ul > li:first-child {
+  margin-left: 0;
+}
+.profile.view-container > form > header > nav > ul > li:last-child {
+  margin-right: 0;
+}
+
+.profile.view-container > form > header > .cover-image {
+  position: relative;
+  overflow: hidden;
+  padding: 0px;
+}
+.profile.view-container > form > header > .cover-image > img {
+  width: 100%;
+}
+
+.avatar-wrapper {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin-top: -79px;
+  margin-bottom: 11px;
+  -ms-flex-item-align: center;
+  align-self: center;
+}
+.avatar-wrapper .avatar {
+  border: 4px solid #fff;
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+}
+.avatar-wrapper .profile-status {
+  position: absolute;
+  left: 85px;
+  top: 85px;
+  width: 30px;
+  height: 30px;
+}
+
+.profile-followers {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 6px;
+  color: #999999;
+}
+header.nav > .profile-followers {
+  margin-bottom: 0;
+}
+
+.profile-title {
+  position: relative;
+  width: 100%;
+  text-align: center;
+  word-break: break-word;
+  -moz-word-break: break-word;
+  -webkit-word-break: break-word;
+}
+.profile-title > h3 {
+  margin-bottom: 0;
+  font-size: 26px;
+  text-transform: uppercase;
+  color: #4d4d4d;
+}
+.profile-title > p {
+  margin-block-end: 6px;
+  font-size: 16px;
+  text-transform: lowercase;
+  color: #999999;
+}
+
+.profile-followers > a {
+  display: flex;
+  margin-left: 16px;
+  margin-right: 16px;
+}
+.profile-followers > a > i {
+  margin-right: 8px;
+}
+.profile-followers > a > i.material-icons {
+  font-size: 19px;
+}
+
+@media (min-width: 993px) {
+  .profile.view-container > form > header {
+    height: 394px;
+  }
+  .profile.view-container > form > header .contact-group {
+    left: unset;
+    right: 148px;
+  }
+  .profile.view-container > form > header > nav {
+    padding-left: 152px;
+  }
+  .profile.view-container > form > header > nav > ul {
+    justify-content: unset;
+  }
+  .profile.view-container > form > header > nav > ul > li {
+    height: 50px;
+  }
+  .avatar-wrapper {
+    position: absolute;
+    left: 16px;
+    bottom: 11px;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  .profile-title {
+    margin-top: -60px;
+    padding-left: 152px;
+    text-align: left;
+  }
+  .profile-title > h3,
+  .profile-title > p {
+    color: #fff;
+  }
+  header.nav > .profile-title {
+    margin-top: -79px;
+  }
+  header.nav > .profile-title > p {
+    margin-block-end: 3px;
+  }
+  .profile-followers > a {
+    margin-right: 0;
+  }
+  .profile-followers {
+    width: unset;
+    height: 50px;
+    justify-content: flex-end;
+    align-items: center;
+    margin-right: 18px;
+    margin-bottom: 0;
+  }
+  header.nav > .profile-followers {
+    justify-content: flex-start;
+    width: 100%;
+    height: unset;
+    margin-right: unset;
+    padding-left: 152px;
+    margin-bottom: 3px;
+    color: #fff;
+  }
+  header.nav > .profile-followers > a {
+    margin-left: 0;
+    margin-right: 16px;
+  }
+}
+
+
+.profile.view-container > form > header > div.card,
+.profile.view-container > form > .row > .col > div.card {
+  margin: 20px 0;
+  padding: 16px;
+  border-radius: 4px;
+  display: flex;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  word-wrap: break-word;
+  -webkit-box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.18);
+  -moz-box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.18);
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.18);
+}
+
+.profile.view-container > form > header > div.card {
+  position: relative;
+  width: calc(100% - 32px);
+  margin: -32px 16px 7px 16px;
+  border-radius: 15px;
+  background-color: #fff;
+}
+
+
+.page-body > .profile.view-container > form > div {
+  padding-top: 0;
+  max-height: none;
+}
+
+.profile.view-container > form > .row > .col > div.card:last-child {
+  margin-bottom: 0;
+}
+.profile.view-container > form > .row > .col > div.card > header {
+  position: relative;
+  margin-bottom: 18px;
+}
+.profile.view-container > form > .row > .col > div.card > header > .btn-edit {
+  position: absolute;
+  right: 15px;
+  padding-right: 0;
+}
+.profile.view-container > form > .row > .col > div.card > section > p,
+.profile.view-container > form > .row > .col > div.card > p {
+  width: 100%;
+  font-size: 13px;
+  word-wrap: break-word;
+  -moz-word-wrap: break-word;
+  -webkit-word-wrap: break-word;
+}
+.profile.view-container > form > .row > .col > div.card p.description {
+  color: #aeb4b2;
+  line-height: 20px;
+}
+
+.profile .row span.col {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  padding-left: 0;
+}
+
+.profile.view-container > form > .row > .col > div.card > section:first-of-type {
+  margin-top: 0;
+}
+.profile.view-container > form > .row > .col > div.card > section {
+  position: relative;
+  margin-top: 16px;
+}
+.profile.view-container > form > .row > .col > div.card > section > h3 {
+  font-size: 15px;
+}
+.profile.view-container > form > .row > .col > div.card > section > .btn-remove {
+  position: absolute;
+  top: 7px;
+  right: 2px;
+}
+/*
+.profile.view-container > form > .row > .col > div.card > section > .btn-remove::before {
+  font-size: 25px;
+  font-family: Material Icons;
+  font-style: normal;
+  content: "\e92b";
+}
+*/
+.profile.view-container > form > .row > .col > div.card > section > label.checkbox-container {
+  width: 100%;
+  height: 40px;
+  padding-left: 22px;
+}
+
+.profile.view-container > form > .row > .col > div.card > section > label.checkbox-container > input[type=checkbox]:not(.modal-trigger):not(.toggle):not(#alert-check):not([id*=lightbox-]) {
+  left: 0;
+}
+.profile.view-container .btn-group {
+  display: inline-flex;
+  align-items: center;
+  font-size: 15px;
+  min-height: 40px;
+}
+.profile.view-container .btn-group > .btn-add {
+  width: 22px;
+  height: 22px;
+  margin-top: -4px;
+  margin-right: 6px;
+  border: 1px solid;
+  border-radius: 21px;
+}
+.profile.view-container .btn-group > .btn-add::before {
+  font-size: 23px;
+  font-weight: 100;
+  content: "\2B";
+  top: -7px;
+  left: 3px;
+}
+
+.profile.view-container > form > .row > .col > div.card > div {
+  width: 100%;
+  margin-top: -3px;
+  margin-bottom: -3px;
+}
+.profile.view-container > form > .row > .col > div.card > div > a {
+  display: inline-block;
+  margin: 3px 10px 3px 0;
+  color: #999999;
+}
+.profile.view-container > form > .row > .col > div.card > div > a > i {
+  padding-top: 5px;
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  text-align: center;
+  border: 1px solid;
+  border-radius: 50%;
+  color: #0dcfb0;
+}
+.profile.view-container > form > .row > .col > div.card > div > a > span {
+  display: none;
+  margin-left: 7px;
+  margin-right: 9px;
+}
+
+@media screen and (max-width: 600px) {
+  .profile.view-container > form > div > *:last-child {
+    margin-bottom: 64px; /* 44px + 20px - 20px */
+  }
+}

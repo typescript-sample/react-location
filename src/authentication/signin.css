@@ -1,0 +1,21 @@
+.sign-in-view-container > div {
+  padding-top: unset !important;
+}
+
+.img-responsive {
+  display: block;
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+}
+.sign-in-welcome {
+  font-size: 24px;
+  color: #808080;
+}
+.sign-in-welcome .k-cash {
+  color: #049b2d;
+}
+.compatible {
+  text-align: center;
+  font-size: 12px;
+}
