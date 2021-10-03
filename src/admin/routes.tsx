@@ -1,10 +1,6 @@
-import {AxiosInstance} from 'axios';
 import * as H from 'history';
 import * as React from 'react';
-import {connect} from 'react-redux';
 import {Redirect, Route, RouteComponentProps, withRouter} from 'react-router-dom';
-import {compose} from 'redux';
-import {updateGlobalState} from 'redux-plus';
 import {alert, authenticated, resource} from 'uione';
 import {WithDefaultProps} from '../core/default';
 import AuditForm from './component/audit-form';
@@ -15,13 +11,13 @@ import {UserForm} from './component/user-form';
 import {UsersForm} from './component/users-form';
 
 interface AppProps {
-  history: H.History;
-  setGlobalState: (data: any) => void;
+  history?: H.History;
+  setGlobalState?: (data: any) => void;
 }
 
 class StatelessApp extends React.Component<AppProps & RouteComponentProps<any>, {}> {
   render() {
-    // if (authenticated()) {
+    if (authenticated()) {
       return (
         <React.Fragment>
           <Route path={this.props.match.url + 'users'} exact={true} component={WithDefaultProps(UsersForm)} />
@@ -36,27 +32,15 @@ class StatelessApp extends React.Component<AppProps & RouteComponentProps<any>, 
           <Route path={this.props.match.url + 'audit-logs'} exact={true} component={WithDefaultProps(AuditForm)} />
         </React.Fragment>
       );
-      /*
     } else {
       const resourceService = resource();
       const title = resourceService.value('error_permission');
       const msg = resourceService.value('error_unauthorized');
       alert(msg, title);
       return <Redirect to={{ pathname: '/auth', state: { from: this.props.location } }} />;
-    }*/
+    }
   }
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-    setGlobalState: (res) => dispatch(updateGlobalState(res))
-  };
-}
-
-const withConnect = connect(null, mapDispatchToProps);
-
-const adminRoutes = compose(
-  withRouter,
-  withConnect
-)(StatelessApp);
+const adminRoutes = withRouter(StatelessApp);
 export default adminRoutes;

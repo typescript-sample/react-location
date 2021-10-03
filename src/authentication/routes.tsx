@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {Route, RouteComponentProps, Switch, withRouter} from 'react-router-dom';
-import {compose} from 'redux';
 import {ChangePasswordForm} from './change-password-form';
 import {ConnectForm} from './connect-form';
 import {ConnectOauth2Form} from './connect-oauth2-form';
@@ -33,7 +32,5 @@ class StatelessApp extends React.Component<AppProps & RouteComponentProps<any>, 
   }
 }
 
-const authenticationRoutes = compose(
-  withRouter,
-)(StatelessApp);
+const authenticationRoutes = withRouter(StatelessApp);
 export default authenticationRoutes;

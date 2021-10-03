@@ -5,7 +5,6 @@ import {phonecodes} from 'phonecodes';
 import * as React from 'react';
 import * as LazyLoadModule from 'react-loadable/lib/index';
 import {Redirect, Route, RouteComponentProps, Switch, withRouter} from 'react-router-dom';
-import {compose} from 'redux';
 import {alert, confirm} from 'ui-alert';
 import {loading} from 'ui-loading';
 import {DefaultUIService, resources as uiresources} from 'ui-plus';
@@ -92,8 +91,4 @@ class StatelessApp extends React.Component<AppProps & RouteComponentProps<any>, 
   }
 }
 
-// const withStore = withReducer(globalStateReducer, GLOBAL_STATE);
-
-export const App = compose(
-  withRouter
-)(StatelessApp);
+export const App = withRouter(StatelessApp);

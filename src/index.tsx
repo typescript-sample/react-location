@@ -2,16 +2,13 @@
 import * as FontFaceObserver from 'fontfaceobserver';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import {Provider} from 'react-redux';
 import {BrowserRouter} from 'react-router-dom';
 import {App} from './App';
 import './assets/css/styles.scss';
 import './assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css';
 import './assets/fonts/material-icon/css/material-icons.css';
 import './assets/fonts/Roboto/font.css';
-import {store} from './core/store';
 import './index.css';
-// import {rootEpic} from './redux/rootEpic';
 import {unregister} from './registerServiceWorker';
 // import {LanguageProvider} from './core/containers/languageProvider';
 // import {translationMessages} from './i18n';
@@ -27,11 +24,10 @@ Promise.all([Roboto800.load(), Roboto400.load(), Roboto500.load(), Roboto300.loa
 });
 
 ReactDOM.render(
-  <Provider store={store}>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </Provider>,
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+  ,
   document.getElementById('root') as HTMLElement
 );
 unregister();
