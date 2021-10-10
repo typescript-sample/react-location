@@ -73,7 +73,11 @@ export const UsersForm = (props: ModelProps) => {
     <div className='view-container'>
       <header>
         <h2>{resource.users}</h2>
-        {component.addable && <button type='button' id='btnNew' name='btnNew' className='btn-new' onClick={hooks.add} />}
+        <div className='btn-group'>
+          {component.view !== 'table' && <button type='button' id='btnTable' name='btnTable' className='btn-table' onClick={(e) => hooks.changeView('table')} />}
+          {component.view === 'table' && <button type='button' id='btnListView' name='btnListView' className='btn-list-view' onClick={(e) => hooks.changeView('listview')} />}
+          {component.addable && <button type='button' id='btnNew' name='btnNew' className='btn-new' onClick={hooks.add} />}
+        </div>
       </header>
       <div>
         <form id='usersForm' name='usersForm' noValidate={true} ref={refForm}>
@@ -131,12 +135,38 @@ export const UsersForm = (props: ModelProps) => {
           </section>
         </form>
         <form className='list-result'>
-          <ul className='row list-view'>
+          {component.view === 'table' && <div className='table-responsive'>
+            <table>
+              <thead>
+                <tr>
+                  <th>{resource.sequence}</th>
+                  <th data-field='userId'><button type='button' id='sortUserId' onClick={hooks.sort}>{resource.user_id}</button></th>
+                  <th data-field='username'><button type='button' id='sortUserName' onClick={hooks.sort}>{resource.username}</button></th>
+                  <th data-field='email'><button type='button' id='sortEmail' onClick={hooks.sort}>{resource.email}</button></th>
+                  <th data-field='displayname'><button type='button' id='sortDisplayName' onClick={hooks.sort}>{resource.display_name}</button></th>
+                  <th data-field='status'><button type='button' id='sortStatus' onClick={hooks.sort}>{resource.status}</button></th>
+                </tr>
+              </thead>
+              {list && list.length > 0 && list.map((item, i) => {
+                return (
+                  <tr key={i}>
+                    <td className='text-right'>{(item as any).sequenceNo}</td>
+                    <td>{item.userId}</td>
+                    <td>{item.username}</td>
+                    <td>{item.email}</td>
+                    <td>{item.displayName}</td>
+                    <td>{item.status}</td>
+                  </tr>
+                );
+              })}
+            </table>
+          </div>}
+          {component.view !== 'table' && <ul className='row list-view'>
             {list && list.length > 0 && list.map((item, i) => {
               return (
                 <li key={i} className='col s12 m6 l4 xl3'>
                   <section>
-                    <img onClick={(e) => handleNavigateToUpload(e, item.userId)} src={item.imageURL && item.imageURL.length > 0 ? item.imageURL : (item.gender === 'F' ? femaleIcon : maleIcon)} className='round-border'/>
+                    <img onClick={(e) => handleNavigateToUpload(e, item.userId)} src={item.imageURL && item.imageURL.length > 0 ? item.imageURL : (item.gender === 'F' ? femaleIcon : maleIcon)} className='round-border' />
                     <div>
                       <h3 onClick={e => edit(e, item.userId)} className={item.status === 'I' ? 'inactive' : ''}>{item.displayName}</h3>
                       <p>{item.email}</p>
@@ -146,7 +176,7 @@ export const UsersForm = (props: ModelProps) => {
                 </li>
               );
             })}
-          </ul>
+          </ul>}
           <Pagination className='col s12 m6' totalRecords={component.itemTotal} itemsPerPage={component.pageSize} maxSize={component.pageMaxSize} currentPage={component.pageIndex} onPageChanged={hooks.pageChanged} initPageSize={component.initPageSize} />
         </form>
       </div>

@@ -66,6 +66,12 @@ div.card > button.btn-pick,
   background-position-y: center;
   background-repeat: no-repeat;
 }
+.view-container > header > .btn-group > button {
+  margin-left: 8px;
+}
+.view-container > header > .btn-group > .btn-new,
+.view-container > header > .btn-group > .btn-table,
+.view-container > header > .btn-group > .btn-list-view,
 .view-container > header > .btn-new,
 .view-container > form > footer .btn-cancel,
 .view-container > footer .btn-cancel,
@@ -386,21 +392,37 @@ h4> .btn-add {
   font-size: 37px;
   content: "+";
 }
-
+.view-container > header > .btn-group > .btn-list-view {
+  padding-top: 11px;
+}
+.view-container > header > .btn-group > .btn-table {
+  padding-top: 8px;
+}
+.btn-list-view::before {
+  font-size: 23px;
+  content: "\2630";
+}
+.btn-table::before {
+  font-size: 27px;
+  content: "\25A4";
+}
 .list-content > header > .btn-new,
-.view-container > header > .btn-new {
+.view-container > header > .btn-new,
+.view-container > header > .btn-group {
   position: absolute;
   top: -4px;
   right: 13px;
 }
-
+.view-container > header > .btn-group {
+  display: flex;
+  flex-direction: row;
+}
 .btn-approve {
   border: 1px solid;
   width: 24px;
   height: 24px;
   border-radius: 50%;
 }
-
 .btn-approve::before {
   font-size: 17px;
   font-weight: 100;

@@ -391,6 +391,8 @@ div.card > h3,
 .btn-select,
 .btn-add,
 .btn-new,
+.btn-table,
+.btn-list-view,
 .btn-search,
 .btn-lookup,
 .chip:focus,
@@ -406,6 +408,7 @@ div.card > h3,
 }
 
 @media screen and (max-width: 600px) {
+  .view-container > header > .btn-group > *,
   .view-container > header > .btn-new {
     color: #fff;
   }
@@ -642,3 +645,4 @@ section > p > label,
 .highlight {
   color: #cdba11 !important;
 }
+

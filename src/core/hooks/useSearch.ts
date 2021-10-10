@@ -103,6 +103,7 @@ export interface HookPropsBaseSearchParameter<T, S extends SearchModel, ST, P ex
   prepareCustomData?: (data: any) => void;
 }
 export interface SearchComponentState<T, S> extends Pagination, Sortable {
+  view?: string;
   nextPageToken?: string;
   keys?: string[];
   model?: S;
@@ -450,6 +451,9 @@ export const useBaseSearchWithProps = <T, S extends SearchModel, ST, P extends M
       resetAndSearch();
     }
   };
+  const changeView = (view: string) => {
+    setComponent({view});
+  };
 
   const resetAndSearch = () => {
     if (running === true) {
@@ -546,6 +550,7 @@ export const useBaseSearchWithProps = <T, S extends SearchModel, ST, P extends M
     add,
     searchOnClick,
     sort,
+    changeView,
     showMore,
     toggleFilter,
     doSearch,
