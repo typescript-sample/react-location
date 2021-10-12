@@ -1,7 +1,6 @@
 import * as H from 'history';
 import * as React from 'react';
 import { Route, RouteComponentProps, withRouter } from 'react-router-dom';
-import { compose } from 'redux';
 import { WithDefaultProps } from '../core/default';
 import UploadFile from './app';
 interface AppProps {
@@ -18,8 +17,5 @@ class StatelessApp extends React.Component<AppProps & RouteComponentProps<any>, 
     );
   }
 }
-
-const UploadRoutes = compose(
-  withRouter,
-)(StatelessApp);
-export default UploadRoutes;
+const uploadRoutes = withRouter(StatelessApp);
+export default uploadRoutes;
