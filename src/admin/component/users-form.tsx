@@ -6,6 +6,7 @@ import Pagination from 'react-pagination-x';
 import { useHistory } from 'react-router-dom';
 import { mergeSearchModel } from 'search-utilities';
 import { pageSizes, SearchComponentState, useSearch } from 'src/core/hooks/useSearch';
+import UserCarousel from 'src/users_carousel/app';
 import { handleError, inputSearch, storage } from 'uione';
 import femaleIcon from '../../assets/images/female.png';
 import maleIcon from '../../assets/images/male.png';
@@ -42,6 +43,7 @@ const initialize = (load: (s: UserSM, auto?: boolean) => void, setPrivateState: 
 export const UsersForm = (props: ModelProps) => {
   const refForm = React.useRef();
   const history = useHistory();
+  const [listStatus, setListStatus]  = React.useState(true);
 
   const getSearchModel = (): UserSM => {
     return currentState.model;
@@ -135,6 +137,9 @@ export const UsersForm = (props: ModelProps) => {
           </section>
         </form>
         <form className='list-result'>
+          <section className='btn-group' style={{paddingLeft : '16px'}}>
+            <div className='btn-search' style={{textAlign : 'center', padding : '6px 0'}} onClick={() => setListStatus(l => !l)}>{listStatus ? 'Carousel' : 'Items'}</div>
+          </section>
           {component.view === 'table' && <div className='table-responsive'>
             <table>
               <thead>
@@ -164,16 +169,28 @@ export const UsersForm = (props: ModelProps) => {
           {component.view !== 'table' && <ul className='row list-view'>
             {list && list.length > 0 && list.map((item, i) => {
               return (
-                <li key={i} className='col s12 m6 l4 xl3'>
-                  <section>
-                    <img onClick={(e) => handleNavigateToUpload(e, item.userId)} src={item.imageURL && item.imageURL.length > 0 ? item.imageURL : (item.gender === 'F' ? femaleIcon : maleIcon)} className='round-border' />
-                    <div>
-                      <h3 onClick={e => edit(e, item.userId)} className={item.status === 'I' ? 'inactive' : ''}>{item.displayName}</h3>
-                      <p>{item.email}</p>
-                    </div>
-                    <button className='btn-detail' />
-                  </section>
-                </li>
+                <>
+                {
+                  listStatus ? (
+                    <li key={i} className='col s12 m6 l4 xl3'>
+                      <section>
+                        <img onClick={(e) => handleNavigateToUpload(e, item.userId)} src={item.imageURL && item.imageURL.length > 0 ? item.imageURL : (item.gender === 'F' ? femaleIcon : maleIcon)} className='round-border'/>
+                        <div>
+                          <h3 onClick={e => edit(e, item.userId)} className={item.status === 'I' ? 'inactive' : ''}>{item.displayName}</h3>
+                          <p>{item.email}</p>
+                        </div>
+                        <button className='btn-detail'/>
+                      </section>
+                    </li>
+                  ) : (
+                    <li key={i} className='col s12 m6 l4 xl3'>
+                      <section>
+                        <UserCarousel user={item} edit={edit}/>
+                      </section>
+                    </li>
+                  )
+                }
+                </>
               );
             })}
           </ul>}

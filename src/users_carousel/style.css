@@ -1,0 +1,50 @@
+.slider-items{
+    height:200px;
+}
+
+.image-carousel {
+    height: 200px;
+}
+
+#btn-prev,
+#btn-next {
+    top: 48%;
+    opacity: 0;
+}
+
+.user-carousel-container:hover #btn-prev,.user-carousel-container:hover #btn-next{
+    opacity: 1;
+    transition: all 0.5s ease-in-out 0s;
+}
+
+.user-carousel-content h3{
+    cursor: pointer;
+    line-height: 1.5;
+    font-size: 18px;
+    color: #4db6ac;
+}
+
+.user-carousel-content .inactive{
+    color: #999999;
+}
+
+.user-carousel-content p{
+    font-size: 15px;
+}
+
+@media only screen and (max-width: 992px) {
+    #btn-prev,
+    #btn-next {
+        opacity: 1;
+        border-radius: 0%;
+        background-color: rgba(24, 23, 23, 0.637);
+        width: 30px;
+    }
+    #btn-prev {
+        left: 5%;
+    }
+      
+    #btn-next {
+        right: 5%;
+    }
+}

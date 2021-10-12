@@ -1,0 +1,136 @@
+.slider {
+  width: 100% ;
+  height: 100%;
+  overflow: hidden;
+  cursor: pointer;
+}
+.slider-container {
+  height: 100% ;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  background-color: rgba(43, 39, 39, 0.11);
+}
+
+.slider-container img {
+  object-fit: contain;
+}
+
+#btn-prev,
+#btn-next {
+  font-size: 30px;
+  background-color: #fff;
+  position: absolute;
+  z-index:2;
+  transform: translateY(-50%);
+  top: 38%;
+  width: 48px;
+  height: 48px;
+  margin-top: -24px;
+  text-align: center;
+  -webkit-box-shadow: 0 2px 5px 0 rgb(0 0 0 / 15%);
+  box-shadow: 0 2px 5px 0 rgb(0 0 0 / 15%);
+  border-radius: 50%;
+  user-select: none;
+  cursor: pointer;
+}
+
+#btn-prev {
+  left: -3%;
+}
+
+#btn-next {
+  right: -3%;
+}
+
+.slider-content-wrapper{
+  display: flex;
+  box-sizing: border-box;
+}
+
+.slider-items {
+  height: 100%;
+  width: 100%;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
+  position: relative;
+  /* background-color: rgba(43, 39, 39, 0.11); */
+  /* min-height: 1px; */
+  /* float: left; */
+  /* -webkit-backface-visibility: hidden; */
+  /* -webkit-tap-highlight-color: transparent; */
+}
+
+.thumbnail-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 0;
+}
+
+.slider-items .image-carousel {
+  width: 100%;
+  height: 100%;
+}
+
+.thumbnail-container img {
+  width: 100%;
+}
+/* carousel for video item */
+.panel-container{
+  width: 100%;
+  height: 100%;
+  /* background-color: rgba(43, 39, 39, 0.11); */
+}
+.btn-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  opacity: 0.6;
+  -webkit-box-shadow: 0 0 0 5px #000;
+  box-shadow: 0 0 0 5px #000;
+  display: block;
+  z-index: 1;
+}
+
+.btn-play svg{
+  width: 100%;
+  height: 100%;
+}
+
+video {
+  width: 100%;
+  /* height: 100%; */
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
+
+iframe {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.opacity-0 {
+  opacity: 0;
+}
+
+.displayNone {
+  display: none;
+}
