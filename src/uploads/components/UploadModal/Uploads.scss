@@ -1,0 +1,163 @@
+.upload-modal {
+  margin-top: 15px;
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+  .ReactCrop__image {
+    max-width: 300px !important;
+    max-height: 250px !important;
+  }
+  .frame {
+    overflow: hidden;
+    background: transparent;
+    color: #333;
+    box-shadow: 4px 4px 4px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    max-width: 600px;
+  }
+  .center {
+    position: relative;
+    height: 100%;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    min-width: 300px;
+  }
+
+  .title {
+    padding-top: 5px;
+    width: 100%;
+    height: 30px;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 16px;
+    font-weight: 300;
+    color: #666;
+  }
+
+  .dropzone {
+    width: 90%;
+    padding: 12px;
+    margin-bottom: 12px;
+    min-height: 200px;
+    border: 1px dashed #999;
+    border-radius: 3px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    cursor: pointer;
+  }
+  .area {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .upload-input {
+    display: none;
+    position: relative;
+    top: -62px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
+  .btn-area {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .preview-image {
+    padding: 12px;
+    position: relative;
+    object-fit: cover;
+    overflow: hidden;
+    .img {
+      max-width: 300px;
+    }
+  }
+  .file-name {
+    padding-top: 12px;
+  }
+
+  .btn {
+    display: block;
+    width: 120px;
+    height: 30px;
+    background: #008577;
+    color: #fff;
+    border-radius: 3px;
+    border: 0;
+    transition: all 0.3s ease-in-out;
+    font-size: 14px;
+    margin: 8px 8px 8px 8px;
+  }
+  .remove {
+    background: #850000;
+  }
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+.upload {
+  .success {
+    color: #056e24;
+    padding: 10px;
+  }
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    outline: 0;
+    box-shadow: none;
+    border: 0 !important;
+    background: #fff;
+    background-image: none;
+  }
+  select::-ms-expand {
+    display: none;
+  }
+  .select {
+    position: relative;
+    display: flex;
+    width: 20em;
+    height: 3em;
+    line-height: 3;
+    background: #fff;
+    overflow: hidden;
+    border: 1px solid #0f0f0f !important;
+    border-radius: 0.25em;
+    margin-left: 16px;
+  }
+  select {
+    flex: 1;
+    padding: 0 0.5em;
+    color: #000;
+    cursor: pointer;
+  }
+  .select::after {
+    content: '\25BC';
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0 1em;
+    background: #fff;
+    cursor: pointer;
+    pointer-events: none;
+    -webkit-transition: 0.25s all ease;
+    -o-transition: 0.25s all ease;
+    transition: 0.25s all ease;
+  }
+  .select:hover::after {
+    color: #f39c12;
+  }
+}

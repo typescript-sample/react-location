@@ -1,0 +1,88 @@
+.image-uploaded {
+  max-width: 100%;
+  max-height: 180px;
+  border-radius: 5px;
+}
+.video-uploaded {
+  max-width: 100%;
+  border-radius: 2px;
+  border: 1px solid #0f0f0f7e;
+  height: 180px;
+  background-color: black;
+}
+.card-image {
+  position: relative;
+  padding: 6px;
+  .button-area {
+    display: none;
+    position: absolute;
+    left: 35%;
+    top: 40%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    i {
+      display: none;
+      margin: 2px;
+    }
+  }
+  .button-area-video {
+    display: none;
+    position: absolute;
+    top: 5%;
+    right: 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    i {
+      display: none;
+      margin: 2px;
+    }
+  }
+}
+.card-image:hover {
+  background-color: #0f0f0f0a;
+  .button-area {
+    display: flex !important;
+    i {
+      display: block !important;
+    }
+  }
+  .button-area-video {
+    display: flex !important;
+    i {
+      display: block !important;
+    }
+    .icon-delete {
+      color: rgba(255, 0, 0, 0.8);
+    }
+  }
+}
+
+.data-item {
+  max-width: 338px;
+  max-height: 190px;
+}
+
+.input-video-id {
+  padding: 8px;
+  display: block;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  width: 80%;
+  border-radius: 8px;
+  border: 1px solid #ccc!important;
+}
+.icon-delete {
+  color: rgba(255, 0, 0, 0.8);
+}
+.youtube-add {
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+  .btn-add-youtube {
+    padding: 2px;
+    background-color: transparent;
+    border: none;
+  }
+}

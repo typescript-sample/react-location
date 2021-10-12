@@ -21,6 +21,7 @@ import DefaultWrapper from './core/default';
 import {Loading} from './core/Loading';
 import {resources as locales} from './core/resources';
 import {WelcomeForm} from './core/welcome-form';
+import UploadFile from './uploads/app';
 
 const adminRoutes = LazyLoadModule({ loader: () => import(`./admin/routes`), loading: Loading });
 
@@ -81,6 +82,7 @@ class StatelessApp extends React.Component<AppProps & RouteComponentProps<any>, 
         <Route path='/' exact={true} render={(props) => (<Redirect to='/auth' {...props} />)} />
 
         <DefaultWrapper history={this.props.history} location={this.props.location}>
+          <Route path='/upload' component={UploadFile} />
           <Route path='/welcome' component={WelcomeForm} />
           <Route path='' component={adminRoutes} />
         </DefaultWrapper>
