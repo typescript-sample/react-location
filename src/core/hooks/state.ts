@@ -14,11 +14,15 @@ export const enLocale = {
   'currencySymbol': '$',
   'currencyPattern': 0
 };
-export function localeOf(lc?: Locale, glc?: () => Locale): Locale {
+export function localeOf(lc?: Locale, glc?: (() => Locale) | Locale): Locale {
   let l: Locale = lc;
   if (!l) {
     if (glc) {
-      l = glc();
+      if (typeof glc === 'function') {
+        l = glc();
+      } else {
+        l = glc;
+      }
     }
     if (!l) {
       l = enLocale;

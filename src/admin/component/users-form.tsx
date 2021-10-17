@@ -60,11 +60,6 @@ export const UsersForm = (props: ModelProps) => {
     history.push(`users/${id}`);
   };
 
-  const approve = (e: any, id: string) => {
-    e.preventDefault();
-    history.push(`users/approve/${id}`);
-  };
-
   const handleNavigateToUpload = (e: any, userId: string) => {
     e.preventDefault();
     history.push(`uploads/${userId}/image`);
@@ -76,8 +71,8 @@ export const UsersForm = (props: ModelProps) => {
       <header>
         <h2>{resource.users}</h2>
         <div className='btn-group'>
-          {component.view !== 'table' && <button type='button' id='btnTable' name='btnTable' className='btn-table' onClick={(e) => hooks.changeView('table')} />}
-          {component.view === 'table' && <button type='button' id='btnListView' name='btnListView' className='btn-list-view' onClick={(e) => hooks.changeView('listview')} />}
+          {component.view !== 'table' && <button type='button' id='btnTable' name='btnTable' className='btn-table' data-view='table' onClick={hooks.changeView} />}
+          {component.view === 'table' && <button type='button' id='btnListView' name='btnListView' className='btn-list-view' data-view='listview' onClick={hooks.changeView} />}
           {component.addable && <button type='button' id='btnNew' name='btnNew' className='btn-new' onClick={hooks.add} />}
         </div>
       </header>

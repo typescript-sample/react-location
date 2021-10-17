@@ -1,8 +1,9 @@
 import {PasswordChange, strongPassword, validateAndChangePassword, validateChange} from 'password-component';
 import {PasswordService} from 'password-component';
 import * as React from 'react';
-import {MessageComponent, MessageState} from 'react-message-component';
-import {HistoryProps, navigate} from 'react-onex';
+import {HistoryProps, ModelProps, navigate} from 'react-onex';
+// import {MessageComponent, MessageState} from 'react-message-component';
+import {MessageComponent, MessageState} from 'src/core/hooks/components';
 import {handleError, initForm, loading, registerEvents, resource as getResource, storage} from 'uione';
 import logo from '../assets/images/logo.png';
 import {context} from './app';
@@ -13,8 +14,8 @@ export interface ChangePasswordState extends MessageState {
   hiddenPasscode: boolean;
 }
 
-export class ChangePasswordForm extends MessageComponent<HistoryProps, ChangePasswordState> {
-  constructor(props) {
+export class ChangePasswordForm extends MessageComponent<HistoryProps & ModelProps, ChangePasswordState> {
+  constructor(props: HistoryProps & ModelProps) {
     super(props);
     this.signin = this.signin.bind(this);
     this.changePassword = this.changePassword.bind(this);

@@ -1,6 +1,8 @@
 import {AuthInfo} from 'authentication-component';
 
 import * as React from 'react';
+import {Locale} from './core';
+import {useUpdate} from './update';
 
 interface ErrorMessage {
   field: string;
@@ -9,8 +11,9 @@ interface ErrorMessage {
   message?: string;
 }
 
-export interface MessageState {
-  message: string;
+interface MessageState {
+  message?: string;
+  alertClass?: string;
 }
 
 interface SigninState extends MessageState {
@@ -18,15 +21,16 @@ interface SigninState extends MessageState {
   remember: boolean;
 }
 
-const useMessage = (signInInfor: SigninState) => {
-  const [alertClass, setAlertClass] = React.useState<string>('');
-  const [signinInfor, setSiginInfor] = React.useState<SigninState>(signInInfor);
-
+const useMessage = (initialState: MessageState, getName?: ((f?: HTMLFormElement) => string)|string, getLocale?: () => Locale, removeErr?: (ctrl: HTMLInputElement) => void) => {
+  const [msg, setMessage] = React.useState<MessageState>(initialState);
+  console.log(JSON.stringify(msg));
+  // const [signinInfor, setSiginInfor] = React.useState<SigninState>(signInInfor);
+/*
   const handleChange = (e: any) => {
     const type = e.target.id;
     const value = e.target.value ? e.target.value : '';
     if (type === 'username') {
-      setSiginInfor((prev) => ({...prev, user: {
+      setMessage((prev) => ({...prev, message: {
         username: value,
         password: prev.user.password,
         passcode: prev.user.passcode
@@ -50,30 +54,27 @@ const useMessage = (signInInfor: SigninState) => {
     e.preventDefault();
     setSiginInfor((prev) => ({...prev, remember: !signinInfor.remember}));
   };
-
+*/
   const hideMessage = () => {
-    setAlertClass('');
-    setSiginInfor((prev) => ({...prev, message: ''}));
+    setMessage({alertClass: '', message: ''});
   };
 
-  const showMessage = (msg: string) => {
-    setAlertClass('alert alert-info');
-    setSiginInfor((prev) => ({...prev, message: msg}));
+  const showMessage = (ms: string) => {
+    setMessage({alertClass: 'alert alert-info', message: ms});
   };
 
-  const showError = (msg: string|ErrorMessage[]) => {
-    setAlertClass('alert alert-erro');
-    if (typeof msg === 'string') {
-      setSiginInfor((prev) => ({...prev, message: msg}));
-    } else if (Array.isArray(msg) && msg.length > 0) {
-      setSiginInfor((prev) => ({...prev, message: msg[0].message}));
+  const showError = (ms: string|ErrorMessage[]) => {
+    if (typeof ms === 'string') {
+      setMessage({alertClass: 'alert alert-error', message: ms});
+    } else if (Array.isArray(ms) && ms.length > 0) {
+      setMessage({alertClass: 'alert alert-error', message: ms[0].message});
     } else {
-      const x = JSON.stringify(msg);
-      setSiginInfor((prev) => ({...prev, message: x}));
+      const x = JSON.stringify(ms);
+      setMessage({alertClass: 'alert alert-error', message: x});
     }
   };
 
-  return {signinInfor, setSiginInfor, alertClass, handleChange, showError, showMessage, updateRemember, hideMessage};
+  return {msg, showError, showMessage, hideMessage};
 
 };
 export default useMessage;

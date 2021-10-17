@@ -225,7 +225,6 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
   };
 
   const [running, setRunning] = useState(undefined);
-  const baseProps = useUpdate<S>(p.initialState, p.getLocale);
 
   const getModelName = (f?: HTMLFormElement) => {
     if (p.name && p.name.length > 0) {
@@ -233,6 +232,8 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
     }
     return getModelName2(f);
   };
+  const baseProps = useUpdate<S>(p.initialState, getModelName, p.getLocale);
+
   const prepareCustomData = (p.prepareCustomData ? p.prepareCustomData : prepareData);
   const updateDateState = (name: string, value: any) => {
     const modelName = getModelName(p.refForm.current);
