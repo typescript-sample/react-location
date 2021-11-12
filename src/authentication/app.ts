@@ -10,6 +10,7 @@ import {SignupInfo} from 'signup-component';
 import {SignupService} from 'signup-component';
 import {SignupClient} from 'signup-component';
 import {options, storage} from 'uione';
+// axios.defaults.withCredentials = true;
 
 export interface Config {
   authentication_url: string;
@@ -17,6 +18,7 @@ export interface Config {
   password_url: string;
   oauth2_url: string;
 }
+
 class ApplicationContext {
   private readonly httpRequest = new HttpRequest(axios, options);
   private signupService: SignupService<SignupInfo>;
