@@ -284,7 +284,7 @@ export const useBaseSearchWithProps = <T, S extends SearchModel, ST, P extends M
   const getModelName = (p1.getModelName ? p1.getModelName : _getModelName);
 
   // const setState2: <K extends keyof S, P>(st: ((prevState: Readonly<S>, props: Readonly<P>) => (Pick<S, K> | S | null)) | (Pick<S, K> | S | null), cb?: () => void) => void;
-  const baseProps = (props ? useUpdateWithProps<ST, P>(props, initialState, p2.getLocale, p1.removeError, getModelName, p1.prepareCustomData) : useUpdate<ST>(initialState, p2.getLocale, p1.removeError, getModelName));
+  const baseProps = (props ? useUpdateWithProps<ST, P>(props, initialState, p2.getLocale, p1.removeError, getModelName, p1.prepareCustomData) : useUpdate<ST>(initialState, getModelName, p2.getLocale, p1.removeError));
   const { state, setState } = baseProps;
   const [history, match] = [useHistory(), useRouteMatch()];
 
@@ -451,8 +451,16 @@ export const useBaseSearchWithProps = <T, S extends SearchModel, ST, P extends M
       resetAndSearch();
     }
   };
-  const changeView = (view: string) => {
-    setComponent({view});
+  const changeView = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, view?: string) => {
+    if (view && view.length > 0) {
+      setComponent({view});
+    } else if (event && event.target) {
+      const target = event.target as any;
+      const v: string = target.getAttribute('data-view');
+      if (v && v.length > 0) {
+        setComponent({view: v});
+      }
+    }
   };
 
   const resetAndSearch = () => {

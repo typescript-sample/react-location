@@ -2,7 +2,7 @@ import * as React from 'react';
 import {clone, diff, makeDiff} from 'reflectx';
 import {addParametersIntoUrl, append, buildSearchMessage, changePage, changePageSize, formatResultsByComponent, getDisplayFieldsFromForm, getModel, handleAppend, handleSortEvent, initSearchable, mergeSearchModel as mergeSearchModel2, more, reset, Searchable, showPaging, validate} from 'search-utilities';
 import {BaseDiffState, createDiffStatus, DiffApprService, DiffParameter, DiffState, DiffStatusConfig, hideLoading, showLoading} from './core';
-import {Attributes, buildId, EditStatusConfig, error, getCurrencyCode, getModelName as getModelName2, HistoryProps, initForm, LoadingService, Locale, message, messageByHttpStatus, ModelHistoryProps, ModelProps, removePhoneFormat, ResourceService, SearchModel, SearchParameter, SearchResult, SearchService, SearchState, StringMap, UIService, ViewParameter, ViewService} from './core';
+import {Attributes, buildId, EditStatusConfig, error, ErrorMessage, getCurrencyCode, getModelName as getModelName2, HistoryProps, initForm, LoadingService, Locale, message, messageByHttpStatus, ModelHistoryProps, ModelProps, removePhoneFormat, ResourceService, SearchModel, SearchParameter, SearchResult, SearchService, SearchState, StringMap, UIService, ViewParameter, ViewService} from './core';
 import {formatDiffModel, getDataFields} from './diff';
 import {build, createModel as createModel2, EditParameter, GenericService, handleStatus, handleVersion, initPropertyNullInModel, ResultInfo} from './edit';
 import {focusFirstError, readOnly} from './formutil';
@@ -230,6 +230,61 @@ export class BaseComponent<P extends ModelProps, S> extends React.Component<P, S
         this.setState(objSet);
       }
     }
+  }
+}
+export interface MessageState extends ModelProps {
+  message?: string;
+}
+export class MessageComponent<P extends MessageState, S extends MessageState> extends BaseComponent<P, S> {
+  constructor(props: P,
+    getLocale?: () => Locale,
+    removeErr?: (ctrl: HTMLInputElement) => void) {
+    super(props, getLocale, removeErr);
+    this.getModelName = this.getModelName.bind(this);
+    this.showMessage = this.showMessage.bind(this);
+    this.showError = this.showError.bind(this);
+    this.hideMessage = this.hideMessage.bind(this);
+    this.ref = React.createRef();
+  }
+  ref: any;
+  form: HTMLFormElement;
+  name?: string;
+  alertClass = '';
+  running: boolean;
+  protected getModelName(f?: HTMLFormElement): string {
+    if (this.name && this.name.length > 0) {
+      return this.name;
+    }
+    let f2 = f;
+    if (!f2) {
+      f2 = this.form;
+    }
+    if (f2) {
+      const a = getModelName2(f2);
+      if (a && a.length > 0) {
+        return a;
+      }
+    }
+    return 'model';
+  }
+  showMessage = (msg: string) => {
+    this.alertClass = 'alert alert-info';
+    this.setState({ message: msg });
+  }
+  showError = (msg: string|ErrorMessage[]) => {
+    this.alertClass = 'alert alert-error';
+    if (typeof msg === 'string') {
+      this.setState({ message: msg });
+    } else if (Array.isArray(msg) && msg.length > 0) {
+      this.setState({ message: msg[0].message });
+    } else {
+      const x = JSON.stringify(msg);
+      this.setState({ message: x });
+    }
+  }
+  hideMessage = () => {
+    this.alertClass = '';
+    this.setState({ message: '' });
   }
 }
 export class BaseSearchComponent<T, S extends SearchModel, P extends ModelHistoryProps, I extends SearchState<T, S>> extends BaseComponent<P, I> implements Searchable {
