@@ -3,12 +3,12 @@ import {PasswordService} from 'password-component';
 import * as React from 'react';
 import {HistoryProps, ModelProps, navigate} from 'react-onex';
 // import {MessageComponent, MessageState} from 'react-message-component';
-import {MessageComponent, MessageState} from 'src/core/hooks/components';
+import {MessageComponent, MessageOnlyState} from 'src/core/hooks/components';
 import {handleError, initForm, loading, registerEvents, resource as getResource, storage} from 'uione';
 import logo from '../assets/images/logo.png';
 import {context} from './app';
 
-export interface ChangePasswordState extends MessageState {
+export interface ChangePasswordState extends MessageOnlyState {
   user: PasswordChange;
   confirmPassword: string;
   hiddenPasscode: boolean;

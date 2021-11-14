@@ -96,17 +96,19 @@ export const useViewOne = <T, ID, S, P extends HistoryProps>(p: HookPropsViewPar
       initForm(baseProps.refForm.current);
     }
     const id = buildId<ID>(p.props, p.keys);
-    if (p && p.initialize) {
-      p.initialize(id, baseProps.load, setState, p.callback);
-    } else {
-      baseProps.load(id, p.callback);
+    if (id) {
+      if (p && p.initialize) {
+        p.initialize(id, baseProps.load, setState, p.callback);
+      } else {
+        baseProps.load(id, p.callback);
+      }
     }
   }, []);
   return {...baseProps};
 };
 export const useBaseViewOne = <T, ID, S, P extends HistoryProps>(p: HookPropsBaseViewParameter<T, ID, S, P>) => {
   const [state, setState] = useMergeState<S>(p.initialState);
-  const [running, setRunning] = useState(undefined);
+  const [running, setRunning] = useState<boolean>();
   const {goBack} = useRouter();
 
   const back = (event: any) => {

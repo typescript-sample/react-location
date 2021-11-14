@@ -4,7 +4,7 @@ import { buildFromUrl, DispatchWithCallback, ModelProps } from 'react-onex';
 import PageSizeSelect from 'react-page-size-select';
 import Pagination from 'react-pagination-x';
 import { useHistory } from 'react-router-dom';
-import { mergeSearchModel } from 'search-utilities';
+import { mergeFilter } from 'search-utilities';
 import { pageSizes, SearchComponentState, useSearch } from 'src/core/hooks/useSearch';
 import UserCarousel from 'src/users_carousel/app';
 import { handleError, inputSearch, storage } from 'uione';
@@ -35,7 +35,7 @@ const initialize = (load: (s: UserSM, auto?: boolean) => void, setPrivateState: 
   Promise.all([
     masterDataService.getStatus()
   ]).then(values => {
-    const s2 = mergeSearchModel(buildFromUrl(), sm, pageSizes, ['activate']);
+    const s2 = mergeFilter(buildFromUrl(), sm, pageSizes, ['activate']);
     const [activationStatuses] = values;
     setPrivateState({ statusList: activationStatuses }, () => load(s2, true));
   }).catch(handleError);

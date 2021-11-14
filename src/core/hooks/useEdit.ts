@@ -5,6 +5,7 @@ import {build, createModel as createModel2, EditParameter, GenericService, handl
 import {focusFirstError, readOnly as setReadOnly} from './formutil';
 import {DispatchWithCallback, useMergeState} from './merge';
 import {useRouter} from './router';
+import {localeOf} from './state';
 import {useUpdate} from './update';
 
 function prepareData(data: any): void {
@@ -49,7 +50,7 @@ export interface HookBaseEditParameter<T, ID, S> extends BaseEditComponentParam<
   showMessage: (msg: string) => void;
   showError: (m: string, header?: string, detail?: string, callback?: () => void) => void;
   getLocale?: () => Locale;
-  confirm: (m2: string, header: string, yesCallback?: () => void, btnLeftText?: string, btnRightText?: string, noCallback?: () => void) => void;
+  confirm: (m2: string, header?: string, yesCallback?: () => void, btnLeftText?: string, btnRightText?: string, noCallback?: () => void) => void;
   ui?: UIService;
   loading?: LoadingService;
 }
@@ -72,10 +73,10 @@ export const useBaseEdit = <T, ID, S>(
   p1: EditParameter,
   p2?: BaseEditComponentParam<T, ID>
   ) => {
-  return useBaseEditWithProps(null, refForm, initialState, service, p1, p2);
+  return useBaseEditWithProps(undefined, refForm, initialState, service, p1, p2);
 };
 export const useBaseEditWithProps = <T, ID, S, P extends ModelProps>(
-  props: P,
+  props: P|undefined,
   refForm: any,
   initialState: S,
   service: GenericService<T, ID, number|ResultInfo<T>>,
@@ -119,7 +120,7 @@ export const useBaseEditWithProps = <T, ID, S, P extends ModelProps>(
     load: p4.load,
     save: p4.save
   };
-  const per: EditPermission = (p3 ? p3 : p2);
+  const per: EditPermission|undefined = (p3 ? p3 : p2);
   if (per) {
     p.addable = per.addable;
     p.readOnly = per.readOnly;
@@ -186,7 +187,7 @@ export const useEditOne = <T, ID, S, P extends ModelProps>(p: HookPropsEditParam
   const baseProps = useBaseEditOneWithProps(p);
   useEffect(() => {
     if (baseProps.refForm) {
-      const registerEvents = (baseProps.ui ? baseProps.ui.registerEvents : null);
+      const registerEvents = (baseProps.ui ? baseProps.ui.registerEvents : undefined);
       initForm(baseProps.refForm.current, registerEvents);
     }
     const n = baseProps.getModelName(p.refForm.current);
@@ -196,16 +197,18 @@ export const useEditOne = <T, ID, S, P extends ModelProps>(p: HookPropsEditParam
     if (!p.keys && p.service && p.service.metadata) {
       const metadata = (p.metadata ? p.metadata : p.service.metadata());
       const meta = build(metadata);
-      const keys = (p.keys ? p.keys : (meta ? meta.keys : null));
-      const version = (p.version ? p.version : (meta ? meta.version : null));
+      const keys = (p.keys ? p.keys : (meta ? meta.keys : undefined));
+      const version = (p.version ? p.version : (meta ? meta.version : undefined));
       p.keys = keys;
       p.version = version;
     }
     const id = buildId<ID>(p.props, p.keys);
-    if (p && p.initialize) {
-      p.initialize(id, baseProps.load, baseProps.setState, p.callback);
-    } else {
-      baseProps.load(id, p.callback);
+    if (id) {
+      if (p && p.initialize) {
+        p.initialize(id, baseProps.load, baseProps.setState, p.callback);
+      } else {
+        baseProps.load(id, p.callback);
+      }
     }
   }, []);
   return {...baseProps};
@@ -224,9 +227,9 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
     goBack();
   };
 
-  const [running, setRunning] = useState(undefined);
+  const [running, setRunning] = useState<boolean>();
 
-  const getModelName = (f?: HTMLFormElement) => {
+  const getModelName = (f?: HTMLFormElement|null): string => {
     if (p.name && p.name.length > 0) {
       return p.name;
     }
@@ -237,7 +240,7 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
   const prepareCustomData = (p.prepareCustomData ? p.prepareCustomData : prepareData);
   const updateDateState = (name: string, value: any) => {
     const modelName = getModelName(p.refForm.current);
-    const currentState = state[modelName];
+    const currentState = (state as any)[modelName];
     if (p.props && p.props.setGlobalState) {
       const data = p.props.shouldBeCustomized ? prepareCustomData({ [name]: value }) : { [name]: value };
       p.props.setGlobalState({ [modelName]: { ...currentState, ...data } });
@@ -266,8 +269,8 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
     }
   };
 
-  const resetState = (newMode: boolean, model: T, originalModel: T) => {
-    setFlag({ newMode, originalModel });
+  const resetState = (newMode: boolean, model: T, originalModel?: T) => {
+    setFlag({ newMode, originalModel } as any);
     showModel(model);
   };
 
@@ -283,15 +286,15 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
   const _getModel = () => {
     const n = getModelName(p.refForm.current);
     if (p.props) {
-      return p.props[n] || state[n];
+      return (p.props as any)[n] || (state as any)[n];
     } else {
-      return state[n];
+      return (state as any)[n];
     }
   };
   const getModel = (p.getModel ? p.getModel : _getModel);
 
   const _createModel = (): T => {
-    const metadata = (p.metadata ? p.metadata : p.service.metadata());
+    const metadata = (p.metadata ? p.metadata : (p.service.metadata ? p.service.metadata() : undefined));
     if (metadata) {
       const obj = createModel2<T>(metadata);
       return obj;
@@ -305,10 +308,11 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
   const newOnClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
     const obj = createModel();
-    resetState(true, obj, null);
-    if (p.ui) {
+    resetState(true, obj, undefined);
+    const u = p.ui;
+    if (u) {
       setTimeout(() => {
-        p.ui.removeFormError(p.refForm.current);
+        u.removeFormError(p.refForm.current);
       }, 100);
     }
   };
@@ -327,11 +331,11 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
         return;
       }
       const obj = getModel();
-      const metadata = (p.metadata ? p.metadata : p.service.metadata());
-      if ((!p.keys || !p.version) && p.service && p.service.metadata) {
+      const metadata = (p.metadata ? p.metadata : (p.service.metadata ? p.service.metadata() : undefined));
+      if (metadata && (!p.keys || !p.version)) {
         const meta = build(metadata);
-        const keys = (p.keys ? p.keys : (meta ? meta.keys : null));
-        const version = (p.version ? p.version : (meta ? meta.version : null));
+        const keys = (p.keys ? p.keys : (meta ? meta.keys : undefined));
+        const version = (p.version ? p.version : (meta ? meta.version : undefined));
         p.keys = keys;
         p.version = version;
       }
@@ -339,7 +343,7 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
         validate(obj, () => {
           const msg = message(p.resourceService.value, 'msg_confirm_save', 'confirm', 'yes', 'no');
           p.confirm(msg.message, msg.title, () => {
-            save(obj, null, p.version, isBack);
+            save(obj, undefined, p.version, isBack);
           }, msg.no, msg.yes);
         });
       } else {
@@ -368,7 +372,7 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
 
   const _validate = (obj: T, callback: (obj2?: T) => void) => {
     if (p.ui) {
-      const valid = p.ui.validateForm(p.refForm.current, p.getLocale());
+      const valid = p.ui.validateForm(p.refForm.current, localeOf(undefined, p.getLocale));
       if (valid) {
         callback(obj);
       }
@@ -390,10 +394,10 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
     } else {
       handleVersion(obj, version);
     }
-    const isBackO = (isBack == null || isBack === undefined ? backOnSuccess : isBack);
+    const isBackO = (!isBack ? backOnSuccess : isBack);
     p.showMessage(msg);
     if (isBackO) {
-      back(null);
+      back(undefined);
     }
   };
   const succeed = (p.succeed ? p.succeed : _succeed);
@@ -401,21 +405,26 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
   const _fail = (result: ResultInfo<T>) => {
     const errors = result.errors;
     const f = p.refForm.current;
-    const unmappedErrors = p.ui.showFormError(f, errors);
-    focusFirstError(f);
-    if (!result.message) {
-      if (errors && errors.length === 1) {
-        result.message = errors[0].message;
-      } else {
-        if (p.ui && p.ui.buildErrorMessage) {
-          result.message = p.ui.buildErrorMessage(unmappedErrors);
-        } else {
+    const u = p.ui;
+    if (errors && u) {
+      const unmappedErrors = u.showFormError(f, errors);
+      focusFirstError(f);
+      if (!result.message) {
+        if (errors && errors.length === 1) {
           result.message = errors[0].message;
+        } else {
+          if (p.ui && p.ui.buildErrorMessage) {
+            result.message = p.ui.buildErrorMessage(unmappedErrors);
+          } else {
+            result.message = errors[0].message;
+          }
         }
       }
+      if (result.message) {
+        const t = p.resourceService.value('error');
+        p.showError(result.message, t);
+      }
     }
-    const t = p.resourceService.value('error');
-    p.showError(result.message, t);
   };
   const fail = (p.fail ? p.fail : _fail);
 
@@ -467,7 +476,7 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
     showLoading(p.loading);
     const isBackO = (isBack == null || isBack === undefined ? backOnSuccess : isBack);
     if (flag.newMode === false) {
-      if (patchable === true && body && Object.keys(body).length > 0) {
+      if (p.service.patch && patchable === true && body && Object.keys(body).length > 0) {
         p.service.patch(body).then(result => postSave(obj, result, version, isBackO));
       } else {
         p.service.update(obj).then(result => postSave(obj, result, version, isBackO));
@@ -517,7 +526,7 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
       });
     } else {
       const obj = createModel();
-      setFlag({ newMode: true, originalModel: null });
+      setFlag({ newMode: true, originalModel: undefined });
       if (callback) {
         callback(obj, showModel);
       } else {

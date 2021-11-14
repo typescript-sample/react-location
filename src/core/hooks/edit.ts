@@ -10,7 +10,7 @@ export interface EditParameter {
   resource: ResourceService;
   showMessage: (msg: string, option?: string) => void;
   showError: (m: string, header?: string, detail?: string, callback?: () => void) => void;
-  confirm: (m2: string, header: string, yesCallback?: () => void, btnLeftText?: string, btnRightText?: string, noCallback?: () => void) => void;
+  confirm: (m2: string, header?: string, yesCallback?: () => void, btnLeftText?: string, btnRightText?: string, noCallback?: () => void) => void;
   ui?: UIService;
   getLocale?: (profile?: string) => Locale;
   loading?: LoadingService;
@@ -26,9 +26,9 @@ export interface MetaModel {
   keys?: string[];
   version?: string;
 }
-export function build(attributes: Attributes, name?: string): MetaModel {
+export function build(attributes: Attributes, name?: string): MetaModel|undefined {
   if (!attributes) {
-    return null;
+    return undefined;
   }
   if (resource.cache && name && name.length > 0) {
     let meta: MetaModel = resource._cache[name];
@@ -77,53 +77,55 @@ export function createModel<T>(attributes?: Attributes): T {
   const attrs = Object.keys(attributes);
   for (const k of attrs) {
     const attr = attributes[k];
-    switch (attr.type) {
-      case 'string':
-      case 'text':
-        obj[attr.name] = '';
-        break;
-      case 'integer':
-      case 'number':
-        obj[attr.name] = 0;
-        break;
-      case 'array':
-        obj[attr.name] = [];
-        break;
-      case 'boolean':
-        obj[attr.name] = false;
-        break;
-      case 'date':
-        obj[attr.name] = new Date();
-        break;
-      case 'object':
-        if (attr.typeof) {
-          const object = createModel(attr.typeof);
-          obj[attr.name] = object;
+    if (attr.name) {
+      switch (attr.type) {
+        case 'string':
+        case 'text':
+          obj[attr.name] = '';
           break;
-        } else {
-          obj[attr.name] = {};
+        case 'integer':
+        case 'number':
+          obj[attr.name] = 0;
           break;
-        }
-      case 'ObjectId':
-        obj[attr.name] = null;
-        break;
-      default:
-        obj[attr.name] = '';
-        break;
+        case 'array':
+          obj[attr.name] = [];
+          break;
+        case 'boolean':
+          obj[attr.name] = false;
+          break;
+        case 'date':
+          obj[attr.name] = new Date();
+          break;
+        case 'object':
+          if (attr.typeof) {
+            const object = createModel(attr.typeof);
+            obj[attr.name] = object;
+            break;
+          } else {
+            obj[attr.name] = {};
+            break;
+          }
+        case 'ObjectId':
+          obj[attr.name] = null;
+          break;
+        default:
+          obj[attr.name] = '';
+          break;
+      }
     }
   }
   return obj;
 }
 
-export function initPropertyNullInModel<T>(obj: T, m: Attributes): T {
+export function initPropertyNullInModel<T>(obj: T, m?: Attributes): T {
   if (!m) {
     const x: any = {};
     return x;
   }
   const model = createModel(m);
-  for (const key of Object.keys(model)) {
-    if (obj && !obj.hasOwnProperty(key)) {
-      obj[key] = model[key];
+  for (const key of Object.keys(model as any)) {
+    if (obj && !(obj as any).hasOwnProperty(key)) {
+      (obj as any)[key] = (model as any)[key];
     }
   }
   return obj;
@@ -138,13 +140,13 @@ export function handleStatus(x: number|string, st: EditStatusConfig, gv: (k: str
     se(gv('error_internal'), title);
   }
 }
-export function handleVersion<T>(obj: T, version: string) {
+export function handleVersion<T>(obj: T, version?: string): void {
   if (obj && version && version.length > 0) {
-    const v = obj[version];
+    const v = (obj as any)[version];
     if (v && typeof v === 'number') {
-      obj[version] = v + 1;
+      (obj as any)[version] = v + 1;
     } else {
-      obj[version] = 1;
+      (obj as any)[version] = 1;
     }
   }
 }

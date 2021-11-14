@@ -12,3 +12,4 @@ export * from './update';
 export * from './useView';
 export * from './useEdit';
 export * from './useSearch';
+export * from './useMessage';

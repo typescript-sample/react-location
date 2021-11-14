@@ -3,7 +3,10 @@ import {useMergeState} from './merge';
 import {buildFlatState, buildState, handleEvent, handleProps, localeOf} from './state';
 
 const m = 'model';
-export const useUpdate = <T>(initialState: T, getName?: ((f?: HTMLFormElement) => string) | string, getLocale?: (() => Locale) | Locale, removeErr?: (ctrl: HTMLInputElement) => void) => {
+const _getModelName = (f2?: HTMLFormElement|null): string => {
+  return getModelName2(f2, 'model');
+};
+export const useUpdate = <T>(initialState: T, getName?: ((f?: HTMLFormElement|null) => string) | string, getLocale?: (() => Locale) | Locale, removeErr?: (ctrl: HTMLInputElement) => void) => {
   const [state, setState] = useMergeState<T>(initialState);
 
   const updatePhoneState = (event: any) => {
@@ -24,16 +27,7 @@ export const useUpdate = <T>(initialState: T, getName?: ((f?: HTMLFormElement) =
       updateState(event);
     }
   };
-  const _getModelName = (f2?: HTMLFormElement) => {
-    if (f2) {
-      const a = getModelName2(f2);
-      if (a && a.length > 0) {
-        return a;
-      }
-    }
-    return 'model';
-  };
-  let getModelName: (f2?: HTMLFormElement) => string;
+  const getModelName: (f2?: HTMLFormElement|null) => string = (typeof getName === 'function' ? getName : _getModelName);
   const updateState = (e: any, callback?: () => void, lc?: Locale) => {
     const ctrl = e.currentTarget as HTMLInputElement;
     let mn: string = m;
@@ -42,11 +36,9 @@ export const useUpdate = <T>(initialState: T, getName?: ((f?: HTMLFormElement) =
         mn = getName;
       } else {
         mn = getName(ctrl.form);
-        getModelName = getName;
       }
     } else {
       mn = _getModelName(ctrl.form);
-      getModelName = _getModelName;
     }
     const l = localeOf(lc, getLocale);
     handleEvent(e, removeErr);
@@ -83,7 +75,7 @@ export const useUpdate = <T>(initialState: T, getName?: ((f?: HTMLFormElement) =
 };
 function prepareData(data: any): void {
 }
-export const useUpdateWithProps = <T, P extends ModelProps>(props: P, initialState: T, gl?: (() => Locale) | Locale, removeErr?: (ctrl: HTMLInputElement) => void, getName?: ((f?: HTMLFormElement) => string) | string, prepareCustomData?: (d: any) => void) => {
+export const useUpdateWithProps = <T, P extends ModelProps>(props: P, initialState: T, gl?: (() => Locale) | Locale, removeErr?: (ctrl: HTMLInputElement) => void, getName?: ((f?: HTMLFormElement|null) => string) | string, prepareCustomData?: (d: any) => void) => {
   if (!prepareCustomData) {
     prepareCustomData = prepareData;
   }

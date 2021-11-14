@@ -1,14 +1,14 @@
 import * as React from 'react';
 import {clone, diff, makeDiff} from 'reflectx';
-import {addParametersIntoUrl, append, buildSearchMessage, changePage, changePageSize, formatResultsByComponent, getDisplayFieldsFromForm, getModel, handleAppend, handleSortEvent, initSearchable, mergeSearchModel as mergeSearchModel2, more, reset, Searchable, showPaging, validate} from 'search-utilities';
-import {BaseDiffState, createDiffStatus, DiffApprService, DiffParameter, DiffState, DiffStatusConfig, hideLoading, showLoading} from './core';
+import {addParametersIntoUrl, append, buildMessage, changePage, changePageSize, formatResultsByComponent, getFieldsFromForm, getModel, handleAppend, handleSortEvent, initFilter, mergeFilter as mergeFilter2, more, reset, Searchable, showPaging, validate} from 'search-utilities';
+import {BaseDiffState, createDiffStatus, createEditStatus, DiffApprService, DiffParameter, DiffState, DiffStatusConfig, hideLoading, showLoading} from './core';
 import {Attributes, buildId, EditStatusConfig, error, ErrorMessage, getCurrencyCode, getModelName as getModelName2, HistoryProps, initForm, LoadingService, Locale, message, messageByHttpStatus, ModelHistoryProps, ModelProps, removePhoneFormat, ResourceService, SearchModel, SearchParameter, SearchResult, SearchService, SearchState, StringMap, UIService, ViewParameter, ViewService} from './core';
 import {formatDiffModel, getDataFields} from './diff';
 import {build, createModel as createModel2, EditParameter, GenericService, handleStatus, handleVersion, initPropertyNullInModel, ResultInfo} from './edit';
 import {focusFirstError, readOnly} from './formutil';
 import {getAutoSearch, getConfirmFunc, getDiffStatusFunc, getEditStatusFunc, getErrorFunc, getLoadingFunc, getLocaleFunc, getMsgFunc, getResource, getUIService} from './input';
 import {buildFromUrl} from './route';
-import {buildFlatState, buildState, handleEvent, handleProps, localeOf} from './state';
+import {buildFlatState, buildState, enLocale, handleEvent, handleProps, localeOf} from './state';
 
 export class ViewComponent<T, ID, P extends HistoryProps, S> extends React.Component<P, S> {
   constructor(props: P, sv: ((id: ID, ctx?: any) => Promise<T>)|ViewService<T, ID>,
@@ -26,13 +26,15 @@ export class ViewComponent<T, ID, P extends HistoryProps, S> extends React.Compo
       if (typeof sv === 'function') {
         this.loadData = sv;
       } else {
-        this.service = sv;
-        if (this.service.metadata) {
-          const m = this.service.metadata();
+        this.loadData = sv.load;
+        if (sv.metadata) {
+          const m = sv.metadata();
           if (m) {
             this.metadata = m;
             const meta = build(m);
-            this.keys = meta.keys;
+            if (meta) {
+              this.keys = meta.keys;
+            }
           }
         }
       }
@@ -45,15 +47,15 @@ export class ViewComponent<T, ID, P extends HistoryProps, S> extends React.Compo
     this.ref = React.createRef();
   }
   protected name?: string;
-  protected running: boolean;
+  protected running?: boolean;
   protected resourceService: ResourceService;
   protected resource: StringMap;
   protected loading?: LoadingService;
   protected showError: (msg: string, title?: string, detail?: string, callback?: () => void) => void;
   protected getLocale?: (profile?: string) => Locale;
-  protected loadData: (id: ID, ctx?: any) => Promise<T>;
-  protected service: ViewService<T, ID>;
-  protected form: HTMLFormElement;
+  protected loadData?: (id: ID, ctx?: any) => Promise<T>;
+  // protected service: ViewService<T, ID>;
+  protected form?: HTMLFormElement;
   protected ref: any;
   protected keys?: string[];
   protected metadata?: Attributes;
@@ -71,21 +73,24 @@ export class ViewComponent<T, ID, P extends HistoryProps, S> extends React.Compo
     const n = getModelName2(this.form);
     if (!n || n.length === 0) {
       return 'model';
+    } else {
+      return n;
     }
   }
   componentDidMount() {
     this.form = this.ref.current;
     const id = buildId<ID>(this.props, this.keys);
-    this.load(id);
+    if (id) {
+      this.load(id);
+    }
   }
   load(_id: ID, callback?: (m: T, showF: (model: T) => void) => void) {
     const id: any = _id;
-    if (id != null && id !== '') {
+    if (id != null && id !== '' && this.loadData) {
       this.running = true;
       showLoading(this.loading);
       const com = this;
-      const fn = (this.loadData ? this.loadData : this.service.load);
-      fn(id).then(obj => {
+      this.loadData(id).then(obj => {
         if (!obj) {
           com.handleNotFound(com.form);
         } else {
@@ -117,7 +122,7 @@ export class ViewComponent<T, ID, P extends HistoryProps, S> extends React.Compo
     this.showError(msg.message, msg.title);
   }
   getModel(): T {
-    return this.state[this.getModelName()];
+    return (this.state as any)[this.getModelName()];
   }
   showModel(model: T) {
     const modelName = this.getModelName();
@@ -139,8 +144,8 @@ export class BaseComponent<P extends ModelProps, S> extends React.Component<P, S
     this.updateDateState = this.updateDateState.bind(this);
     this.prepareCustomData = this.prepareCustomData.bind(this);
   }
-  protected running: boolean;
-  protected form: HTMLFormElement;
+  protected running?: boolean;
+  protected form?: HTMLFormElement|null;
   /*
   protected handleSubmitForm(e) {
     if (e.which === 13) {
@@ -179,7 +184,7 @@ export class BaseComponent<P extends ModelProps, S> extends React.Component<P, S
   protected updateDateState = (name: string, value: any) => {
     const props: any = this.props;
     const modelName = this.getModelName(this.form);
-    const state = this.state[modelName];
+    const state = (this.state as any)[modelName];
     if (props.setGlobalState) {
       const data = props.shouldBeCustomized ? this.prepareCustomData({ [name]: value }) : { [name]: value };
       props.setGlobalState({ [modelName]: { ...state, ...data } });
@@ -188,7 +193,7 @@ export class BaseComponent<P extends ModelProps, S> extends React.Component<P, S
       this.setState(objSet);
     }
   }
-  protected getModelName(f?: HTMLFormElement): string {
+  protected getModelName(f?: HTMLFormElement|null): string {
     let f2 = f;
     if (!f2) {
       f2 = this.form;
@@ -232,10 +237,10 @@ export class BaseComponent<P extends ModelProps, S> extends React.Component<P, S
     }
   }
 }
-export interface MessageState extends ModelProps {
+export interface MessageOnlyState extends ModelProps {
   message?: string;
 }
-export class MessageComponent<P extends MessageState, S extends MessageState> extends BaseComponent<P, S> {
+export class MessageComponent<P extends MessageOnlyState, S extends MessageOnlyState> extends BaseComponent<P, S> {
   constructor(props: P,
     getLocale?: () => Locale,
     removeErr?: (ctrl: HTMLInputElement) => void) {
@@ -247,11 +252,9 @@ export class MessageComponent<P extends MessageState, S extends MessageState> ex
     this.ref = React.createRef();
   }
   ref: any;
-  form: HTMLFormElement;
   name?: string;
   alertClass = '';
-  running: boolean;
-  protected getModelName(f?: HTMLFormElement): string {
+  protected getModelName(f?: HTMLFormElement|null): string {
     if (this.name && this.name.length > 0) {
       return this.name;
     }
@@ -295,7 +298,7 @@ export class BaseSearchComponent<T, S extends SearchModel, P extends ModelHistor
       protected ui?: UIService,
       protected loading?: LoadingService,
       protected listFormId?: string) {
-    super(props, getLocale, (ui ? ui.removeError : null));
+    super(props, getLocale, (ui ? ui.removeError : undefined));
     this.resource = resourceService.resource();
     this.getModelName = this.getModelName.bind(this);
     this.showMessage = this.showMessage.bind(this);
@@ -325,7 +328,7 @@ export class BaseSearchComponent<T, S extends SearchModel, P extends ModelHistor
     this.showMore = this.showMore.bind(this);
     this.pageChanged = this.pageChanged.bind(this);
 
-    this.url = (props.match ? props.match.url : props['props'].match.url);
+    this.url = (props.match ? props.match.url : (props as any)['props'].match.url);
     /*
     this.locationSearch = '';
     const location = (props.location ? props.location : props['props'].location);
@@ -340,36 +343,36 @@ export class BaseSearchComponent<T, S extends SearchModel, P extends ModelHistor
   // Pagination
   initPageSize = 20;
   pageSize = 20;
-  pageIndex = 1;
+  pageIndex?: number = 1;
   nextPageToken?: string;
   itemTotal = 0;
   pageTotal = 0;
-  showPaging: boolean;
-  append: boolean;
-  appendMode: boolean;
-  appendable: boolean;
+  showPaging?: boolean;
+  append?: boolean;
+  appendMode?: boolean;
+  appendable?: boolean;
 
   // Sortable
-  sortField: string;
-  sortType: string;
-  sortTarget: HTMLElement;
+  sortField?: string;
+  sortType?: string;
+  sortTarget?: HTMLElement;
 
-  keys: string[];
-  format?: (obj: T, locale: Locale) => T;
-  displayFields: string[];
-  initDisplayFields: boolean;
+  keys?: string[];
+  format?: (obj: T, locale?: Locale) => T;
+  fields?: string[];
+  initFields?: boolean;
   sequenceNo = 'sequenceNo';
-  triggerSearch: boolean;
-  tmpPageIndex = 1;
+  triggerSearch?: boolean;
+  tmpPageIndex?: number = 1;
 
   pageMaxSize = 7;
   pageSizes: number[] = [10, 20, 40, 60, 100, 200, 400, 800];
 
-  private list: T[];
-  excluding: any;
-  hideFilter: boolean;
+  list?: T[];
+  excluding?: string[]|number[];
+  hideFilter?: boolean;
 
-  ignoreUrlParam: boolean;
+  ignoreUrlParam?: boolean;
   // locationSearch: string;
   // _currentSortField: string;
 
@@ -380,7 +383,7 @@ export class BaseSearchComponent<T, S extends SearchModel, P extends ModelHistor
   deletable?: boolean;
 
   protected getModelName(): string {
-    return 'model';
+    return 'filter';
   }
 
   toggleFilter(event: any): void {
@@ -388,11 +391,11 @@ export class BaseSearchComponent<T, S extends SearchModel, P extends ModelHistor
   }
   protected add = (event: any) => {
     event.preventDefault();
-    const url = this.props['props'].match.url + '/add';
+    const url = (this.props as any)['props'].match.url + '/add';
     this.props.history.push(url);
   }
   load(s: S, autoSearch: boolean): void {
-    const obj2 = initSearchable(s, this);
+    const obj2 = initFilter(s, this);
     this.setSearchModel(obj2);
     const com = this;
     if (autoSearch) {
@@ -406,7 +409,7 @@ export class BaseSearchComponent<T, S extends SearchModel, P extends ModelHistor
     this.form = form;
   }
 
-  protected getSearchForm(): HTMLFormElement {
+  protected getSearchForm(): HTMLFormElement|undefined|null {
     if (!this.form && this.listFormId) {
       this.form = document.getElementById(this.listFormId) as HTMLFormElement;
     }
@@ -415,31 +418,37 @@ export class BaseSearchComponent<T, S extends SearchModel, P extends ModelHistor
   setSearchModel(searchModel: S): void {
     this.setState(searchModel as any);
   }
-  protected getCurrencyCode(): string {
+  protected getCurrencyCode(): string|undefined {
     return getCurrencyCode(this.form);
   }
   getSearchModel(): S {
     const name = this.getModelName();
-    const lc = this.getLocale();
+    let lc: Locale|undefined;
+    if (this.getLocale) {
+      lc = this.getLocale();
+    }
+    if (!lc) {
+      lc = enLocale;
+    }
     const cc = this.getCurrencyCode();
     const fields = this.getDisplayFields();
     const l = this.getList();
     const f = this.getSearchForm();
-    const dc = (this.ui ? this.ui.decodeFromForm : null);
+    const dc = (this.ui ? this.ui.decodeFromForm : undefined);
     const obj3 = getModel<T, S>(this.state, name, this, fields, this.excluding, this.keys, l, f, dc, lc, cc);
     return obj3;
   }
-  protected getDisplayFields(): string[] {
-    const fs = getDisplayFieldsFromForm(this.displayFields, this.initDisplayFields, this.form);
-    this.initDisplayFields = true;
+  protected getDisplayFields(): string[]|undefined {
+    const fs = getFieldsFromForm(this.fields, this.initFields, this.form);
+    this.initFields = true;
     return fs;
   }
-
+/*
   protected pagingOnClick = (size, e) => {
     this.setState(prevState => ({ isPageSizeOpenDropDown: !(prevState as any).isPageSizeOpenDropDown } as any));
     this.pageSizeChanged(size);
   }
-
+*/
   protected pageSizeOnClick = () => {
     this.setState(prevState => ({ isPageSizeOpenDropDown: !(prevState as any).isPageSizeOpenDropDown } as any));
   }
@@ -505,14 +514,14 @@ export class BaseSearchComponent<T, S extends SearchModel, P extends ModelHistor
 
   validateSearch(se: S, callback: () => void): void {
     const u = this.ui;
-    const vl = (u ? u.validateForm : null);
-    validate(se, callback, this.getSearchForm(), this.getLocale(), vl);
+    const vl = (u ? u.validateForm : undefined);
+    validate(se, callback, this.getSearchForm(), localeOf(undefined, this.getLocale), vl);
   }
   showResults(s: S, sr: SearchResult<T>) {
     const com = this;
     const results = sr.list;
     if (results && results.length > 0) {
-      const lc = this.getLocale();
+      const lc = localeOf(undefined, this.getLocale);
       formatResultsByComponent(results, com, lc);
     }
     const am = com.appendMode;
@@ -522,27 +531,28 @@ export class BaseSearchComponent<T, S extends SearchModel, P extends ModelHistor
     }
     if (am) {
       let limit = s.limit;
-      if (s.page <= 1 && s.firstLimit && s.firstLimit > 0) {
+      if ((!s.page || s.page <= 1) && s.firstLimit && s.firstLimit > 0) {
         limit = s.firstLimit;
       }
       com.nextPageToken = sr.nextPageToken;
-      handleAppend(com, limit, sr.list, sr.nextPageToken);
-      if (com.append && s.page > 1) {
+      handleAppend(com, sr.list, limit, sr.nextPageToken);
+      if (com.append && (s.page && s.page > 1)) {
         com.appendList(results);
       } else {
         com.setList(results);
       }
     } else {
-      showPaging(com, s.limit, sr.list, sr.total);
+      showPaging(com, sr.list, s.limit, sr.total);
       com.setList(results);
       com.tmpPageIndex = s.page;
-      const m1 = buildSearchMessage(this.resourceService, s.page, s.limit, sr.list, sr.total);
-      this.showMessage(m1);
+      if (s.limit) {
+        this.showMessage(buildMessage(this.resourceService, s.page, s.limit, sr.list, sr.total));
+      }
     }
-    com.running = false;
+    com.running = undefined;
     hideLoading(com.loading);
     if (com.triggerSearch) {
-      com.triggerSearch = false;
+      com.triggerSearch = undefined;
       com.resetAndSearch();
     }
   }
@@ -573,7 +583,7 @@ export class BaseSearchComponent<T, S extends SearchModel, P extends ModelHistor
     }
   }
 
-  getList(): T[] {
+  getList(): T[]|undefined {
     return this.list;
   }
 
@@ -593,13 +603,13 @@ export class BaseSearchComponent<T, S extends SearchModel, P extends ModelHistor
     this.doSearch();
   }
   pageSizeChanged = (event: any) => {
-    const size = parseInt((event.currentTarget as HTMLInputElement).value, null);
+    const size = parseInt((event.currentTarget as HTMLInputElement).value, 10);
     changePageSize(this, size);
     this.tmpPageIndex = 1;
     this.doSearch();
   }
 
-  pageChanged(data) {
+  pageChanged(data: any) {
     const { currentPage, itemsPerPage } = data;
     changePage(this, currentPage, itemsPerPage);
     this.doSearch();
@@ -621,9 +631,9 @@ export class SearchComponent<T, S extends SearchModel, P extends ModelHistoryPro
         const x: any = sv;
         this.search = x;
       } else {
-        this.service = sv;
-        if (this.service.keys) {
-          this.keys = this.service.keys();
+        this.search = sv.search;
+        if (sv.keys) {
+          this.keys = sv.keys();
         }
       }
     }
@@ -636,17 +646,17 @@ export class SearchComponent<T, S extends SearchModel, P extends ModelHistoryPro
   }
   protected showError: (m: string, header?: string, detail?: string, callback?: () => void) => void;
   protected search?: (s: S, limit?: number, offset?: number|string, fields?: string[]) => Promise<SearchResult<T>>;
-  protected service: SearchService<T, S>;
+  // protected service: SearchService<T, S>;
   protected ref: any;
   protected autoSearch: boolean;
   componentDidMount() {
-    const k = (this.ui ? this.ui.registerEvents : null);
+    const k = (this.ui ? this.ui.registerEvents : undefined);
     this.form = initForm(this.ref.current, k);
     const s = this.mergeSearchModel(buildFromUrl<S>(), this.createSearchModel());
     this.load(s, this.autoSearch);
   }
   mergeSearchModel(obj: S, b?: S, arrs?: string[]|any): S {
-    return mergeSearchModel2<S>(obj, b, this.pageSizes, arrs);
+    return mergeFilter2<S>(obj, b, this.pageSizes, arrs);
   }
   createSearchModel(): S {
     const s: any = {};
@@ -659,11 +669,13 @@ export class SearchComponent<T, S extends SearchModel, P extends ModelHistoryPro
     if (!page || page < 1) {
       page = 1;
     }
-    let offset: number;
-    if (se.firstLimit && se.firstLimit > 0) {
-      offset = se.limit * (page - 2) + se.firstLimit;
-    } else {
-      offset = se.limit * (page - 1);
+    let offset: number|undefined;
+    if (se.limit) {
+      if (se.firstLimit && se.firstLimit > 0) {
+        offset = se.limit * (page - 2) + se.firstLimit;
+      } else {
+        offset = se.limit * (page - 1);
+      }
     }
     const limit = (page <= 1 && se.firstLimit && se.firstLimit > 0 ? se.firstLimit : se.limit);
     const next = (this.nextPageToken && this.nextPageToken.length > 0 ? this.nextPageToken : offset);
@@ -674,17 +686,18 @@ export class SearchComponent<T, S extends SearchModel, P extends ModelHistoryPro
     delete se['firstLimit'];
     showLoading(this.loading);
     const com = this;
-    const fn = (this.search ? this.search : this.service.search);
-    fn(s, limit, next, fields).then(sr => {
-      com.showResults(s, sr);
-      com.running = false;
-      hideLoading(com.loading);
-    }).catch(err => {
-      com.pageIndex = com.tmpPageIndex;
-      error(err, com.resourceService.value, com.showError);
-      com.running = false;
-      hideLoading(com.loading);
-    });
+    if (this.search) {
+      this.search(s, limit, next, fields).then(sr => {
+        com.showResults(s, sr);
+        com.running = undefined;
+        hideLoading(com.loading);
+      }).catch(err => {
+        com.pageIndex = com.tmpPageIndex;
+        error(err, com.resourceService.value, com.showError);
+        com.running = undefined;
+        hideLoading(com.loading);
+      });
+    }
   }
 }
 
@@ -697,10 +710,11 @@ export abstract class BaseEditComponent<T, P extends ModelHistoryProps, S> exten
       getLocale?: () => Locale,
       protected ui?: UIService,
       protected loading?: LoadingService,
-      protected status?: EditStatusConfig,
+      status?: EditStatusConfig,
       patchable?: boolean, backOnSaveSuccess?: boolean) {
-    super(props, getLocale, (ui ? ui.removeError : null));
+    super(props, getLocale, (ui ? ui.removeError : undefined));
     this.resource = resourceService.resource();
+    this.status = createEditStatus(status);
     if (patchable === false) {
       this.patchable = patchable;
     }
@@ -733,16 +747,17 @@ export abstract class BaseEditComponent<T, P extends ModelHistoryProps, S> exten
     this.postSave = this.postSave.bind(this);
     this.handleDuplicateKey = this.handleDuplicateKey.bind(this);
   }
+  status: EditStatusConfig;
   protected name?: string;
   protected backOnSuccess = true;
   protected resource: StringMap;
   protected metadata?: Attributes;
   protected keys?: string[];
   protected version?: string;
-  protected newMode: boolean;
-  protected setBack: boolean;
+  protected newMode?: boolean;
+  protected setBack?: boolean;
   protected patchable = true;
-  protected orginalModel: T;
+  protected orginalModel?: T;
 
   addable?: boolean = true;
   readOnly?: boolean;
@@ -756,12 +771,12 @@ export abstract class BaseEditComponent<T, P extends ModelHistoryProps, S> exten
     }
     this.props.history.goBack();
   }
-  protected resetState(newMod: boolean, model: T, originalModel: T) {
+  protected resetState(newMod: boolean, model: T, originalModel?: T) {
     this.newMode = newMod;
     this.orginalModel = originalModel;
     this.showModel(model);
   }
-  protected handleNotFound(form?: HTMLFormElement): void {
+  protected handleNotFound(form?: HTMLFormElement|null): void {
     const msg = message(this.resourceService.value, 'error_not_found', 'error');
     if (form) {
       readOnly(form);
@@ -776,7 +791,7 @@ export abstract class BaseEditComponent<T, P extends ModelHistoryProps, S> exten
   }
   getModel(): T {
     const n = this.getModelName();
-    return this.props[n] || this.state[n];
+    return (this.props as any)[n] || (this.state as any)[n];
   }
   showModel(model: T) {
     const f = this.form;
@@ -809,10 +824,10 @@ export abstract class BaseEditComponent<T, P extends ModelHistoryProps, S> exten
       this.form = (event.target as HTMLInputElement).form;
     }
     const obj = this.createModel();
-    this.resetState(true, obj, null);
+    this.resetState(true, obj, undefined);
     const u = this.ui;
-    if (u) {
-      const f = this.form;
+    const f = this.form;
+    if (u && f) {
       setTimeout(() => {
         u.removeFormError(f);
       }, 100);
@@ -866,8 +881,8 @@ export abstract class BaseEditComponent<T, P extends ModelHistoryProps, S> exten
     }
   }
   protected validate(obj: T, callback: (obj2?: T) => void) {
-    if (this.ui) {
-      const valid = this.ui.validateForm(this.form, this.getLocale());
+    if (this.ui && this.form) {
+      const valid = this.ui.validateForm(this.form, localeOf(undefined, this.getLocale));
       if (valid) {
         callback(obj);
       }
@@ -901,7 +916,7 @@ export abstract class BaseEditComponent<T, P extends ModelHistoryProps, S> exten
     const errors = result.errors;
     const f = this.form;
     const u = this.ui;
-    if (u) {
+    if (u && f) {
       const unmappedErrors = u.showFormError(f, errors);
       if (!result.message) {
         if (errors && errors.length === 1) {
@@ -914,8 +929,10 @@ export abstract class BaseEditComponent<T, P extends ModelHistoryProps, S> exten
     } else if (errors && errors.length === 1) {
       result.message = errors[0].message;
     }
-    const t = this.resourceService.value('error');
-    this.showError(result.message, t);
+    if (result.message) {
+      const t = this.resourceService.value('error');
+      this.showError(result.message, t);
+    }
   }
 
   protected postSave(res: number|string|ResultInfo<T>, backOnSave?: boolean) {
@@ -973,8 +990,10 @@ export class EditComponent<T, ID, P extends ModelHistoryProps, S> extends BaseEd
       const metadata = service.metadata();
       if (metadata) {
         const meta = build(metadata);
-        this.keys = meta.keys;
-        this.version = meta.version;
+        if (meta) {
+          this.keys = meta.keys;
+          this.version = meta.version;
+        }
         this.metadata = metadata;
       }
     }
@@ -994,10 +1013,12 @@ export class EditComponent<T, ID, P extends ModelHistoryProps, S> extends BaseEd
   }
   protected ref: any;
   componentDidMount() {
-    const k = (this.ui ? this.ui.registerEvents : null);
+    const k = (this.ui ? this.ui.registerEvents : undefined);
     this.form = initForm(this.ref.current, k);
     const id = buildId<ID>(this.props, this.keys);
-    this.load(id);
+    if (id) {
+      this.load(id);
+    }
   }
   load(_id: ID, callback?: (m: T, showM: (m2: T) => void) => void) {
     const id: any = _id;
@@ -1042,7 +1063,7 @@ export class EditComponent<T, ID, P extends ModelHistoryProps, S> extends BaseEd
     } else {
       // Call service state
       this.newMode = true;
-      this.orginalModel = null;
+      this.orginalModel = undefined;
       const obj = this.createModel();
       if (callback) {
         callback(obj, this.showModel);
@@ -1081,7 +1102,7 @@ export class BaseDiffApprComponent<T, ID, P extends HistoryProps, S extends Base
       protected showMessage: (msg: string, option?: string) => void,
       protected showError: (m: string, title?: string, detail?: string, callback?: () => void) => void,
       protected loading?: LoadingService,
-      protected status?: DiffStatusConfig,
+      status?: DiffStatusConfig,
     ) {
     super(props);
     // this._id = props['props'].match.params.id || props['props'].match.params.cId || props.match.params.cId;
@@ -1095,16 +1116,15 @@ export class BaseDiffApprComponent<T, ID, P extends HistoryProps, S extends Base
     this.postReject = this.postReject.bind(this);
     this.format = this.format.bind(this);
     this.handleNotFound = this.handleNotFound.bind(this);
-    if (!this.status) {
-      this.status = createDiffStatus();
-    }
+    this.status = createDiffStatus(status);
     this.state = {
       disabled: false
     };
   }
-  protected id: ID;
-  protected form: HTMLFormElement;
-  protected running: boolean;
+  protected status: DiffStatusConfig;
+  protected id?: ID;
+  protected form?: HTMLFormElement;
+  protected running?: boolean;
   protected resource: StringMap;
 
   protected back(event: any) {
@@ -1158,12 +1178,15 @@ export class BaseDiffApprComponent<T, ID, P extends HistoryProps, S extends Base
       const differentKeys = diff(diffModel.origin, diffModel.value);
       const dataFields = getDataFields(this.form);
       dataFields.forEach(e => {
-        if (differentKeys.indexOf(e.getAttribute('data-field')) >= 0) {
-          if (e.childNodes.length === 3) {
-            (e.childNodes[1] as HTMLElement).classList.add('highlight');
-            (e.childNodes[2] as HTMLElement).classList.add('highlight');
-          } else {
-            e.classList.add('highlight');
+        const x = e.getAttribute('data-field');
+        if (x) {
+          if (differentKeys.indexOf(x) >= 0) {
+            if (e.childNodes.length === 3) {
+              (e.childNodes[1] as HTMLElement).classList.add('highlight');
+              (e.childNodes[2] as HTMLElement).classList.add('highlight');
+            } else {
+              e.classList.add('highlight');
+            }
           }
         }
       });
@@ -1172,12 +1195,15 @@ export class BaseDiffApprComponent<T, ID, P extends HistoryProps, S extends Base
       const differentKeys = diff(origin, value);
       const dataFields = getDataFields(this.form);
       dataFields.forEach(e => {
-        if (differentKeys.indexOf(e.getAttribute('data-field')) >= 0) {
-          if (e.childNodes.length === 3) {
-            (e.childNodes[1] as HTMLElement).classList.add('highlight');
-            (e.childNodes[2] as HTMLElement).classList.add('highlight');
-          } else {
-            e.classList.add('highlight');
+        const x = e.getAttribute('data-field');
+        if (x) {
+          if (differentKeys.indexOf(x) >= 0) {
+            if (e.childNodes.length === 3) {
+              (e.childNodes[1] as HTMLElement).classList.add('highlight');
+              (e.childNodes[2] as HTMLElement).classList.add('highlight');
+            } else {
+              e.classList.add('highlight');
+            }
           }
         }
       });
@@ -1214,7 +1240,9 @@ export class DiffApprComponent<T, ID, P extends HistoryProps, S extends DiffStat
   componentDidMount() {
     this.form = this.ref.current;
     const id = buildId<ID>(this.props, this.keys);
-    this.load(id);
+    if (id) {
+      this.load(id);
+    }
   }
 
   formatFields(value: T): T {
@@ -1258,16 +1286,17 @@ export class DiffApprComponent<T, ID, P extends HistoryProps, S extends DiffStat
     const com = this;
     this.running = true;
     showLoading(this.loading);
-    const id = this.id;
-    this.service.approve(id).then(status => {
-      com.postApprove(status, null);
-      com.running = false;
-      hideLoading(com.loading);
-    }).catch(err => {
-      com.postApprove(4, err);
-      com.running = false;
-      hideLoading(com.loading);
-    });
+    if (this.id) {
+      this.service.approve(this.id).then(status => {
+        com.postApprove(status, null);
+        com.running = false;
+        hideLoading(com.loading);
+      }).catch(err => {
+        com.postApprove(4, err);
+        com.running = false;
+        hideLoading(com.loading);
+      });
+    }
   }
 
   reject(event: any) {
@@ -1275,15 +1304,16 @@ export class DiffApprComponent<T, ID, P extends HistoryProps, S extends DiffStat
     const com = this;
     this.running = true;
     showLoading(this.loading);
-    const id = this.id;
-    this.service.reject(id).then(status => {
-      com.postReject(status, null);
-      com.running = false;
-      hideLoading(com.loading);
-    }).catch(err => {
-      com.postReject(4, err);
-      com.running = false;
-      hideLoading(com.loading);
-    });
+    if (this.id) {
+      this.service.reject(this.id).then(status => {
+        com.postReject(status, null);
+        com.running = false;
+        hideLoading(com.loading);
+      }).catch(err => {
+        com.postReject(4, err);
+        com.running = false;
+        hideLoading(com.loading);
+      });
+    }
   }
 }

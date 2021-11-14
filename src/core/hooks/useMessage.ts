@@ -33,7 +33,5 @@ export const useMessage = (initialState: MessageState) => {
       setMessage({alertClass: 'alert alert-error', message: x});
     }
   };
-
   return {msg, showError, showMessage, hideMessage};
-
 };

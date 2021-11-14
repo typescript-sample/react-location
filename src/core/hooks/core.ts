@@ -156,8 +156,14 @@ export class resource {
   static _cache: any = {};
   static cache = true;
 }
-export function getCurrencyCode(form: HTMLFormElement): string {
-  return (form ? form.getAttribute('currency-code') : null);
+export function getCurrencyCode(form?: HTMLFormElement|null): string|undefined {
+  if (form) {
+    const x = form.getAttribute('currency-code');
+    if (x) {
+      return x;
+    }
+  }
+  return undefined;
 }
 export function removePhoneFormat(phone: string): string {
   if (phone) {
@@ -176,33 +182,38 @@ export interface ResourceService {
 }
 export interface Message {
   message: string;
-  title?: string;
+  title: string;
   yes?: string;
   no?: string;
 }
-export function message(gv: (key: string) => string, msg: string, title?: string, yes?: string, no?: string): Message {
-  const m2 = (msg && msg.length > 0 ? gv(msg) : '');
-  const m: Message = {
-    message: m2
-  };
-  if (title && title.length > 0) {
-    m.title = gv(title);
+export function getString(key: string, gv: StringMap|((key: string) => string)): string {
+  if (typeof gv === 'function') {
+    return gv(key);
+  } else {
+    return gv[key];
   }
-  if (yes && yes.length > 0) {
-    m.yes = gv(yes);
-  }
-  if (no && no.length > 0) {
-    m.no = gv(no);
-  }
-  return m;
 }
-export function messageByHttpStatus(status: number, gv: (key: string) => string): string {
+export function message(gv: StringMap|((key: string) => string), msg: string, title?: string, yes?: string, no?: string): Message {
+  const m2 = (msg && msg.length > 0 ? getString(msg, gv) : '');
+    const m: Message = { message: m2, title: '' };
+    if (title && title.length > 0) {
+      m.title = getString(title, gv);
+    }
+    if (yes && yes.length > 0) {
+      m.yes = getString(yes, gv);
+    }
+    if (no && no.length > 0) {
+      m.no = getString(no, gv);
+    }
+    return m;
+}
+export function messageByHttpStatus(status: number, gv: StringMap|((key: string) => string)): string {
   const k = 'status_' + status;
-  let msg = gv(k);
-  if (!msg || msg.length === 0) {
-    msg = gv('error_internal');
-  }
-  return msg;
+  let msg = getString(k, gv);
+    if (!msg || msg.length === 0) {
+      msg = getString('error_internal', gv);
+    }
+    return msg;
 }
 
 export interface Locale {
@@ -230,20 +241,21 @@ export interface ErrorMessage {
 }
 export interface UIService {
   getValue(el: HTMLInputElement, locale?: Locale, currencyCode?: string): string|number|boolean;
-  decodeFromForm(form: HTMLFormElement, locale?: Locale, currencyCode?: string): any;
+  decodeFromForm(form: HTMLFormElement, locale?: Locale, currencyCode?: string|null): any;
 
-  validateForm(form: HTMLFormElement, locale?: Locale, focusFirst?: boolean, scroll?: boolean): boolean;
+  validateForm(form?: HTMLFormElement, locale?: Locale, focusFirst?: boolean, scroll?: boolean): boolean;
   removeFormError(form: HTMLFormElement): void;
   removeError(el: HTMLInputElement): void;
-  showFormError(form: HTMLFormElement, errors: ErrorMessage[], focusFirst?: boolean): ErrorMessage[];
+  showFormError(form?: HTMLFormElement, errors?: ErrorMessage[], focusFirst?: boolean): ErrorMessage[];
   buildErrorMessage(errors: ErrorMessage[]): string;
 
   registerEvents?(form: HTMLFormElement): void;
 }
 
 export type DataType = 'ObjectId' | 'date' | 'datetime' | 'time'
-    | 'boolean' | 'number' | 'integer' | 'string' | 'text'
-    | 'object' | 'array' | 'primitives' | 'binary';
+  | 'boolean' | 'number' | 'integer' | 'string' | 'text'
+  | 'object' | 'array' | 'binary'
+  | 'primitives' | 'booleans' | 'numbers' | 'integers' | 'strings' | 'dates' | 'datetimes' | 'times';
 /*
 export interface Metadata {
   name?: string;
@@ -277,7 +289,7 @@ export function buildKeys(attributes: Attributes): string[] {
   return ps;
 }
 
-export function buildId<ID>(props: any, keys?: string[]): ID {
+export function buildId<ID>(props: any, keys?: string[]): ID|null {
   if (!props) {
     return null;
   }
@@ -401,7 +413,7 @@ export function error(err: any, gv: (key: string) => string, ae: (msg: string, h
     ae(msg, title);
   }
 }
-export function getModelName(form: HTMLFormElement): string {
+export function getModelName(form?: HTMLFormElement|null, name?: string): string {
   if (form) {
     const a = form.getAttribute('model-name');
     if (a && a.length > 0) {
@@ -415,32 +427,38 @@ export function getModelName(form: HTMLFormElement): string {
       return b;
     }
   }
+  if (name && name.length > 0) {
+    return name;
+  }
   return '';
 }
 
 export const scrollToFocus = (e: any, isUseTimeOut?: boolean) => {
   try {
     const element = e.target as HTMLInputElement;
-    const container = element.form.childNodes[1] as HTMLElement;
-    const elementRect = element.getBoundingClientRect();
-    const absoluteElementTop = elementRect.top + window.pageYOffset;
-    const middle = absoluteElementTop - (window.innerHeight / 2);
-    const scrollTop = container.scrollTop;
-    const timeOut = isUseTimeOut ? 300 : 0;
-    const isChrome = navigator.userAgent.search('Chrome') > 0;
-    setTimeout(() => {
-      if (isChrome) {
-        const scrollPosition = scrollTop === 0 ? (elementRect.top + 64) : (scrollTop + middle);
-        container.scrollTo(0, Math.abs(scrollPosition));
-      } else {
-        container.scrollTo(0, Math.abs(scrollTop + middle));
-      }
-    }, timeOut);
+    const form = element.form;
+    if (form) {
+      const container = form.childNodes[1] as HTMLElement;
+      const elementRect = element.getBoundingClientRect();
+      const absoluteElementTop = elementRect.top + window.pageYOffset;
+      const middle = absoluteElementTop - (window.innerHeight / 2);
+      const scrollTop = container.scrollTop;
+      const timeOut = isUseTimeOut ? 300 : 0;
+      const isChrome = navigator.userAgent.search('Chrome') > 0;
+      setTimeout(() => {
+        if (isChrome) {
+          const scrollPosition = scrollTop === 0 ? (elementRect.top + 64) : (scrollTop + middle);
+          container.scrollTo(0, Math.abs(scrollPosition));
+        } else {
+          container.scrollTo(0, Math.abs(scrollTop + middle));
+        }
+      }, timeOut);
+    }
   } catch (e) {
     console.log(e);
   }
 };
-export function showLoading(loading: LoadingService|((firstTime?: boolean) => void)): void {
+export function showLoading(loading?: LoadingService|((firstTime?: boolean) => void)): void {
   if (loading) {
     if (typeof loading === 'function') {
       loading();
@@ -449,7 +467,7 @@ export function showLoading(loading: LoadingService|((firstTime?: boolean) => vo
     }
   }
 }
-export function hideLoading(loading: LoadingService|(() => void)): void {
+export function hideLoading(loading?: LoadingService|(() => void)): void {
   if (loading) {
     if (typeof loading === 'function') {
       loading();

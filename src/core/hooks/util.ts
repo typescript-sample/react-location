@@ -1,4 +1,5 @@
 import {Locale} from './core';
+import {enLocale} from './state';
 
 const r1 = / |,|\$|€|£|¥|'|٬|،| /g;
 const r2 = / |\.|\$|€|£|¥|'|٬|،| /g;
@@ -26,10 +27,10 @@ export function valueOf(ctrl: HTMLInputElement, locale?: Locale, eventType?: str
       } else {
         v = ctrl.value.replace(r1, '');
       }
-      return isNaN(v) ? { mustChange: false } : { mustChange: true, value: parseFloat(v) };
+      return isNaN(v as any) ? { mustChange: false } : { mustChange: true, value: parseFloat(v) };
     } else if (datatype === 'currency' || datatype === 'string-currency') {
       const ml = ctrl.getAttribute('maxlength');
-      const nm = (isNaN(ml as any) ? null : parseInt(ml, 10));
+      const nm = (ml != null && !isNaN(ml as any) ? parseInt(ml, 10) : undefined);
       const res: any = getStringCurrency(ctrl.value, datatype, locale, nm, eventType === 'blur');
       return res;
     } else {
@@ -38,7 +39,7 @@ export function valueOf(ctrl: HTMLInputElement, locale?: Locale, eventType?: str
   }
 }
 
-function getStringCurrency(value: string, datatype: string, locale: Locale, maxLength?: number, isOnBlur?: boolean): { mustChange: any, value?: string } {
+function getStringCurrency(value: string, datatype: string, locale?: Locale, maxLength?: number, isOnBlur?: boolean): { mustChange: any, value?: string } {
   if (locale && locale.decimalSeparator !== '.') {
     value = value.replace(r2, '');
     if (value.indexOf(locale.decimalSeparator) >= 0) {
@@ -57,6 +58,9 @@ function getStringCurrency(value: string, datatype: string, locale: Locale, maxL
     return { mustChange: true, value: value.substring(1) };
   }
 
+  if (!locale) {
+    locale = enLocale;
+  }
   const decimalDigits = locale ? locale.decimalDigits : 2;
   const groupDigits = 3; // TODO in database locale don't have data
   const decimalSeparator = locale.decimalSeparator; // '.'
@@ -86,7 +90,7 @@ function getStringCurrency(value: string, datatype: string, locale: Locale, maxL
       afterDot = afterDot.substr(0, decimalDigits);
     }
   }
-  if (beforeDot.length > maxLength - (decimalDigits + 1)) {
+  if (maxLength && beforeDot.length > maxLength - (decimalDigits + 1)) {
     return { mustChange: false };
   }
 

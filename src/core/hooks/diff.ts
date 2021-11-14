@@ -29,8 +29,11 @@ export function formatDiffModel<T, ID>(obj: DiffModel<T, ID>, formatFields?: (ob
   return obj2;
 }
 
-export function getDataFields(form: HTMLElement): HTMLElement[] {
+export function getDataFields(form?: HTMLElement|null): HTMLElement[] {
   let results: HTMLElement[] = [];
+  if (!form) {
+    return results;
+  }
   const attributeValue = form.getAttribute('data-field');
   if (attributeValue && attributeValue.length > 0) {
     results.push(form);

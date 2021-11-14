@@ -15,7 +15,7 @@ export const enLocale = {
   'currencyPattern': 0
 };
 export function localeOf(lc?: Locale, glc?: (() => Locale) | Locale): Locale {
-  let l: Locale = lc;
+  let l: Locale|undefined = lc;
   if (!l) {
     if (glc) {
       if (typeof glc === 'function') {
@@ -45,31 +45,33 @@ export function handleEvent(e: any, removeErr?: (ctrl: HTMLInputElement) => void
     removeErr(ctrl);
   }
 }
-export function handleProps<P extends ModelProps>(e: any, props: P, ctrl: HTMLInputElement, modelName: string, tloc: Locale, prepareData: (data: any) => void) {
+export function handleProps<P extends ModelProps>(e: any, props: P, ctrl: HTMLInputElement, modelName: string, tloc: Locale, prepareData?: (data: any) => void) {
   if (props.setGlobalState) {
     const res = valueOf(ctrl, tloc, e.type);
     if (res.mustChange) {
       const dataField = ctrl.getAttribute('data-field');
       const field = (dataField ? dataField : ctrl.name);
-      const propsDataForm = props[modelName];
+      const propsDataForm = (props as any)[modelName];
       const form = ctrl.form;
-      const formName = form.name;
-      if (field.indexOf('.') < 0 && field.indexOf('[') < 0) {
-        const data = props.shouldBeCustomized ? prepareData({ [ctrl.name]: res.value }) : { [ctrl.name]: res.value };
-        props.setGlobalState({ [formName]: { ...propsDataForm, ...data } });
-      } else {
-        setValue(propsDataForm, field, ctrl.value);
-        props.setGlobalState({ [formName]: { ...propsDataForm } });
+      if (form) {
+        const formName = form.name;
+        if (field.indexOf('.') < 0 && field.indexOf('[') < 0) {
+          const data = props.shouldBeCustomized && prepareData ? prepareData({ [ctrl.name]: res.value }) : { [ctrl.name]: res.value };
+          props.setGlobalState({ [formName]: { ...propsDataForm, ...data } });
+        } else {
+          setValue(propsDataForm, field, ctrl.value);
+          props.setGlobalState({ [formName]: { ...propsDataForm } });
+        }
       }
     }
   }
 }
-export function buildState<S, K extends keyof S>(e: any, state: Readonly<S>, ctrl: HTMLInputElement, modelName: string, tloc: Locale): K {
+export function buildState<S, K extends keyof S>(e: any, state: Readonly<S>, ctrl: HTMLInputElement, modelName: string, tloc: Locale): K|undefined {
   const form = ctrl.form;
   if (form) {
     if (modelName && modelName !== '') {
       const type = ctrl.getAttribute('type');
-      const ex = state[modelName];
+      const ex = (state as any)[modelName];
       const dataField = ctrl.getAttribute('data-field');
       const field = (dataField ? dataField : ctrl.name);
       const model = Object.assign({}, ex);
@@ -79,7 +81,7 @@ export function buildState<S, K extends keyof S>(e: any, state: Readonly<S>, ctr
           if (!value || !Array.isArray(value)) {
             value = [];
           }
-          value.includes(ctrl.value) ? value = value.filter(v => v !== ctrl.value) : value.push(ctrl.value);
+          value.includes(ctrl.value) ? value = value.filter((v: string) => v !== ctrl.value) : value.push(ctrl.value);
           model[field] = value;
         } else {
           const v = valueOfCheckbox(ctrl);
@@ -128,7 +130,7 @@ export function valueOfCheckbox(ctrl: HTMLInputElement): string|number|boolean {
     return ctrl.checked === true;
   }
 }
-export function buildFlatState<S, K extends keyof S>(e: any, state: Readonly<S>, l: Locale): K {
+export function buildFlatState<S, K extends keyof S>(e: any, state: Readonly<S>, l?: Locale): K|undefined {
   const ctrl = e.currentTarget as HTMLInputElement;
   const stateName = ctrl.name;
   const objSet: any = {};
@@ -139,8 +141,8 @@ export function buildFlatState<S, K extends keyof S>(e: any, state: Readonly<S>,
       objSet[stateName] = v;
       return objSet;
     } else {
-      let value = state[stateName];
-      value.includes(ctrl.value) ? value = value.filter(v => v !== ctrl.value) : value.push(ctrl.value);
+      let value = (state as any)[stateName];
+      value.includes(ctrl.value) ? value = value.filter((v: string) => v !== ctrl.value) : value.push(ctrl.value);
       const objSet2: any = {[ctrl.name]: value};
       return objSet2;
     }
@@ -150,7 +152,7 @@ export function buildFlatState<S, K extends keyof S>(e: any, state: Readonly<S>,
       objSet[stateName] = data.value;
       return objSet;
     } else {
-      return null;
+      return undefined;
     }
   }
 }
