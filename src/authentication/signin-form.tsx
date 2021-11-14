@@ -8,6 +8,7 @@ import {HistoryProps, navigate} from 'react-onex';
 import {alertInfo} from 'ui-alert';
 import {handleError, message, storage} from 'uione';
 import {initForm, registerEvents} from 'uione';
+import logo from '../assets/images/logo.png';
 import {context} from './app';
 import './signin.css';
 
@@ -140,7 +141,7 @@ export class SigninForm extends MessageComponent<HistoryProps, SigninState> {
       <div className='view-container central-full sign-in-view-container'>
         <form id='signinForm' name='signinForm' noValidate={true} autoComplete='off' ref={this.ref}>
           <div>
-            {/* <img className='logo' src={logo} /> */}
+            <img className='logo' src={logo} />
             <h2>{resource.signin}</h2>
             <div className={'message ' + this.alertClass}>
               {this.state.message}

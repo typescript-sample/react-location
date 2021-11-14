@@ -18,7 +18,7 @@ export class ResetPasswordForm extends MessageComponent<HistoryProps, ResetPassw
     super(props);
     this.signin = this.signin.bind(this);
     this.resetPassword = this.resetPassword.bind(this);
-    this.passwordService = context.getPasswordServicer();
+    this.passwordService = context.getPasswordService();
     const user: PasswordReset = {
       username: '',
       passcode: '',

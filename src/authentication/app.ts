@@ -42,7 +42,7 @@ class ApplicationContext {
     }
     return this.authenticator;
   }
-  getPasswordServicer(): PasswordService {
+  getPasswordService(): PasswordService {
     if (!this.passwordService) {
       const c = this.getConfig();
       this.passwordService = new PasswordWebClient(this.httpRequest, c.password_url);
@@ -59,3 +59,16 @@ class ApplicationContext {
 }
 
 export const context = new ApplicationContext();
+
+export function useAuthen(): Authenticator<AuthInfo> {
+  return context.getAuthenticator();
+}
+export function usePassword(): PasswordService {
+  return context.getPasswordService();
+}
+export function useSignUp(): SignupService<SignupInfo> {
+  return context.getSignupService();
+}
+export function useOAuth2(): OAuth2Service {
+  return context.getOAuth2Service();
+}

@@ -1,15 +1,15 @@
-import {dayDiff, getMessage, handleCookie, initFromCookie, store, validate} from 'authentication-component';
-import {AuthInfo, AuthResult, Status} from 'authentication-component';
-import {DefaultCookieService} from 'cookie-core';
-import {Base64} from 'js-base64';
+import { dayDiff, getMessage, handleCookie, initFromCookie, store, validate } from 'authentication-component';
+import { AuthInfo, AuthResult, Status } from 'authentication-component';
+import { DefaultCookieService } from 'cookie-core';
+import { Base64 } from 'js-base64';
 import * as React from 'react';
-// import {MessageComponent, MessageState} from 'react-message-component';
-import {useHistory} from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { initForm, useUpdate } from 'src/core/hooks';
-import useMessage from 'src/core/hooks/useMessage';
-import {alertInfo} from 'ui-alert';
-import {handleError, message, storage} from 'uione';
-import {context} from './app';
+import {useMessage} from 'src/core/hooks/useMessage';
+import { alertInfo } from 'ui-alert';
+import { handleError, message, storage } from 'uione';
+import logo from '../assets/images/logo.png';
+import { context } from './app';
 
 export const map = {
   '3': 'fail_authentication',
@@ -60,7 +60,7 @@ const SigninForm = () => {
   const history = useHistory();
   const resource = storage.getResource();
   const authenticator = context.getAuthenticator();
-  const hooks = useMessage(msgData, 'user');
+  const hooks = useMessage(msgData);
   const {
     msg,
     showError,
@@ -69,7 +69,7 @@ const SigninForm = () => {
   // const [info, setInfo] = React.useState<SigninState>(signinData);
   const baseProps = useUpdate<SigninState>(signinData, 'user');
   const form = React.useRef();
-  const {state, setState, updateState} = baseProps;
+  const { state, setState, updateState } = baseProps;
   React.useEffect(() => {
     if (form) {
       const ui = storage.ui();
@@ -110,7 +110,7 @@ const SigninForm = () => {
     }
   };
 
-  const signin = async(event: any) => {
+  const signin = async (event: any) => {
     event.preventDefault();
     const r = storage.resource();
     const user = state.user;
@@ -156,57 +156,57 @@ const SigninForm = () => {
 
   return (
     <div className='view-container central-full sign-in-view-container'>
-        <form id='signinForm' name='signinForm' noValidate={true} autoComplete='off' ref={form}>
-          <div>
-            {/* <img className='logo' src={logo} /> */}
-            <h2>{resource.signin}</h2>
-            <div className={'message ' + msg.alertClass}>
-              {msg.message}
-              <span onClick={hideMessage} hidden={!msg.message || msg.message === ''}/>
-            </div>
-            <label hidden={isTwoFactor}>
-              {resource.username}
-              <input type='text'
-                id='username' name='username'
-                placeholder={resource.placeholder_username}
-                onChange={updateState}
-                maxLength={255} />
-            </label>
-            <label hidden={isTwoFactor}>
-              {resource.password}
-              <input type='password'
-                id='password' name='password'
-                placeholder={resource.placeholder_password}
-                onChange={updateState}
-                maxLength={255} />
-            </label>
-            <label hidden={!isTwoFactor}>
-              {resource.passcode}
-              <input
-                type='password'
-                id='passcode' name='passcode'
-                placeholder={resource.placeholder_passcode}
-                // onChange={updateState}
-                maxLength={255} />
-            </label>
-            <label className='col s12 checkbox-container' hidden={isTwoFactor}>
-              <input type='checkbox'
-                id='remember' name='remember'
-                checked={state.remember ? true : false}
-                onChange={updateRemember} />
-              {resource.signin_remember_me}
-            </label>
-            <button
-              type='submit'
-              id='btnSignin'
-              name='btnSignin'
-              onClick={signin}
-              >{resource.button_signin}</button>
-            <a id='btnForgotPassword' onClick={forgotPassword}>{resource.button_forgot_password}</a>
-            <a id='btnSignup' onClick={signup}>{resource.button_signup}</a>
+      <form id='signinForm' name='signinForm' noValidate={true} autoComplete='off' ref={form}>
+        <div>
+          <img className='logo' src={logo} />
+          <h2>{resource.signin}</h2>
+          <div className={'message ' + msg.alertClass}>
+            {msg.message}
+            <span onClick={hideMessage} hidden={!msg.message || msg.message === ''} />
           </div>
-        </form>
-      </div>
+          <label hidden={isTwoFactor}>
+            {resource.username}
+            <input type='text'
+              id='username' name='username'
+              placeholder={resource.placeholder_username}
+              onChange={updateState}
+              maxLength={255} />
+          </label>
+          <label hidden={isTwoFactor}>
+            {resource.password}
+            <input type='password'
+              id='password' name='password'
+              placeholder={resource.placeholder_password}
+              onChange={updateState}
+              maxLength={255} />
+          </label>
+          <label hidden={!isTwoFactor}>
+            {resource.passcode}
+            <input
+              type='password'
+              id='passcode' name='passcode'
+              placeholder={resource.placeholder_passcode}
+              // onChange={updateState}
+              maxLength={255} />
+          </label>
+          <label className='col s12 checkbox-container' hidden={isTwoFactor}>
+            <input type='checkbox'
+              id='remember' name='remember'
+              checked={state.remember ? true : false}
+              onChange={updateRemember} />
+            {resource.signin_remember_me}
+          </label>
+          <button
+            type='submit'
+            id='btnSignin'
+            name='btnSignin'
+            onClick={signin}
+          >{resource.button_signin}</button>
+          <a id='btnForgotPassword' onClick={forgotPassword}>{resource.button_forgot_password}</a>
+          <a id='btnSignup' onClick={signup}>{resource.button_signup}</a>
+        </div>
+      </form>
+    </div>
   );
 };
 export default SigninForm;

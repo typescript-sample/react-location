@@ -16,7 +16,7 @@ export class ForgotPasswordForm extends MessageComponent<HistoryProps, ContactIn
     this.signin = this.signin.bind(this);
     this.resetPassword = this.resetPassword.bind(this);
     this.forgotPassword = this.forgotPassword.bind(this);
-    this.passwordService = context.getPasswordServicer();
+    this.passwordService = context.getPasswordService();
     this.state = {
       message: '',
       contact: ''

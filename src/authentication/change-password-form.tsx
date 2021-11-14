@@ -19,7 +19,7 @@ export class ChangePasswordForm extends MessageComponent<HistoryProps & ModelPro
     super(props);
     this.signin = this.signin.bind(this);
     this.changePassword = this.changePassword.bind(this);
-    this.passwordService = context.getPasswordServicer();
+    this.passwordService = context.getPasswordService();
     const user: PasswordChange = {
       step: null,
       username: '',
