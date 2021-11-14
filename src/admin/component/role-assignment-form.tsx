@@ -50,6 +50,7 @@ const initialize = (id: number, set: DispatchWithCallback<Partial<InternalState>
 };
 
 export const RoleAssignmentForm = (props) => {
+  const refForm = React.useRef();
     const [state, setState] = useState(initialState);
     const roleService = context.getRoleService();
     const history = useHistory();
@@ -171,7 +172,7 @@ export const RoleAssignmentForm = (props) => {
 
     return (
         <div className='view-container'>
-            <form id='roleAssignmentForm' name='roleAssignmentForm' model-name='role' ref={this.ref}>
+            <form id='roleAssignmentForm' name='roleAssignmentForm' model-name='role' ref={refForm}>
                 <header>
                     <button type='button' id='btnBack' name='btnBack' className='btn-back' onClick={back}/>
                     <h2>{resource.edit} {resource.role_assignment_subject}</h2>
@@ -202,12 +203,12 @@ export const RoleAssignmentForm = (props) => {
                         <h4>
                             {resource.user}
                             <div className='btn-group'>
-                                {!this.readOnly && <button type='button'
+                                {<button type='button'
                                                            onClick={() => setState({
                                                                ...state,
                                                                isOpenModel: true
                                                            })}>{resource.add}</button>}
-                                {!this.readOnly && <button type='button'
+                                {<button type='button'
                                                            onClick={onShowCheckBox}>{isShowCheckbox ? resource.deselect : resource.select}</button>}
                                 {isShowCheckbox ?
                                     <button type='button' onClick={onCheckAll}>{resource.check_all}</button> : ''}
@@ -217,7 +218,7 @@ export const RoleAssignmentForm = (props) => {
                                                           onClick={onDeleteCheckBox}>{resource.delete}</button> : ''}
                             </div>
                         </h4>
-                        {!this.readOnly &&
+                        {
                         <label className='col s12 search-input'>
                             <i className='btn-search'/>
                             <input type='text'
@@ -258,10 +259,9 @@ export const RoleAssignmentForm = (props) => {
                     </section>
                 </div>
                 <footer>
-                    {!this.readOnly &&
                     <button type='submit' id='btnSave' name='btnSave' onClick={saveOnClick}>
                         {resource.save}
-                    </button>}
+                    </button>
                 </footer>
             </form>
             <UsersLookup

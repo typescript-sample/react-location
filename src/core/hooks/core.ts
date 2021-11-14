@@ -76,7 +76,7 @@ export function createDiffStatus(status?: DiffStatusConfig): DiffStatusConfig {
   return s;
 }
 
-export interface SearchModel {
+export interface Filter {
   q?: string;
   page?: number;
   limit?: number;
@@ -90,12 +90,12 @@ export interface SearchResult<T> {
   nextPageToken?: string;
   last?: boolean;
 }
-export interface SearchState<T, S extends SearchModel> {
+export interface SearchState<T, S extends Filter> {
   model?: S;
   q?: string;
   list?: T[];
 }
-export interface SearchService<T, S extends SearchModel> {
+export interface SearchService<T, S extends Filter> {
   keys?(): string[];
   search(s: S, limit?: number, offset?: number|string, fields?: string[]): Promise<SearchResult<T>>;
 }

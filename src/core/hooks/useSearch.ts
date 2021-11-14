@@ -49,11 +49,11 @@ const setListOfState = <T, S extends Filter>(list: T[], setState2: DispatchWithC
   setState2({ list } as any);
 };
 export interface InitSearchComponentParam<T, M extends Filter, S> extends SearchComponentParam<T, M> {
-  createSearchModel?: () => M;
+  createFilter?: () => M;
   initialize?: (ld: (s: M, auto?: boolean) => void, setState2: DispatchWithCallback<Partial<S>>, com?: SearchComponentState<T, M>) => void;
 }
 export interface HookPropsSearchParameter<T, S extends Filter, ST, P extends ModelProps> extends HookPropsBaseSearchParameter<T, S, ST, P> {
-  createSearchModel?: () => S;
+  createFilter?: () => S;
   initialize?: (ld: (s: S, auto?: boolean) => void, setState2: DispatchWithCallback<Partial<ST>>, com?: SearchComponentState<T, S>) => void;
 }
 export interface SearchComponentParam<T, M extends Filter> {
@@ -72,8 +72,8 @@ export interface SearchComponentParam<T, M extends Filter> {
   load?: (s: M, auto?: boolean) => void;
   getModelName?: () => string;
   getCurrencyCode?: () => string;
-  setSearchModel?: (s: M) => void;
-  getSearchModel?: () => M;
+  setFilter?: (s: M) => void;
+  getFilter?: () => M;
   getFields?: () => string[]|undefined;
   validateSearch?: (se: M, callback: () => void) => void;
   prepareCustomData?: (data: any) => void;
@@ -218,7 +218,7 @@ export const useSearch = <T, S extends Filter, ST extends SearchComponentState<T
     if (p1.initialize) {
       p1.initialize(load, setState, component);
     } else {
-      const se: S|undefined = (p1.createSearchModel ? p1.createSearchModel() : undefined);
+      const se: S|undefined = (p1.createFilter ? p1.createFilter() : undefined);
       const s: any = mergeFilter2(buildFromUrl<S>(), se, component.pageSizes);
       load(s, p2.auto);
     }
@@ -242,7 +242,7 @@ export const useSearchOneWithProps = <T, S extends Filter, ST extends SearchComp
     if (p.initialize) {
       p.initialize(load, setState, component);
     } else {
-      const se: S|undefined = (p.createSearchModel ? p.createSearchModel() : undefined);
+      const se: S|undefined = (p.createFilter ? p.createFilter() : undefined);
       const s: any = mergeFilter2(buildFromUrl<S>(), se, component.pageSizes);
       load(s, p.autoSearch);
     }
@@ -279,7 +279,7 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P extends ModelP
     if (p1.name && p1.name.length > 0) {
       return p1.name;
     } else {
-      return 'model';
+      return 'filter';
     }
   };
   const getModelName = (p1.getModelName ? p1.getModelName : _getModelName);
@@ -327,7 +327,7 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P extends ModelP
   };
   const getFields = p1.getFields ? p1.getFields : _getFields;
 
-  const getSearchModel = (se?: Searchable<T>): S => {
+  const getFilter = (se?: Searchable<T>): S => {
     if (!se) {
       se = component;
     }
@@ -345,20 +345,20 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P extends ModelP
     const obj3 = getModel<T, S>(state, n, se, fs, se.excluding, keys, se.list, refForm.current, p1.decodeFromForm, lc, cc);
     return obj3;
   };
-  const _setSearchModel = (s: S): void => {
+  const _setFilter = (s: S): void => {
     const objSet: any = {};
     const n = getModelName();
     objSet[n] = s;
     setState(objSet);
   };
 
-  const setSearchModel = p1.setSearchModel ? p1.setSearchModel : _setSearchModel;
+  const setFilter = p1.setFilter ? p1.setFilter : _setFilter;
 
   const _load = (s: S, auto?: boolean): void => {
     const com = Object.assign({}, component);
     const obj2 = initFilter(s, com);
     setComponent(com);
-    setSearchModel(obj2);
+    setFilter(obj2);
     const runSearch = doSearch;
     if (auto) {
       setTimeout(() => {
@@ -373,7 +373,7 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P extends ModelP
     if (f && p1.removeFormError) {
       p1.removeFormError(f);
     }
-    const s = getSearchModel(se);
+    const s = getFilter(se);
     const isStillRunning = running;
     validateSearch(s, () => {
       if (isStillRunning === true) {
@@ -411,7 +411,7 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P extends ModelP
     doSearch(component);
   };
 
-  const clearKeyworkOnClick = (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const clearQ = (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const n = getModelName();
     if (n && n.length > 0) {
       const m = (state as any)[n];
@@ -567,7 +567,7 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P extends ModelP
     doSearch,
     pageChanged,
     pageSizeChanged,
-    clearKeyworkOnClick,
+    clearKeyworkOnClick: clearQ,
     showResults,
     getFields,
     getModelName,

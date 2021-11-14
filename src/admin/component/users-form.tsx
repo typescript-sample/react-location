@@ -1,4 +1,4 @@
-import { UserSM, ValueText } from 'onecore';
+import { UserFilter, ValueText } from 'onecore';
 import * as React from 'react';
 import { buildFromUrl, DispatchWithCallback, ModelProps } from 'react-onex';
 import PageSizeSelect from 'react-page-size-select';
@@ -13,10 +13,10 @@ import maleIcon from '../../assets/images/male.png';
 import { context } from '../app';
 import { User } from '../model/User';
 
-interface UserSearch extends SearchComponentState<User, UserSM> {
+interface UserSearch extends SearchComponentState<User, UserFilter> {
   statusList: ValueText[];
 }
-const sm: UserSM = {
+const sm: UserFilter = {
   userId: '',
   username: '',
   displayName: '',
@@ -30,7 +30,7 @@ const initialState: UserSearch = {
   model: sm
 };
 let currentState = initialState;
-const initialize = (load: (s: UserSM, auto?: boolean) => void, setPrivateState: DispatchWithCallback<UserSearch>, c?: SearchComponentState<User, UserSM>) => {
+const initialize = (load: (s: UserFilter, auto?: boolean) => void, setPrivateState: DispatchWithCallback<UserSearch>, c?: SearchComponentState<User, UserFilter>) => {
   const masterDataService = context.getMasterDataService();
   Promise.all([
     masterDataService.getStatus()
@@ -45,11 +45,11 @@ export const UsersForm = (props: ModelProps) => {
   const history = useHistory();
   const [listStatus, setListStatus]  = React.useState(true);
 
-  const getSearchModel = (): UserSM => {
+  const getFilter = (): UserFilter => {
     return currentState.model;
   };
-  const p = { initialize, getSearchModel };
-  const hooks = useSearch<User, UserSM, UserSearch>(refForm, initialState, context.getUserService(), p, inputSearch());
+  const p = { initialize, getFilter };
+  const hooks = useSearch<User, UserFilter, UserSearch>(refForm, initialState, context.getUserService(), p, inputSearch());
   const { state, resource, component, updateState } = hooks;
   currentState = state;
   component.viewable = true;

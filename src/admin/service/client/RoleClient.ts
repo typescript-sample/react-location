@@ -1,4 +1,4 @@
-import {ResultInfo, RoleSM} from 'onecore';
+import {ResultInfo, RoleFilter} from 'onecore';
 import {GenericSearchDiffApprClient} from 'web-clients';
 import {HttpRequest} from 'web-clients';
 import {json} from 'web-clients/src/json';
@@ -6,7 +6,7 @@ import {roleModel} from '../../metadata/RoleModel';
 import {Privilege, Role} from '../../model/Role';
 import {RoleService} from '../RoleService';
 
-export class RoleClient extends GenericSearchDiffApprClient<Role, any, number|ResultInfo<Role>, RoleSM> implements RoleService {
+export class RoleClient extends GenericSearchDiffApprClient<Role, any, number|ResultInfo<Role>, RoleFilter> implements RoleService {
   constructor(http: HttpRequest, url: string, protected privilegeUrl) {
     super(http, url, roleModel.attributes, null);
   }

@@ -1,5 +1,5 @@
 import {ViewSearchService} from 'onecore';
-import {Audit, AuditSM} from '../model/Audit';
+import {Audit, AuditFilter} from '../model/Audit';
 
-export interface AuditService extends ViewSearchService<Audit, string, AuditSM> {
+export interface AuditService extends ViewSearchService<Audit, string, AuditFilter> {
 }

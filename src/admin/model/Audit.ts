@@ -1,4 +1,4 @@
-import {SearchModel} from 'onecore';
+import {Filter} from 'onecore';
 
 export interface Audit {
   id: string;
@@ -17,7 +17,7 @@ export interface Privilege {
   children?: Privilege[];
 }
 
-export interface AuditSM extends SearchModel {
+export interface AuditFilter extends Filter {
   id?: string;
   resource?: string;
   userId?: string;

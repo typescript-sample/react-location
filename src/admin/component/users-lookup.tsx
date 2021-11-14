@@ -1,4 +1,4 @@
-import {SearchModel, UserSM} from 'onecore';
+import {UserFilter} from 'onecore';
 import * as React from 'react';
 import Modal from 'react-modal';
 // import {HistoryProps, SearchComponent, SearchState} from 'react-onex';
@@ -9,7 +9,7 @@ import {initForm, inputSearch, registerEvents, storage} from 'uione';
 import {context} from '../app';
 import {User} from '../model/User';
 
-interface InternalState extends SearchState<User, UserSM> {
+interface InternalState extends SearchState<User, UserFilter> {
   users: User[];
   availableUsers: User[];
   textSearch?: string;
@@ -22,10 +22,10 @@ interface Props extends HistoryProps {
   props?: any;
 }
 
-export class UsersLookup extends SearchComponent<User, SearchModel, Props, InternalState> {
+export class UsersLookup extends SearchComponent<User, UserFilter, Props, InternalState> {
   constructor(props: Props) {
     super(props, context.getUserService(), inputSearch());
-    this.createSearchModel = this.createSearchModel.bind(this);
+    this.createFilter = this.createFilter.bind(this);
     this.state = {
       list: [],
       users: [],
@@ -38,9 +38,9 @@ export class UsersLookup extends SearchComponent<User, SearchModel, Props, Inter
   }
   componentDidMount() {
     this.form = initForm(this.ref.current, registerEvents);
-    this.load(this.createSearchModel(), storage.autoSearch);
+    this.load(this.createFilter(), storage.autoSearch);
   }
-  createSearchModel(): SearchModel {
+  createFilter(): UserFilter {
     const obj: any = {};
     return obj;
   }

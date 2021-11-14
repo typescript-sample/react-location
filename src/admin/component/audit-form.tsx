@@ -6,13 +6,13 @@ import {useHistory} from 'react-router-dom';
 import { SearchComponentState, useSearch } from 'src/core/hooks/useSearch';
 import { inputSearch } from 'uione';
 import { context } from '../app';
-import { Audit, AuditSM } from '../model/Audit';
+import { Audit, AuditFilter } from '../model/Audit';
 
-interface AuditSearch extends SearchComponentState<Audit, AuditSM> {
+interface AuditSearch extends SearchComponentState<Audit, AuditFilter> {
   statusList: ValueText[];
 }
 
-const sm: AuditSM = {
+const sm: AuditFilter = {
   id: '',
   action: '',
 };
@@ -26,11 +26,11 @@ const AuditSearch: AuditSearch = {
 const RolesForm = () => {
   const history = useHistory();
   const refForm = React.useRef();
-  const getSearchModel = (): AuditSM => {
+  const getFilter = (): AuditFilter => {
     return AuditSearch.model;
   };
-  const p = {getSearchModel};
-  const hooks = useSearch<Audit, AuditSM, AuditSearch>(refForm, AuditSearch, context.getAuditService(), p, inputSearch());
+  const p = {getFilter};
+  const hooks = useSearch<Audit, AuditFilter, AuditSearch>(refForm, AuditSearch, context.getAuditService(), p, inputSearch());
   const { state, resource, component, updateState } = hooks;
 
   const edit = (e: any, id: string) => {

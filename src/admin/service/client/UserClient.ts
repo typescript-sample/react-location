@@ -1,11 +1,11 @@
-import {ResultInfo, UserSM} from 'onecore';
+import {ResultInfo, UserFilter} from 'onecore';
 import {GenericSearchDiffApprClient, json, resources} from 'web-clients';
 import {HttpRequest} from 'web-clients';
 import {userModel} from '../../metadata/UserModel';
 import {User} from '../../model/User';
 import {UserService} from '../UserService';
 
-export class UserClient extends GenericSearchDiffApprClient<User, number, number|ResultInfo<User>, UserSM> implements UserService {
+export class UserClient extends GenericSearchDiffApprClient<User, number, number|ResultInfo<User>, UserFilter> implements UserService {
   constructor(http: HttpRequest, url: string) {
     super(http, url, userModel.attributes, null);
     this.searchGet = true;
@@ -21,7 +21,7 @@ export class UserClient extends GenericSearchDiffApprClient<User, number, number
       const url = `${this.serviceUrl}?roleId=${id}`;
       return this.http.get<User[]>(url);
   }
-  protected postOnly(s: UserSM): boolean {
+  protected postOnly(s: UserFilter): boolean {
     return true;
   }
   patch(obj: User, ctx?: any): Promise<ResultInfo<User>> {

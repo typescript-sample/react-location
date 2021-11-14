@@ -2,7 +2,7 @@ import * as React from 'react';
 import {clone, diff, makeDiff} from 'reflectx';
 import {addParametersIntoUrl, append, buildMessage, changePage, changePageSize, formatResultsByComponent, getFieldsFromForm, getModel, handleAppend, handleSortEvent, initFilter, mergeFilter as mergeFilter2, more, reset, Searchable, showPaging, validate} from 'search-utilities';
 import {BaseDiffState, createDiffStatus, createEditStatus, DiffApprService, DiffParameter, DiffState, DiffStatusConfig, hideLoading, showLoading} from './core';
-import {Attributes, buildId, EditStatusConfig, error, ErrorMessage, getCurrencyCode, getModelName as getModelName2, HistoryProps, initForm, LoadingService, Locale, message, messageByHttpStatus, ModelHistoryProps, ModelProps, removePhoneFormat, ResourceService, SearchModel, SearchParameter, SearchResult, SearchService, SearchState, StringMap, UIService, ViewParameter, ViewService} from './core';
+import {Attributes, buildId, EditStatusConfig, error, ErrorMessage, Filter, getCurrencyCode, getModelName as getModelName2, HistoryProps, initForm, LoadingService, Locale, message, messageByHttpStatus, ModelHistoryProps, ModelProps, removePhoneFormat, ResourceService, SearchParameter, SearchResult, SearchService, SearchState, StringMap, UIService, ViewParameter, ViewService} from './core';
 import {formatDiffModel, getDataFields} from './diff';
 import {build, createModel as createModel2, EditParameter, GenericService, handleStatus, handleVersion, initPropertyNullInModel, ResultInfo} from './edit';
 import {focusFirstError, readOnly} from './formutil';
@@ -290,7 +290,7 @@ export class MessageComponent<P extends MessageOnlyState, S extends MessageOnlyS
     this.setState({ message: '' });
   }
 }
-export class BaseSearchComponent<T, S extends SearchModel, P extends ModelHistoryProps, I extends SearchState<T, S>> extends BaseComponent<P, I> implements Searchable {
+export class BaseSearchComponent<T, S extends Filter, P extends ModelHistoryProps, I extends SearchState<T, S>> extends BaseComponent<P, I> implements Searchable {
   constructor(props: P,
       protected resourceService: ResourceService,
       protected showMessage: (msg: string) => void,
@@ -309,12 +309,12 @@ export class BaseSearchComponent<T, S extends SearchModel, P extends ModelHistor
     this.getSearchForm = this.getSearchForm.bind(this);
     this.setSearchForm = this.setSearchForm.bind(this);
 
-    this.setSearchModel = this.setSearchModel.bind(this);
-    this.getSearchModel = this.getSearchModel.bind(this);
-    this.getDisplayFields = this.getDisplayFields.bind(this);
+    this.setFilter = this.setFilter.bind(this);
+    this.getFilter = this.getFilter.bind(this);
+    this.getFields = this.getFields.bind(this);
 
     this.pageSizeChanged = this.pageSizeChanged.bind(this);
-    this.clearKeyword = this.clearKeyword.bind(this);
+    this.clearQ = this.clearQ.bind(this);
     this.searchOnClick = this.searchOnClick.bind(this);
 
     this.resetAndSearch = this.resetAndSearch.bind(this);
@@ -396,7 +396,7 @@ export class BaseSearchComponent<T, S extends SearchModel, P extends ModelHistor
   }
   load(s: S, autoSearch: boolean): void {
     const obj2 = initFilter(s, this);
-    this.setSearchModel(obj2);
+    this.setFilter(obj2);
     const com = this;
     if (autoSearch) {
       setTimeout(() => {
@@ -415,13 +415,13 @@ export class BaseSearchComponent<T, S extends SearchModel, P extends ModelHistor
     }
     return this.form;
   }
-  setSearchModel(searchModel: S): void {
-    this.setState(searchModel as any);
+  setFilter(filter: S): void {
+    this.setState(filter as any);
   }
   protected getCurrencyCode(): string|undefined {
     return getCurrencyCode(this.form);
   }
-  getSearchModel(): S {
+  getFilter(): S {
     const name = this.getModelName();
     let lc: Locale|undefined;
     if (this.getLocale) {
@@ -431,14 +431,14 @@ export class BaseSearchComponent<T, S extends SearchModel, P extends ModelHistor
       lc = enLocale;
     }
     const cc = this.getCurrencyCode();
-    const fields = this.getDisplayFields();
+    const fields = this.getFields();
     const l = this.getList();
     const f = this.getSearchForm();
     const dc = (this.ui ? this.ui.decodeFromForm : undefined);
     const obj3 = getModel<T, S>(this.state, name, this, fields, this.excluding, this.keys, l, f, dc, lc, cc);
     return obj3;
   }
-  protected getDisplayFields(): string[]|undefined {
+  protected getFields(): string[]|undefined {
     const fs = getFieldsFromForm(this.fields, this.initFields, this.form);
     this.initFields = true;
     return fs;
@@ -453,7 +453,7 @@ export class BaseSearchComponent<T, S extends SearchModel, P extends ModelHistor
     this.setState(prevState => ({ isPageSizeOpenDropDown: !(prevState as any).isPageSizeOpenDropDown } as any));
   }
 
-  protected clearKeyword(): void {
+  protected clearQ(): void {
     const m = this.state.model;
     if (m) {
       m.q = '';
@@ -493,7 +493,7 @@ export class BaseSearchComponent<T, S extends SearchModel, P extends ModelHistor
     if (listForm && this.ui) {
       this.ui.removeFormError(listForm);
     }
-    const s = this.getSearchModel();
+    const s = this.getFilter();
     const com = this;
     this.validateSearch(s, () => {
       if (com.running === true) {
@@ -615,7 +615,7 @@ export class BaseSearchComponent<T, S extends SearchModel, P extends ModelHistor
     this.doSearch();
   }
 }
-export class SearchComponent<T, S extends SearchModel, P extends ModelHistoryProps, I extends SearchState<T, S>> extends BaseSearchComponent<T, S, P, I> {
+export class SearchComponent<T, S extends Filter, P extends ModelHistoryProps, I extends SearchState<T, S>> extends BaseSearchComponent<T, S, P, I> {
   constructor(props: P, sv: ((s: S, ctx?: any) => Promise<SearchResult<T>>) | SearchService<T, S>,
       param: ResourceService|SearchParameter,
       showMessage?: (msg: string, option?: string) => void,
@@ -640,8 +640,8 @@ export class SearchComponent<T, S extends SearchModel, P extends ModelHistoryPro
     this.call = this.call.bind(this);
     this.showError = getErrorFunc(param, showError);
     this.componentDidMount = this.componentDidMount.bind(this);
-    this.mergeSearchModel = this.mergeSearchModel.bind(this);
-    this.createSearchModel = this.createSearchModel.bind(this);
+    this.mergeFilter = this.mergeFilter.bind(this);
+    this.createFilter = this.createFilter.bind(this);
     this.ref = React.createRef();
   }
   protected showError: (m: string, header?: string, detail?: string, callback?: () => void) => void;
@@ -652,13 +652,13 @@ export class SearchComponent<T, S extends SearchModel, P extends ModelHistoryPro
   componentDidMount() {
     const k = (this.ui ? this.ui.registerEvents : undefined);
     this.form = initForm(this.ref.current, k);
-    const s = this.mergeSearchModel(buildFromUrl<S>(), this.createSearchModel());
+    const s = this.mergeFilter(buildFromUrl<S>(), this.createFilter());
     this.load(s, this.autoSearch);
   }
-  mergeSearchModel(obj: S, b?: S, arrs?: string[]|any): S {
+  mergeFilter(obj: S, b?: S, arrs?: string[]|any): S {
     return mergeFilter2<S>(obj, b, this.pageSizes, arrs);
   }
-  createSearchModel(): S {
+  createFilter(): S {
     const s: any = {};
     return s;
   }

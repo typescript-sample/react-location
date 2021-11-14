@@ -1,4 +1,4 @@
-import { RoleSM, ValueText } from 'onecore';
+import { RoleFilter, ValueText } from 'onecore';
 import * as React from 'react';
 import { buildFromUrl, DispatchWithCallback } from 'react-onex';
 import PageSizeSelect from 'react-page-size-select';
@@ -10,11 +10,11 @@ import { handleError, inputSearch } from 'uione';
 import { context } from '../app';
 import { Role } from '../model/Role';
 
-interface RoleSearch extends SearchComponentState<Role, RoleSM> {
+interface RoleSearch extends SearchComponentState<Role, RoleFilter> {
   statusList: ValueText[];
 }
 
-const sm: RoleSM = {
+const sm: RoleFilter = {
   roleId: '',
   roleName: '',
 };
@@ -25,7 +25,7 @@ const RoleSearch: RoleSearch = {
   model: sm
 };
 
-const initialize = (load: (s: RoleSM, auto?: boolean) => void, setPrivateState: DispatchWithCallback<RoleSearch>, c?: SearchComponentState<Role, RoleSM>) => {
+const initialize = (load: (s: RoleFilter, auto?: boolean) => void, setPrivateState: DispatchWithCallback<RoleSearch>, c?: SearchComponentState<Role, RoleFilter>) => {
   const masterDataService = context.getMasterDataService();
   Promise.all([
     masterDataService.getStatus()
@@ -39,11 +39,11 @@ const initialize = (load: (s: RoleSM, auto?: boolean) => void, setPrivateState: 
 const RolesForm = () => {
   const history = useHistory();
   const refForm = React.useRef();
-  const getSearchModel = (): RoleSM => {
+  const getFilter = (): RoleFilter => {
     return RoleSearch.model;
   };
-  const p = { initialize, getSearchModel };
-  const hooks = useSearch<Role, RoleSM, RoleSearch>(refForm, RoleSearch, context.getRoleService(), p, inputSearch());
+  const p = { initialize, getFilter };
+  const hooks = useSearch<Role, RoleFilter, RoleSearch>(refForm, RoleSearch, context.getRoleService(), p, inputSearch());
   const { state, resource, component, updateState } = hooks;
 
   const edit = (e: any, id: string) => {
