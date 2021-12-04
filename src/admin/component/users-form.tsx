@@ -7,7 +7,7 @@ import { useHistory } from 'react-router-dom';
 import { mergeFilter } from 'search-utilities';
 import { pageSizes, SearchComponentState, useSearch } from 'src/core/hooks/useSearch';
 import UserCarousel from 'src/users_carousel/app';
-import { handleError, inputSearch, storage } from 'uione';
+import { handleError, inputSearch } from 'uione';
 import femaleIcon from '../../assets/images/female.png';
 import maleIcon from '../../assets/images/male.png';
 import { context } from '../app';

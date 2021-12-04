@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import {useHistory, useRouteMatch} from 'react-router-dom';
 import {clone} from 'reflectx';
 import {addParametersIntoUrl, append, buildMessage, Filter, formatResults, getFieldsFromForm, getModel, handleAppend, handleSort, initFilter, mergeFilter as mergeFilter2, Pagination, removeSortStatus, showPaging, Sortable, validate} from 'search-utilities';
-import {error, hideLoading, initForm, LoadingService, Locale, ModelProps, ResourceService, SearchParameter, SearchPermission, SearchResult, SearchService, showLoading, UIService} from './core';
+import {error, getDecodeFromForm, getName, getRemoveError, getValidateForm, hideLoading, initForm, LoadingService, Locale, ModelProps, removeFormError, ResourceService, SearchParameter, SearchPermission, SearchResult, SearchService, showLoading, UIService} from './core';
 import {DispatchWithCallback, useMergeState} from './merge';
 import {buildFromUrl} from './route';
 import {enLocale} from './state';
@@ -158,45 +158,18 @@ function mergeParam<T, S extends Filter>(p: SearchComponentParam<T, S>, ui?: UIS
   if (!p.sequenceNo) {
     p.sequenceNo = 'sequenceNo';
   }
+  /*
   if (!p.pageIndex || p.pageIndex < 1) {
     p.pageIndex = 1;
-  }
+  }*/
   if (!p.pageSize) {
     p.pageSize = 20;
-  }
-  if (!p.initPageSize) {
-    p.initPageSize = p.pageSize;
   }
   if (!p.pageSizes) {
     p.pageSizes = pageSizes;
   }
   if (!p.pageMaxSize) {
     p.pageMaxSize = 7;
-  }
-  if (ui) {
-    if (!p.decodeFromForm) {
-      p.decodeFromForm = ui.decodeFromForm;
-    }
-    if (!p.registerEvents) {
-      p.registerEvents = ui.registerEvents;
-    }
-    if (!p.validateForm) {
-      p.validateForm = ui.validateForm;
-    }
-    if (!p.removeFormError) {
-      p.removeFormError = ui.removeFormError;
-    }
-    if (!p.removeError) {
-      p.removeError = ui.removeError;
-    }
-  }
-  if (loading) {
-    if (!p.showLoading) {
-      p.showLoading = loading.showLoading;
-    }
-    if (!p.hideLoading) {
-      p.hideLoading = loading.hideLoading;
-    }
   }
 }
 export const useSearch = <T, S extends Filter, ST extends SearchComponentState<T, S>>(
@@ -276,16 +249,12 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P extends ModelP
   const [running, setRunning] = useState<boolean>();
 
   const _getModelName = (): string => {
-    if (p1.name && p1.name.length > 0) {
-      return p1.name;
-    } else {
-      return 'filter';
-    }
+    return getName('filter', p1.name);
   };
   const getModelName = (p1.getModelName ? p1.getModelName : _getModelName);
 
   // const setState2: <K extends keyof S, P>(st: ((prevState: Readonly<S>, props: Readonly<P>) => (Pick<S, K> | S | null)) | (Pick<S, K> | S | null), cb?: () => void) => void;
-  const baseProps = (props ? useUpdateWithProps<ST, P>(props, initialState, getModelName, p2.getLocale, p1.removeError, p1.prepareCustomData) : useUpdate<ST>(initialState, getModelName, p2.getLocale, p1.removeError));
+  const baseProps = (props ? useUpdateWithProps<ST, P>(props, initialState, getModelName, p2.getLocale, getRemoveError(p2, p1.removeError), p1.prepareCustomData) : useUpdate<ST>(initialState, getModelName, p2.getLocale, getRemoveError(p2, p1.removeError)));
   const { state, setState } = baseProps;
   const [history, match] = [useHistory(), useRouteMatch()];
 
@@ -342,7 +311,7 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P extends ModelP
     }
     const lc = (p2.getLocale ? p2.getLocale() : enLocale);
     const cc = getCurrencyCode();
-    const obj3 = getModel<T, S>(state, n, se, fs, se.excluding, keys, se.list, refForm.current, p1.decodeFromForm, lc, cc);
+    const obj3 = getModel<T, S>(state, n, se, fs, se.excluding, keys, se.list, refForm.current, getDecodeFromForm(p2, p1.decodeFromForm), lc, cc);
     return obj3;
   };
   const _setFilter = (s: S): void => {
@@ -369,10 +338,7 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P extends ModelP
   const load = p1.load ? p1.load : _load;
 
   const doSearch = (se: Searchable<T>, isFirstLoad?: boolean) => {
-    const f = refForm.current;
-    if (f && p1.removeFormError) {
-      p1.removeFormError(f);
-    }
+    removeFormError(p2, refForm.current, p1.removeFormError);
     const s = getFilter(se);
     const isStillRunning = running;
     validateSearch(s, () => {
@@ -380,7 +346,7 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P extends ModelP
         return;
       }
       setRunning(true);
-      showLoading(p1.showLoading);
+      showLoading(p1.showLoading, p2);
       if (!p1.ignoreUrlParam) {
         addParametersIntoUrl(s, isFirstLoad);
       }
@@ -394,7 +360,7 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P extends ModelP
   };
 
   const _validateSearch = (se: S, callback: () => void) => {
-    validate(se, callback, refForm.current, (p2.getLocale ? p2.getLocale() : undefined), p1.validateForm);
+    validate(se, callback, refForm.current, (p2.getLocale ? p2.getLocale() : undefined), getValidateForm(p2, p1.validateForm));
   };
   const validateSearch = p1.validateSearch ? p1.validateSearch : _validateSearch;
 
@@ -519,7 +485,7 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P extends ModelP
       }
     }
     setRunning(false);
-    hideLoading(p1.hideLoading);
+    hideLoading(p1.hideLoading, p2);
     if (component.triggerSearch) {
       setComponent({ triggerSearch: false });
       resetAndSearch();

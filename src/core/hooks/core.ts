@@ -1,4 +1,5 @@
 import * as H from 'history';
+import { string } from 'prop-types';
 import {match} from 'react-router-dom';
 import {focusFirstElement} from './formutil';
 
@@ -413,6 +414,9 @@ export function error(err: any, gv: (key: string) => string, ae: (msg: string, h
     ae(msg, title);
   }
 }
+export function getName(d: string, n?: string): string {
+  return (n && n.length > 0 ? n : d);
+}
 export function getModelName(form?: HTMLFormElement|null, name?: string): string {
   if (form) {
     const a = form.getAttribute('model-name');
@@ -458,21 +462,58 @@ export const scrollToFocus = (e: any, isUseTimeOut?: boolean) => {
     console.log(e);
   }
 };
-export function showLoading(loading?: LoadingService|((firstTime?: boolean) => void)): void {
+export interface LoadingParameter {
+  loading?: LoadingService;
+}
+export function showLoading(loading?: LoadingService|((firstTime?: boolean) => void), s?: LoadingParameter): void {
   if (loading) {
     if (typeof loading === 'function') {
       loading();
     } else {
       loading.showLoading();
     }
+  } else if (s && s.loading) {
+    s.loading.showLoading();
   }
 }
-export function hideLoading(loading?: LoadingService|(() => void)): void {
+export function hideLoading(loading?: LoadingService|(() => void), s?: LoadingParameter): void {
   if (loading) {
     if (typeof loading === 'function') {
       loading();
     } else {
       loading.hideLoading();
     }
+  } else if (s && s.loading) {
+    s.loading.hideLoading();
   }
+}
+export interface UIParameter {
+  ui?: UIService;
+}
+export function getRemoveError(u: UIParameter, rmErr?: (el: HTMLInputElement) => void): ((el: HTMLInputElement) => void)|undefined {
+  if (rmErr) {
+    return rmErr;
+  }
+  return (u.ui ? u.ui.removeError : undefined);
+}
+export function removeFormError(u: UIParameter, f?: HTMLFormElement, rfe?: (form: HTMLFormElement) => void): void {
+  if (f) {
+    if (rfe) {
+      rfe(f);
+    } else if (u.ui) {
+      u.ui.removeFormError(f);
+    }
+  }
+}
+export function getValidateForm(u: UIParameter, vf?: (form: HTMLFormElement, locale?: Locale, focusFirst?: boolean, scroll?: boolean) => boolean): ((form: HTMLFormElement, locale?: Locale, focusFirst?: boolean, scroll?: boolean) => boolean)|undefined {
+  if (vf) {
+    return vf;
+  }
+  return (u.ui ? u.ui.validateForm : undefined);
+}
+export function getDecodeFromForm(u: UIParameter, d?: (form: HTMLFormElement, locale?: Locale, currencyCode?: string) => any): ((form: HTMLFormElement, locale?: Locale, currencyCode?: string) => any)|undefined {
+  if (d) {
+    return d;
+  }
+  return (u.ui ? u.ui.decodeFromForm : undefined);
 }
