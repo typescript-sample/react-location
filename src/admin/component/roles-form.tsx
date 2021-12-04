@@ -43,7 +43,7 @@ const RolesForm = () => {
     return RoleSearch.model;
   };
   const p = { initialize, getFilter };
-  const hooks = useSearch<Role, RoleFilter, RoleSearch>(refForm, RoleSearch, context.getRoleService(), p, inputSearch());
+  const hooks = useSearch<Role, RoleFilter, RoleSearch>(refForm, RoleSearch, context.getRoleService(), inputSearch(), p);
   const { state, resource, component, updateState } = hooks;
 
   const edit = (e: any, id: string) => {

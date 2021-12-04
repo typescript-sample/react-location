@@ -41,12 +41,13 @@ export interface BaseEditComponentParam<T, ID> {
   handleDuplicateKey?: (result?: ResultInfo<T>) => void;
   load?: (i: ID, callback?: (m: T, showM: (m2: T) => void) => void) => void;
   save?: (obj: T, diff?: T, version?: string, isBack?: boolean) => void;
+  prepareCustomData?: (data: any) => void; // need to review
 }
 export interface HookBaseEditParameter<T, ID, S> extends BaseEditComponentParam<T, ID> {
   refForm: any;
   initialState: S;
   service: GenericService<T, ID, number|ResultInfo<T>>;
-  resourceService: ResourceService;
+  resource: ResourceService;
   showMessage: (msg: string) => void;
   showError: (m: string, header?: string, detail?: string, callback?: () => void) => void;
   getLocale?: () => Locale;
@@ -75,113 +76,43 @@ export const useBaseEdit = <T, ID, S>(
   ) => {
   return useBaseEditWithProps(undefined, refForm, initialState, service, p1, p2);
 };
-export const useBaseEditWithProps = <T, ID, S, P extends ModelProps>(
-  props: P|undefined,
-  refForm: any,
-  initialState: S,
-  service: GenericService<T, ID, number|ResultInfo<T>>,
-  p1: EditParameter,
-  p2?: BaseEditComponentParam<T, ID>,
-  p3?: EditPermission
-  ) => {
-  const p4: BaseEditComponentParam<T, ID> = (p2 ? p2 : {} as any);
-  const p: HookPropsBaseEditParameter<T, ID, S, P> = {
-    props,
-    refForm,
-    initialState,
-    service,
-    status: p1.status,
-    resourceService: p1.resource,
-    showMessage: p1.showMessage,
-    showError: p1.showError,
-    confirm: p1.confirm,
-    ui: p1.ui,
-    getLocale: p1.getLocale,
-    loading: p1.loading,
-    backOnSuccess: p4.backOnSuccess,
-    metadata: p4.metadata,
-    keys: p4.keys,
-    version: p4.version,
-    setBack: p4.setBack,
-    patchable: p4.patchable,
-    addable: p4.addable,
-    readOnly: p4.readOnly,
-    handleNotFound: p4.handleNotFound,
-    getModelName: p4.getModelName,
-    getModel: p4.getModel,
-    showModel: p4.showModel,
-    createModel: p4.createModel,
-    onSave: p4.onSave,
-    validate: p4.validate,
-    succeed: p4.succeed,
-    fail: p4.fail,
-    postSave: p4.postSave,
-    handleDuplicateKey: p4.handleDuplicateKey,
-    load: p4.load,
-    save: p4.save
-  };
-  const per: EditPermission|undefined = (p3 ? p3 : p2);
-  if (per) {
-    p.addable = per.addable;
-    p.readOnly = per.readOnly;
-    p.deletable = per.deletable;
-  }
-  return useBaseEditOneWithProps(p);
-};
 export const useEdit = <T, ID, S, P extends ModelProps>(
   props: P,
   refForm: any,
   initialState: S,
   service: GenericService<T, ID, number|ResultInfo<T>>,
-  p1: EditComponentParam<T, ID, S>,
   p2: EditParameter,
-  p3?: EditPermission
+  p?: EditComponentParam<T, ID, S>
   ) => {
-  const p4: EditComponentParam<T, ID, S> = (p1 ? p1 : {} as any);
-  const p: HookPropsEditParameter<T, ID, S, P> = {
-    props,
-    refForm,
-    initialize: p4.initialize,
-    callback: p4.callback,
-    initialState,
-    service,
-    status: p2.status,
-    resourceService: p2.resource,
-    showMessage: p2.showMessage,
-    showError: p2.showError,
-    confirm: p2.confirm,
-    ui: p2.ui,
-    getLocale: p2.getLocale,
-    loading: p2.loading,
-    backOnSuccess: p4.backOnSuccess,
-    metadata: p4.metadata,
-    keys: p4.keys,
-    version: p4.version,
-    setBack: p4.setBack,
-    patchable: p4.patchable,
-    addable: p4.addable,
-    readOnly: p4.readOnly,
-    handleNotFound: p4.handleNotFound,
-    getModelName: p4.getModelName,
-    getModel: p4.getModel,
-    showModel: p4.showModel,
-    createModel: p4.createModel,
-    onSave: p4.onSave,
-    validate: p4.validate,
-    succeed: p4.succeed,
-    fail: p4.fail,
-    postSave: p4.postSave,
-    handleDuplicateKey: p4.handleDuplicateKey,
-    load: p4.load,
-    save: p4.save
-  };
-  const per: EditPermission = (p3 ? p3 : p1);
-  if (per) {
-    p.addable = per.addable;
-    p.readOnly = per.readOnly;
-    p.deletable = per.deletable;
-  }
-  return useEditOne(p);
+  const baseProps = useBaseEditWithProps<T, ID, S, P>(props, refForm, initialState, service, p2, p);
+  useEffect(() => {
+    if (refForm) {
+      const registerEvents = (p2.ui ? p2.ui.registerEvents : undefined);
+      initForm(baseProps.refForm.current, registerEvents);
+    }
+    const n = baseProps.getModelName(refForm.current);
+    const obj: any = {};
+    obj[n] = baseProps.createNewModel();
+    baseProps.setState(obj);
+    let keys: string[];
+    if (p && !p.keys && service && service.metadata) {
+      const metadata = (p.metadata ? p.metadata : service.metadata());
+      const meta = build(metadata);
+      keys = (p.keys ? p.keys : (meta ? meta.keys : undefined));
+      const version = (p.version ? p.version : (meta ? meta.version : undefined));
+      p.keys = keys;
+      p.version = version;
+    }
+    const id = buildId<ID>(props, keys);
+    if (id) {
+      if (p && p.initialize) {
+        p.initialize(id, baseProps.load, baseProps.setState, p.callback);
+      } else {
+        baseProps.load(id, p.callback);
+      }
+    }
+  }, []);
+  return {...baseProps};
 };
 export const useEditOne = <T, ID, S, P extends ModelProps>(p: HookPropsEditParameter<T, ID, S, P>) => {
   const baseProps = useBaseEditOneWithProps(p);
@@ -214,6 +145,16 @@ export const useEditOne = <T, ID, S, P extends ModelProps>(p: HookPropsEditParam
   return {...baseProps};
 };
 export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookPropsBaseEditParameter<T, ID, S, P>) => {
+  return useBaseEditWithProps(p.props, p.refForm, p.initialState, p.service, p, p);
+};
+export const useBaseEditWithProps = <T, ID, S, P extends ModelProps>(
+  props: P|undefined,
+  refForm: any,
+  initialState: S,
+  service: GenericService<T, ID, number|ResultInfo<T>>,
+  p1: EditParameter,
+  p?: BaseEditComponentParam<T, ID>
+  ) => {
   const {
     backOnSuccess = true,
     patchable = true,
@@ -235,15 +176,15 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
     }
     return getModelName2(f);
   };
-  const baseProps = useUpdate<S>(p.initialState, getModelName, p.getLocale);
+  const baseProps = useUpdate<S>(initialState, getModelName, p1.getLocale);
 
   const prepareCustomData = (p.prepareCustomData ? p.prepareCustomData : prepareData);
   const updateDateState = (name: string, value: any) => {
-    const modelName = getModelName(p.refForm.current);
+    const modelName = getModelName(refForm.current);
     const currentState = (state as any)[modelName];
-    if (p.props && p.props.setGlobalState) {
-      const data = p.props.shouldBeCustomized ? prepareCustomData({ [name]: value }) : { [name]: value };
-      p.props.setGlobalState({ [modelName]: { ...currentState, ...data } });
+    if (props && props.setGlobalState) {
+      const data = props.shouldBeCustomized ? prepareCustomData({ [name]: value }) : { [name]: value };
+      props.setGlobalState({ [modelName]: { ...currentState, ...data } });
     } else {
       setState({[modelName]: {...currentState, [name]: value}} as T);
     }
@@ -259,12 +200,12 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
   });
 
   const showModel = (model: T) => {
-    const n = getModelName(p.refForm.current);
+    const n = getModelName(refForm.current);
     const objSet: any = {};
     objSet[n] = model;
     setState(objSet);
     if (p.readOnly) {
-      const f = p.refForm.current;
+      const f = refForm.current;
       setReadOnly(f);
     }
   };
@@ -275,18 +216,18 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
   };
 
   const _handleNotFound = (form?: any): void => {
-    const msg = message(p.resourceService.value, 'error_not_found', 'error');
+    const msg = message(p1.resource.value, 'error_not_found', 'error');
     if (form) {
       setReadOnly(form);
     }
-    p.showError(msg.message, msg.title);
+    p1.showError(msg.message, msg.title);
   };
   const handleNotFound = (p.handleNotFound ? p.handleNotFound : _handleNotFound);
 
   const _getModel = () => {
-    const n = getModelName(p.refForm.current);
-    if (p.props) {
-      return (p.props as any)[n] || (state as any)[n];
+    const n = getModelName(refForm.current);
+    if (props) {
+      return (props as any)[n] || (state as any)[n];
     } else {
       return (state as any)[n];
     }
@@ -294,7 +235,7 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
   const getModel = (p.getModel ? p.getModel : _getModel);
 
   const _createModel = (): T => {
-    const metadata = (p.metadata ? p.metadata : (p.service.metadata ? p.service.metadata() : undefined));
+    const metadata = (p.metadata ? p.metadata : (service.metadata ? service.metadata() : undefined));
     if (metadata) {
       const obj = createModel2<T>(metadata);
       return obj;
@@ -309,29 +250,29 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
     event.preventDefault();
     const obj = createModel();
     resetState(true, obj, undefined);
-    const u = p.ui;
+    const u = p1.ui;
     if (u) {
       setTimeout(() => {
-        u.removeFormError(p.refForm.current);
+        u.removeFormError(refForm.current);
       }, 100);
     }
   };
 
   const _onSave = (isBack?: boolean) => {
     if (flag.newMode === true && flag.addable === false) {
-      const m = message(p.resourceService.value, 'error_permission_add', 'error_permission');
-      p.showError(m.message, m.title);
+      const m = message(p1.resource.value, 'error_permission_add', 'error_permission');
+      p1.showError(m.message, m.title);
       return;
     } else if (flag.newMode === false && p.readOnly) {
-      const msg = message(p.resourceService.value, 'error_permission_edit', 'error_permission');
-      p.showError(msg.message, msg.title);
+      const msg = message(p1.resource.value, 'error_permission_edit', 'error_permission');
+      p1.showError(msg.message, msg.title);
       return;
     } else {
       if (running === true) {
         return;
       }
       const obj = getModel();
-      const metadata = (p.metadata ? p.metadata : (p.service.metadata ? p.service.metadata() : undefined));
+      const metadata = (p.metadata ? p.metadata : (service.metadata ? service.metadata() : undefined));
       if (metadata && (!p.keys || !p.version)) {
         const meta = build(metadata);
         const keys = (p.keys ? p.keys : (meta ? meta.keys : undefined));
@@ -341,8 +282,8 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
       }
       if (flag.newMode) {
         validate(obj, () => {
-          const msg = message(p.resourceService.value, 'msg_confirm_save', 'confirm', 'yes', 'no');
-          p.confirm(msg.message, msg.title, () => {
+          const msg = message(p1.resource.value, 'msg_confirm_save', 'confirm', 'yes', 'no');
+          p1.confirm(msg.message, msg.title, () => {
             save(obj, undefined, p.version, isBack);
           }, msg.no, msg.yes);
         });
@@ -350,11 +291,11 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
         const diffObj = makeDiff(initPropertyNullInModel(flag.originalModel, metadata), obj, p.keys, p.version);
         const objKeys = Object.keys(diffObj);
         if (objKeys.length === 0) {
-          p.showMessage(p.resourceService.value('msg_no_change'));
+          p1.showMessage(p1.resource.value('msg_no_change'));
         } else {
           validate(obj, () => {
-            const msg = message(p.resourceService.value, 'msg_confirm_save', 'confirm', 'yes', 'no');
-            p.confirm(msg.message, msg.title, () => {
+            const msg = message(p1.resource.value, 'msg_confirm_save', 'confirm', 'yes', 'no');
+            p1.confirm(msg.message, msg.title, () => {
               save(obj, diffObj, p.version, isBack);
             }, msg.no, msg.yes);
           });
@@ -371,8 +312,8 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
   };
 
   const _validate = (obj: T, callback: (obj2?: T) => void) => {
-    if (p.ui) {
-      const valid = p.ui.validateForm(p.refForm.current, localeOf(undefined, p.getLocale));
+    if (p1.ui) {
+      const valid = p1.ui.validateForm(refForm.current, localeOf(undefined, p1.getLocale));
       if (valid) {
         callback(obj);
       }
@@ -395,7 +336,7 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
       handleVersion(obj, version);
     }
     const isBackO = (!isBack ? backOnSuccess : isBack);
-    p.showMessage(msg);
+    p1.showMessage(msg);
     if (isBackO) {
       back(undefined);
     }
@@ -404,8 +345,8 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
 
   const _fail = (result: ResultInfo<T>) => {
     const errors = result.errors;
-    const f = p.refForm.current;
-    const u = p.ui;
+    const f = refForm.current;
+    const u = p1.ui;
     if (errors && u) {
       const unmappedErrors = u.showFormError(f, errors);
       focusFirstError(f);
@@ -413,16 +354,16 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
         if (errors && errors.length === 1) {
           result.message = errors[0].message;
         } else {
-          if (p.ui && p.ui.buildErrorMessage) {
-            result.message = p.ui.buildErrorMessage(unmappedErrors);
+          if (p1.ui && p1.ui.buildErrorMessage) {
+            result.message = p1.ui.buildErrorMessage(unmappedErrors);
           } else {
             result.message = errors[0].message;
           }
         }
       }
       if (result.message) {
-        const t = p.resourceService.value('error');
-        p.showError(result.message, t);
+        const t = p1.resource.value('error');
+        p1.showError(result.message, t);
       }
     }
   };
@@ -430,9 +371,9 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
 
   const _postSave = (obj: T, res: number | ResultInfo<T>, version?: string, backOnSave?: boolean) => {
     setRunning(false);
-    hideLoading(p.loading);
+    hideLoading(p1.loading);
     const x: any = res;
-    const successMsg = p.resourceService.value('msg_save_success');
+    const successMsg = p1.resource.value('msg_save_success');
     const newMod = flag.newMode;
     const st = createEditStatus(p.status);
     if (!isNaN(x)) {
@@ -444,14 +385,14 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
         } else if (!newMod && x === st.not_found) {
           handleNotFound();
         } else {
-          handleStatus(x as number, st, p.resourceService.value, p.showError);
+          handleStatus(x as number, st, p1.resource.value, p1.showError);
         }
       }
     } else {
       const result: ResultInfo<any> = x;
       if (result.status === st.success) {
         succeed(obj, successMsg, version, backOnSave, result);
-        p.showMessage(successMsg);
+        p1.showMessage(successMsg);
       } else if (result.errors && result.errors.length > 0) {
         fail(result);
       } else if (newMod && result.status === st.duplicate_key) {
@@ -459,30 +400,30 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
       } else if (!newMod && x === st.not_found) {
         handleNotFound();
       } else {
-        handleStatus(result.status, st, p.resourceService.value, p.showError);
+        handleStatus(result.status, st, p1.resource.value, p1.showError);
       }
     }
   };
   const postSave = (p.postSave ? p.postSave : _postSave);
 
   const _handleDuplicateKey = (result?: ResultInfo<any>) => {
-    const msg = message(p.resourceService.value, 'error_duplicate_key', 'error');
-    p.showError(msg.message, msg.title);
+    const msg = message(p1.resource.value, 'error_duplicate_key', 'error');
+    p1.showError(msg.message, msg.title);
   };
   const handleDuplicateKey = (p.handleDuplicateKey ? p.handleDuplicateKey : _handleDuplicateKey);
 
   const _save = (obj: T, body?: T, version?: string, isBack?: boolean) => {
     setRunning(true);
-    showLoading(p.loading);
+    showLoading(p1.loading);
     const isBackO = (isBack == null || isBack === undefined ? backOnSuccess : isBack);
     if (flag.newMode === false) {
-      if (p.service.patch && patchable === true && body && Object.keys(body).length > 0) {
-        p.service.patch(body).then(result => postSave(obj, result, version, isBackO));
+      if (service.patch && patchable === true && body && Object.keys(body).length > 0) {
+        service.patch(body).then(result => postSave(obj, result, version, isBackO));
       } else {
-        p.service.update(obj).then(result => postSave(obj, result, version, isBackO));
+        service.update(obj).then(result => postSave(obj, result, version, isBackO));
       }
     } else {
-      p.service.insert(obj).then(result => postSave(obj, result, version, isBackO));
+      service.insert(obj).then(result => postSave(obj, result, version, isBackO));
     }
   };
   const save = (p.save ? p.save : _save);
@@ -491,10 +432,10 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
     const id: any = _id;
     if (id != null && id !== '') {
       setRunning(true);
-      showLoading(p.loading);
-      p.service.load(id).then(obj => {
+      showLoading(p1.loading);
+      service.load(id).then(obj => {
         if (!obj) {
-          handleNotFound(p.refForm.current);
+          handleNotFound(refForm.current);
         } else {
           setFlag({ newMode: false, originalModel: clone(obj) });
           if (callback) {
@@ -504,25 +445,25 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
           }
         }
         setRunning(false);
-        hideLoading(p.loading);
+        hideLoading(p1.loading);
       }).catch(err => {
         const data = (err &&  err.response) ? err.response : err;
-        const r = p.resourceService;
+        const r = p1.resource;
         const title = r.value('error');
         let msg = r.value('error_internal');
         if (data && data.status === 404) {
-          handleNotFound(p.refForm.current);
+          handleNotFound(refForm.current);
         } else {
           if (data.status && !isNaN(data.status)) {
             msg = messageByHttpStatus(data.status, r.value);
           }
           if (data && (data.status === 401 || data.status === 403)) {
-            setReadOnly(p.refForm.current);
+            setReadOnly(refForm.current);
           }
-          p.showError(msg, title);
+          p1.showError(msg, title);
         }
         setRunning(false);
-        hideLoading(p.loading);
+        hideLoading(p1.loading);
       });
     } else {
       const obj = createModel();
@@ -539,9 +480,9 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
   return {
     ...baseProps,
     back,
-    refForm: p.refForm,
-    ui: p.ui,
-    resource: p.resourceService.resource(),
+    refForm,
+    ui: p1.ui,
+    resource: p1.resource.resource(),
     flag,
     running,
     setRunning,
@@ -557,7 +498,7 @@ export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookP
     onSave,
     confirm,
     validate,
-    showMessage: p.showMessage,
+    showMessage: p1.showMessage,
     succeed,
     fail,
     postSave,

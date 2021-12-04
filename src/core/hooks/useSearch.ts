@@ -130,45 +130,17 @@ export interface SearchComponentState<T, S> extends Pagination, Sortable {
 }
 export const pageSizes = [10, 20, 40, 60, 100, 200, 400, 800];
 
-function createSearchComponentState<T, S extends Filter>(p: SearchComponentParam<T, S>, p2?: SearchPermission): SearchComponentState<T, S> {
-  const p3: SearchComponentState<T, S> = {
-    model: {} as any,
-    pageIndex: p.pageIndex,
-    pageSize: p.pageSize,
-    initPageSize: p.initPageSize,
-    pageSizes: p.pageSizes,
-    appendMode: p.appendMode,
-    fields: p.fields,
-    pageMaxSize: (p.pageMaxSize && p.pageMaxSize > 0 ? p.pageMaxSize : 7)
-  };
-  if (p2) {
-    p3.viewable = p2.viewable;
-    p3.addable = p2.addable;
-    p3.editable = p2.editable;
-    p3.deletable = p2.deletable;
-    p3.approvable = p2.approvable;
-  } else {
-    p3.viewable = true;
-    p3.addable = true;
-    p3.editable = true;
-  }
-  return p3;
-}
 function mergeParam<T, S extends Filter>(p: SearchComponentParam<T, S>, ui?: UIService, loading?: LoadingService): void {
   if (!p.sequenceNo) {
     p.sequenceNo = 'sequenceNo';
   }
-  /*
-  if (!p.pageIndex || p.pageIndex < 1) {
-    p.pageIndex = 1;
-  }*/
   if (!p.pageSize) {
     p.pageSize = 20;
   }
   if (!p.pageSizes) {
     p.pageSizes = pageSizes;
   }
-  if (!p.pageMaxSize) {
+  if (!p.pageMaxSize || p.pageMaxSize <= 0) {
     p.pageMaxSize = 7;
   }
 }
@@ -176,11 +148,10 @@ export const useSearch = <T, S extends Filter, ST extends SearchComponentState<T
   refForm: any,
   initialState: ST,
   search: ((s: S, limit?: number, offset?: number|string, fields?: string[]) => Promise<SearchResult<T>>) | SearchService<T, S>,
-  p1: InitSearchComponentParam<T, S, ST>,
   p2: SearchParameter,
-  p3?: SearchPermission,
+  p?: InitSearchComponentParam<T, S, ST>,
 ) => {
-  const baseProps = useBaseSearchWithProps(undefined, refForm, initialState, search, p1, p2, p3);
+  const baseProps = useBaseSearchWithProps(undefined, refForm, initialState, search, p, p2);
 
   useEffect(() => {
     const { load, setState, component } = baseProps;
@@ -188,10 +159,10 @@ export const useSearch = <T, S extends Filter, ST extends SearchComponentState<T
       const registerEvents = (p2.ui ? p2.ui.registerEvents : undefined);
       initForm(refForm.current, registerEvents);
     }
-    if (p1.initialize) {
-      p1.initialize(load, setState, component);
+    if (p.initialize) {
+      p.initialize(load, setState, component);
     } else {
-      const se: S|undefined = (p1.createFilter ? p1.createFilter() : undefined);
+      const se: S|undefined = (p.createFilter ? p.createFilter() : undefined);
       const s: any = mergeFilter2(buildFromUrl<S>(), se, component.pageSizes);
       load(s, p2.auto);
     }
@@ -223,18 +194,16 @@ export const useSearchOneWithProps = <T, S extends Filter, ST extends SearchComp
 
   return { ...baseProps };
 };
-export const useBaseSearchOne = <T, S extends Filter, ST extends SearchComponentState<T, S>, P extends ModelProps>(p: HookPropsBaseSearchParameter<T, S, ST, P>, p2?: SearchPermission) => {
-  return useBaseSearchWithProps(p.props, p.refForm, p.initialState, p.search, p, p, p2);
+export const useBaseSearchOne = <T, S extends Filter, ST extends SearchComponentState<T, S>, P extends ModelProps>(p: HookPropsBaseSearchParameter<T, S, ST, P>) => {
+  return useBaseSearchWithProps(p.props, p.refForm, p.initialState, p.search, p, p);
 };
 export const useBaseSearch = <T, S extends Filter, ST extends SearchComponentState<T, S>>(
   refForm: any,
   initialState: ST,
   search: ((s: S, ctx?: any) => Promise<SearchResult<T>>) | SearchService<T, S>,
   p1: SearchComponentParam<T, S>,
-  p2: SearchParameter,
-  p3?: SearchPermission
-) => {
-  return useBaseSearchWithProps(undefined, refForm, initialState, search, p1, p2, p3);
+  p2: SearchParameter) => {
+  return useBaseSearchWithProps(undefined, refForm, initialState, search, p1, p2);
 };
 export const useBaseSearchWithProps = <T, S extends Filter, ST, P extends ModelProps>(
   props: P|undefined,
@@ -242,8 +211,7 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P extends ModelP
   initialState: ST,
   search: ((s: S, limit?: number, offset?: number|string, fields?: string[]) => Promise<SearchResult<T>>) | SearchService<T, S>,
   p1: SearchComponentParam<T, S>,
-  p2: SearchParameter,
-  p3?: SearchPermission
+  p2: SearchParameter
 ) => {
   mergeParam(p1, p2.ui, p2.loading);
   const [running, setRunning] = useState<boolean>();
@@ -276,8 +244,8 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P extends ModelP
     setState({ [modelName]: { ...currentState, [name]: value } } as T);
   };
 
-  const p = createSearchComponentState<T, S>(p1, p3);
-  const [component, setComponent] = useMergeState<SearchComponentState<T, S>>(p);
+  // const p = createSearchComponentState<T, S>(p1);
+  const [component, setComponent] = useMergeState<SearchComponentState<T, S>>(p1);
 
   const toggleFilter = (event: any): void => {
     setComponent({ hideFilter: !component.hideFilter });

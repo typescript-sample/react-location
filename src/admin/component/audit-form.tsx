@@ -30,7 +30,7 @@ const RolesForm = () => {
     return AuditSearch.model;
   };
   const p = {getFilter};
-  const hooks = useSearch<Audit, AuditFilter, AuditSearch>(refForm, AuditSearch, context.getAuditService(), p, inputSearch());
+  const hooks = useSearch<Audit, AuditFilter, AuditSearch>(refForm, AuditSearch, context.getAuditService(), inputSearch(), p);
   const { state, resource, component, updateState } = hooks;
 
   const edit = (e: any, id: string) => {

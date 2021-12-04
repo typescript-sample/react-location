@@ -40,7 +40,7 @@ const initialize = (load: (s: UserFilter, auto?: boolean) => void, setPrivateSta
     setPrivateState({ statusList: activationStatuses }, () => load(s2, true));
   }).catch(handleError);
 };
-export const UsersForm = (props: ModelProps) => {
+export const UsersForm = () => {
   const refForm = React.useRef();
   const history = useHistory();
   const [listStatus, setListStatus]  = React.useState(true);
@@ -49,7 +49,7 @@ export const UsersForm = (props: ModelProps) => {
     return currentState.model;
   };
   const p = { initialize, getFilter };
-  const hooks = useSearch<User, UserFilter, UserSearch>(refForm, initialState, context.getUserService(), p, inputSearch());
+  const hooks = useSearch<User, UserFilter, UserSearch>(refForm, initialState, context.getUserService(), inputSearch(), p);
   const { state, resource, component, updateState } = hooks;
   currentState = state;
   component.viewable = true;

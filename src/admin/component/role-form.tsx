@@ -126,7 +126,7 @@ const param: EditComponentParam<Role, number, InternalState> = {
 export function RoleForm(props: ModelProps) {
   const refForm = React.useRef();
   const history = useHistory();
-  const { state, setState, back, flag, updateState, saveOnClick, resource } = useEdit<Role, number, InternalState, ModelProps>(props, refForm, initialState, context.getRoleService(), param, inputEdit());
+  const { state, setState, back, flag, updateState, saveOnClick, resource } = useEdit<Role, number, InternalState, ModelProps>(props, refForm, initialState, context.getRoleService(), inputEdit(), param);
   React.useEffect(() => {
     showModel(state.role);
   }, [state.role]);
