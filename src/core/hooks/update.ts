@@ -4,9 +4,17 @@ import {buildFlatState, buildState, handleEvent, handleProps, localeOf} from './
 
 const m = 'model';
 const _getModelName = (f2?: HTMLFormElement|null): string => {
-  return getModelName2(f2, 'model');
+  return getModelName2(f2, m);
 };
 export const useUpdate = <T>(initialState: T, getName?: ((f?: HTMLFormElement|null) => string) | string, getLocale?: (() => Locale) | Locale, removeErr?: (ctrl: HTMLInputElement) => void) => {
+  return useUpdateWithProps<T, any>(undefined, initialState, getName, getLocale, removeErr);
+};
+function prepareData(data: any): void {
+}
+export const useUpdateWithProps = <T, P extends ModelProps>(props: P|undefined, initialState: T, getName?: ((f?: HTMLFormElement|null) => string) | string, getLocale?: (() => Locale) | Locale, removeErr?: (ctrl: HTMLInputElement) => void, prepareCustomData?: (d: any) => void) => {
+  if (!prepareCustomData) {
+    prepareCustomData = prepareData;
+  }
   const [state, setState] = useMergeState<T>(initialState);
 
   const updatePhoneState = (event: any) => {
@@ -28,6 +36,7 @@ export const useUpdate = <T>(initialState: T, getName?: ((f?: HTMLFormElement|nu
     }
   };
   const getModelName: (f2?: HTMLFormElement|null) => string = (typeof getName === 'function' ? getName : _getModelName);
+
   const updateState = (e: any, callback?: () => void, lc?: Locale) => {
     const ctrl = e.currentTarget as HTMLInputElement;
     let mn: string = m;
@@ -42,16 +51,19 @@ export const useUpdate = <T>(initialState: T, getName?: ((f?: HTMLFormElement|nu
     }
     const l = localeOf(lc, getLocale);
     handleEvent(e, removeErr);
-    const objSet = buildState(e, state, ctrl, mn, l);
-    if (objSet) {
-      if (callback) {
-        setState(objSet, callback);
-      } else {
-        setState(objSet);
+    if (props && props.setGlobalState) {
+      handleProps<P>(e, props, ctrl, mn, l, prepareCustomData);
+    } else {
+      const objSet = buildState(e, state, ctrl, mn, l);
+      if (objSet) {
+        if (callback) {
+          setState(objSet, callback);
+        } else {
+          setState(objSet);
+        }
       }
     }
   };
-
   const updateFlatState = (e: any, callback?: () => void, lc?: Locale) => {
     const objSet = buildFlatState(e, state, lc);
     if (objSet) {
@@ -62,45 +74,6 @@ export const useUpdate = <T>(initialState: T, getName?: ((f?: HTMLFormElement|nu
       }
     }
   };
-
-  return {
-    getModelName,
-    updateState,
-    updatePhoneState,
-    updateFlatState,
-    getLocale,
-    setState,
-    state
-  };
-};
-function prepareData(data: any): void {
-}
-export const useUpdateWithProps = <T, P extends ModelProps>(props: P, initialState: T, gl?: (() => Locale) | Locale, removeErr?: (ctrl: HTMLInputElement) => void, getName?: ((f?: HTMLFormElement|null) => string) | string, prepareCustomData?: (d: any) => void) => {
-  if (!prepareCustomData) {
-    prepareCustomData = prepareData;
-  }
-  const baseProps = useUpdate<T>(initialState, getName, gl, removeErr);
-  const {getModelName, updatePhoneState, updateFlatState, getLocale, state, setState} = baseProps;
-
-  const updateState = (e: any, callback?: () => void, lc?: Locale) => {
-    const ctrl = e.currentTarget as HTMLInputElement;
-    const modelName = getModelName(ctrl.form);
-    const l = localeOf(lc, gl);
-    handleEvent(e, removeErr);
-    if (props.setGlobalState) {
-      handleProps<P>(e, props, ctrl, modelName, l, prepareCustomData);
-    } else {
-      const objSet = buildState(e, state, ctrl, modelName, l);
-      if (objSet) {
-        if (callback) {
-          setState(objSet, callback);
-        } else {
-          setState(objSet);
-        }
-      }
-    }
-  };
-
   return {
     getModelName,
     updateState,

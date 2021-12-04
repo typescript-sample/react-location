@@ -60,9 +60,9 @@ export interface SearchComponentParam<T, M extends Filter> {
   keys?: string[];
   sequenceNo?: string;
   name?: string;
+  fields?: string[];
   appendMode?: boolean;
   pageSizes?: number[];
-  displayFields?: string[];
   pageIndex?: number;
   pageSize?: number;
   initPageSize?: number;
@@ -111,7 +111,7 @@ export interface SearchComponentState<T, S> extends Pagination, Sortable {
   list?: T[];
 
   format?: (obj: T, locale: Locale) => T;
-  displayFields?: string[];
+  fields?: string[];
   initFields?: boolean;
   triggerSearch?: boolean;
   tmpPageIndex?: number;
@@ -138,7 +138,7 @@ function createSearchComponentState<T, S extends Filter>(p: SearchComponentParam
     initPageSize: p.initPageSize,
     pageSizes: p.pageSizes,
     appendMode: p.appendMode,
-    displayFields: p.displayFields,
+    fields: p.fields,
     pageMaxSize: (p.pageMaxSize && p.pageMaxSize > 0 ? p.pageMaxSize : 7)
   };
   if (p2) {
@@ -285,7 +285,7 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P extends ModelP
   const getModelName = (p1.getModelName ? p1.getModelName : _getModelName);
 
   // const setState2: <K extends keyof S, P>(st: ((prevState: Readonly<S>, props: Readonly<P>) => (Pick<S, K> | S | null)) | (Pick<S, K> | S | null), cb?: () => void) => void;
-  const baseProps = (props ? useUpdateWithProps<ST, P>(props, initialState, p2.getLocale, p1.removeError, getModelName, p1.prepareCustomData) : useUpdate<ST>(initialState, getModelName, p2.getLocale, p1.removeError));
+  const baseProps = (props ? useUpdateWithProps<ST, P>(props, initialState, getModelName, p2.getLocale, p1.removeError, p1.prepareCustomData) : useUpdate<ST>(initialState, getModelName, p2.getLocale, p1.removeError));
   const { state, setState } = baseProps;
   const [history, match] = [useHistory(), useRouteMatch()];
 
@@ -320,9 +320,9 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P extends ModelP
   };
 
   const _getFields = (): string[]|undefined => {
-    const { displayFields, initFields } = component;
-    const fs = getFieldsFromForm(displayFields, initFields, refForm.current);
-    setComponent({ displayFields: fs, initFields: true });
+    const { fields, initFields } = component;
+    const fs = getFieldsFromForm(fields, initFields, refForm.current);
+    setComponent({ fields: fs, initFields: true });
     return fs;
   };
   const getFields = p1.getFields ? p1.getFields : _getFields;
@@ -336,7 +336,7 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P extends ModelP
       keys = search.keys();
     }
     const n = getModelName();
-    let fs = p1.displayFields;
+    let fs = p1.fields;
     if (!fs || fs.length <= 0) {
       fs = getFields();
     }
