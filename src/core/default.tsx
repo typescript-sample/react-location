@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { HttpRequest } from 'axios-core';
 import * as React from 'react';
-import { BaseComponent, ModelHistoryProps, navigate } from 'react-hook-core';
+import { StringMap } from 'react-hook-core';
 import PageSizeSelect from 'react-page-size-select';
 import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
-import { getLocale, Privilege, removeError, storage } from 'uione';
+import { Privilege, storage } from 'uione';
 import { options } from 'uione';
 import { isArray } from 'util';
 import logoTitle from '../assets/images/logo-title.png';
@@ -30,9 +30,9 @@ interface InternalState {
   pinnedModules: Privilege[];
 }
 
-export default class DefaultWrapper extends BaseComponent<ModelHistoryProps, InternalState> {
-  constructor(props) {
-    super(props, getLocale, removeError);
+export default class DefaultWrapper extends React.Component<RouteComponentProps, InternalState> {
+  constructor(props: RouteComponentProps) {
+    super(props);
     this.resource = storage.resource().resource();
     this.renderForm = this.renderForm.bind(this);
     this.renderForms = this.renderForms.bind(this);
@@ -54,7 +54,7 @@ export default class DefaultWrapper extends BaseComponent<ModelHistoryProps, Int
     };
     this.httpRequest = new HttpRequest(axios, options);
   }
-  protected resource: any = {};
+  protected resource: StringMap;
   protected httpRequest: HttpRequest;
   protected pageSize = 20;
   protected pageSizes = [10, 20, 40, 60, 100, 200, 400, 10000];
@@ -156,22 +156,22 @@ export default class DefaultWrapper extends BaseComponent<ModelHistoryProps, Int
     sessionStorage.setItem('authService', null);
     sessionStorage.clear();
     storage.setUser(null);
-    navigate(this.props.history, '');
+    this.props.history.push('');
   }
 
   viewMyprofile = (e) => {
     e.preventDefault();
-    navigate(this.props.history, '/my-profile');
+    this.props.history.push('/my-profile');
   }
 
   viewMySetting = (e) => {
     e.preventDefault();
-    navigate(this.props.history, '/my-profile/my-settings');
+    this.props.history.push('/my-profile/my-settings');
   }
 
   viewChangePassword = (e) => {
     e.preventDefault();
-    navigate(this.props.history, '/auth/change-password');
+    this.props.history.push('/auth/change-password');
   }
 
   pinModulesHandler(event, index, moduleSequence) {
@@ -341,7 +341,7 @@ export default class DefaultWrapper extends BaseComponent<ModelHistoryProps, Int
                 </div>
                 <label className='search-input'>
                   <PageSizeSelect pageSize={pageSize} pageSizes={pageSizes} onPageSizeChanged={this.pageSizeChanged} />
-                  <input type='text' id='keyword' name='keyword' value={this.state.keyword} onChange={this.updateState} maxLength={1000} placeholder={this.resource.keyword} />
+                  <input type='text' id='keyword' name='keyword' value={this.state.keyword} maxLength={1000} placeholder={this.resource['keyword']} />
                   <button type='button' hidden={!this.state.keyword} className='btn-remove-text' onClick={this.clearKeyworkOnClick} />
                   <button type='submit' className='btn-search' onClick={this.searchOnClick} />
                 </label>

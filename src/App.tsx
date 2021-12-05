@@ -81,7 +81,7 @@ class StatelessApp extends React.Component<AppProps & RouteComponentProps<any>, 
         <Route path='/auth' component={authenticationRoutes} />
         <Route path='/' exact={true} render={(props) => (<Redirect to='/auth' {...props} />)} />
 
-        <DefaultWrapper history={this.props.history} location={this.props.location}>
+        <DefaultWrapper history={this.props.history} location={this.props.location} match={this.props.match}>
           <Route path='/upload' component={UploadFile} />
           <Route path='/welcome' component={WelcomeForm} />
           <Route path='' component={adminRoutes} />
