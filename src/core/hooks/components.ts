@@ -977,7 +977,7 @@ export abstract class BaseEditComponent<T, P extends ModelHistoryProps, S> exten
     this.showError(msg.message, msg.title);
   }
 }
-export class EditComponent<T, ID, P extends ModelHistoryProps, S> extends BaseEditComponent<T, P, S>  {
+export class EditComponent<T, ID, P extends RouteComponentProps, S> extends BaseEditComponent<T, P, S>  {
   constructor(props: P, protected service: GenericService<T, ID, number|ResultInfo<T>>,
       param: ResourceService|EditParameter,
       showMessage?: (msg: string, option?: string) => void,

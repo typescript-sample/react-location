@@ -60,12 +60,12 @@ export interface EditComponentParam<T, ID, S> extends BaseEditComponentParam<T, 
   initialize?: (id: ID, ld: (i: ID, cb?: (m: T, showF: (model: T) => void) => void) => void, setState2: DispatchWithCallback<Partial<S>>, callback?: (m: T, showF: (model: T) => void) => void) => void;
   callback?: (m: T, showF: (model: T) => void) => void;
 }
-export interface HookPropsEditParameter<T, ID, S, P extends RouteComponentProps|ModelProps> extends HookPropsBaseEditParameter<T, ID, S, P> {
+export interface HookPropsEditParameter<T, ID, S, P extends RouteComponentProps> extends HookPropsBaseEditParameter<T, ID, S, P> {
   initialize?: (id: ID, ld: (i: ID, cb?: (m: T, showF: (model: T) => void) => void) => void, setState2: DispatchWithCallback<Partial<S>>, callback?: (m: T, showF: (model: T) => void) => void) => void;
   callback?: (m: T, showF: (model: T) => void) => void;
 }
-export interface HookPropsBaseEditParameter<T, ID, S, P extends RouteComponentProps|ModelProps> extends HookBaseEditParameter<T, ID, S> {
-  props?: P;
+export interface HookPropsBaseEditParameter<T, ID, S, P extends RouteComponentProps> extends HookBaseEditParameter<T, ID, S> {
+  props: P;
   prepareCustomData?: (data: any) => void;
 }
 export const useEdit = <T, ID, S>(
@@ -75,7 +75,7 @@ export const useEdit = <T, ID, S>(
   p1: EditParameter,
   p2?: BaseEditComponentParam<T, ID>
   ) => {
-  return useBaseEditWithProps(undefined, refForm, initialState, service, p1, p2);
+  return useCoreEdit(undefined, refForm, initialState, service, p1, p2);
 };
 export const useEditProps = <T, ID, S, P extends RouteComponentProps>(
   props: P,
@@ -85,7 +85,7 @@ export const useEditProps = <T, ID, S, P extends RouteComponentProps>(
   p2: EditParameter,
   p?: EditComponentParam<T, ID, S>
   ) => {
-  const baseProps = useBaseEditWithProps<T, ID, S, P>(props, refForm, initialState, service, p2, p);
+  const baseProps = useCoreEdit<T, ID, S, P>(props, refForm, initialState, service, p2, p);
   useEffect(() => {
     if (refForm) {
       const registerEvents = (p2.ui ? p2.ui.registerEvents : undefined);
@@ -95,7 +95,7 @@ export const useEditProps = <T, ID, S, P extends RouteComponentProps>(
     const obj: any = {};
     obj[n] = baseProps.createNewModel();
     baseProps.setState(obj);
-    let keys: string[];
+    let keys: string[]|undefined;
     if (p && !p.keys && service && service.metadata) {
       const metadata = (p.metadata ? p.metadata : service.metadata());
       const meta = build(metadata);
@@ -109,7 +109,7 @@ export const useEditProps = <T, ID, S, P extends RouteComponentProps>(
       if (p && p.initialize) {
         p.initialize(id, baseProps.load, baseProps.setState, p.callback);
       } else {
-        baseProps.load(id, p.callback);
+        baseProps.load(id, p ? p.callback : undefined);
       }
     }
   }, []);
@@ -121,7 +121,7 @@ export const useEditOneProps = <T, ID, S, P extends RouteComponentProps>(p: Hook
 export const useEditOne = <T, ID, S>(p: HookBaseEditParameter<T, ID, S>) => {
   return useEdit(p.refForm, p.initialState, p.service, p, p);
 };
-export const useBaseEditWithProps = <T, ID, S, P>(
+export const useCoreEdit = <T, ID, S, P>(
   props: P|undefined,
   refForm: any,
   initialState: S,
@@ -129,11 +129,13 @@ export const useBaseEditWithProps = <T, ID, S, P>(
   p1: EditParameter,
   p?: BaseEditComponentParam<T, ID>
   ) => {
+    /*
   const {
     backOnSuccess = true,
     patchable = true,
     addable = true
-  } = p;
+  } = p; */
+  const addable = (p && p.patchable !== false ? true : undefined);
   const {goBack} = useRouter();
   const back = (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (event) {
@@ -145,14 +147,14 @@ export const useBaseEditWithProps = <T, ID, S, P>(
   const [running, setRunning] = useState<boolean>();
 
   const getModelName = (f?: HTMLFormElement|null): string => {
-    if (p.name && p.name.length > 0) {
+    if (p && p.name && p.name.length > 0) {
       return p.name;
     }
     return getModelName2(f);
   };
   const baseProps = useUpdate<S>(initialState, getModelName, p1.getLocale);
 
-  const prepareCustomData = (p.prepareCustomData ? p.prepareCustomData : prepareData);
+  const prepareCustomData = (p && p.prepareCustomData ? p.prepareCustomData : prepareData);
   const updateDateState = (name: string, value: any) => {
     const modelName = getModelName(refForm.current);
     const currentState = (state as any)[modelName];
@@ -169,7 +171,7 @@ export const useBaseEditWithProps = <T, ID, S, P>(
     newMode: false,
     setBack: false,
     addable,
-    readOnly: p.readOnly,
+    readOnly: p ? p.readOnly : undefined,
     originalModel: undefined
   });
 
@@ -178,7 +180,7 @@ export const useBaseEditWithProps = <T, ID, S, P>(
     const objSet: any = {};
     objSet[n] = model;
     setState(objSet);
-    if (p.readOnly) {
+    if (p && p.readOnly) {
       const f = refForm.current;
       setReadOnly(f);
     }
@@ -196,7 +198,7 @@ export const useBaseEditWithProps = <T, ID, S, P>(
     }
     p1.showError(msg.message, msg.title);
   };
-  const handleNotFound = (p.handleNotFound ? p.handleNotFound : _handleNotFound);
+  const handleNotFound = (p && p.handleNotFound ? p.handleNotFound : _handleNotFound);
 
   const _getModel = () => {
     const n = getModelName(refForm.current);
@@ -206,10 +208,10 @@ export const useBaseEditWithProps = <T, ID, S, P>(
       return (state as any)[n];
     }
   };
-  const getModel = (p.getModel ? p.getModel : _getModel);
+  const getModel = (p && p.getModel ? p.getModel : _getModel);
 
   const _createModel = (): T => {
-    const metadata = (p.metadata ? p.metadata : (service.metadata ? service.metadata() : undefined));
+    const metadata = (p && p.metadata ? p.metadata : (service.metadata ? service.metadata() : undefined));
     if (metadata) {
       const obj = createModel2<T>(metadata);
       return obj;
@@ -218,7 +220,7 @@ export const useBaseEditWithProps = <T, ID, S, P>(
       return obj;
     }
   };
-  const createModel = (p.createModel ? p.createModel : _createModel);
+  const createModel = (p && p.createModel ? p.createModel : _createModel);
 
   const newOnClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
@@ -237,7 +239,7 @@ export const useBaseEditWithProps = <T, ID, S, P>(
       const m = message(p1.resource.value, 'error_permission_add', 'error_permission');
       p1.showError(m.message, m.title);
       return;
-    } else if (flag.newMode === false && p.readOnly) {
+    } else if (p && flag.newMode === false && p.readOnly) {
       const msg = message(p1.resource.value, 'error_permission_edit', 'error_permission');
       p1.showError(msg.message, msg.title);
       return;
@@ -246,23 +248,23 @@ export const useBaseEditWithProps = <T, ID, S, P>(
         return;
       }
       const obj = getModel();
-      const metadata = (p.metadata ? p.metadata : (service.metadata ? service.metadata() : undefined));
-      if (metadata && (!p.keys || !p.version)) {
+      const metadata = (p && p.metadata ? p.metadata : (service.metadata ? service.metadata() : undefined));
+      let keys: string[]|undefined;
+      let version: string|undefined;
+      if (p && metadata && (!p.keys || !p.version)) {
         const meta = build(metadata);
-        const keys = (p.keys ? p.keys : (meta ? meta.keys : undefined));
-        const version = (p.version ? p.version : (meta ? meta.version : undefined));
-        p.keys = keys;
-        p.version = version;
+        keys = (p.keys ? p.keys : (meta ? meta.keys : undefined));
+        version = (p.version ? p.version : (meta ? meta.version : undefined));
       }
       if (flag.newMode) {
         validate(obj, () => {
           const msg = message(p1.resource.value, 'msg_confirm_save', 'confirm', 'yes', 'no');
           p1.confirm(msg.message, msg.title, () => {
-            save(obj, undefined, p.version, isBack);
+            save(obj, undefined, version, isBack);
           }, msg.no, msg.yes);
         });
       } else {
-        const diffObj = makeDiff(initPropertyNullInModel(flag.originalModel, metadata), obj, p.keys, p.version);
+        const diffObj = makeDiff(initPropertyNullInModel(flag.originalModel, metadata), obj, keys, version);
         const objKeys = Object.keys(diffObj);
         if (objKeys.length === 0) {
           p1.showMessage(p1.resource.value('msg_no_change'));
@@ -270,19 +272,19 @@ export const useBaseEditWithProps = <T, ID, S, P>(
           validate(obj, () => {
             const msg = message(p1.resource.value, 'msg_confirm_save', 'confirm', 'yes', 'no');
             p1.confirm(msg.message, msg.title, () => {
-              save(obj, diffObj, p.version, isBack);
+              save(obj, diffObj, version, isBack);
             }, msg.no, msg.yes);
           });
         }
       }
     }
   };
-  const onSave = (p.onSave ? p.onSave : _onSave);
+  const onSave = (p && p.onSave ? p.onSave : _onSave);
 
   const saveOnClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
     event.persist();
-    onSave(backOnSuccess);
+    onSave();
   };
 
   const _validate = (obj: T, callback: (obj2?: T) => void) => {
@@ -295,7 +297,7 @@ export const useBaseEditWithProps = <T, ID, S, P>(
       callback(obj);
     }
   };
-  const validate = (p.validate ? p.validate : _validate);
+  const validate = (p && p.validate ? p.validate : _validate);
 
   const _succeed = (obj: T, msg: string, version?: string, isBack?: boolean, result?: ResultInfo<T>) => {
     if (result) {
@@ -309,13 +311,12 @@ export const useBaseEditWithProps = <T, ID, S, P>(
     } else {
       handleVersion(obj, version);
     }
-    const isBackO = (!isBack ? backOnSuccess : isBack);
     p1.showMessage(msg);
-    if (isBackO) {
+    if (isBack) {
       back(undefined);
     }
   };
-  const succeed = (p.succeed ? p.succeed : _succeed);
+  const succeed = (p && p.succeed ? p.succeed : _succeed);
 
   const _fail = (result: ResultInfo<T>) => {
     const errors = result.errors;
@@ -341,7 +342,7 @@ export const useBaseEditWithProps = <T, ID, S, P>(
       }
     }
   };
-  const fail = (p.fail ? p.fail : _fail);
+  const fail = (p && p.fail ? p.fail : _fail);
 
   const _postSave = (obj: T, res: number | ResultInfo<T>, version?: string, backOnSave?: boolean) => {
     setRunning(false);
@@ -349,7 +350,7 @@ export const useBaseEditWithProps = <T, ID, S, P>(
     const x: any = res;
     const successMsg = p1.resource.value('msg_save_success');
     const newMod = flag.newMode;
-    const st = createEditStatus(p.status);
+    const st = createEditStatus(p ? p.status : undefined);
     if (!isNaN(x)) {
       if (x === st.success) {
         succeed(obj, successMsg, version, backOnSave);
@@ -378,20 +379,21 @@ export const useBaseEditWithProps = <T, ID, S, P>(
       }
     }
   };
-  const postSave = (p.postSave ? p.postSave : _postSave);
+  const postSave = (p && p.postSave ? p.postSave : _postSave);
 
   const _handleDuplicateKey = (result?: ResultInfo<any>) => {
     const msg = message(p1.resource.value, 'error_duplicate_key', 'error');
     p1.showError(msg.message, msg.title);
   };
-  const handleDuplicateKey = (p.handleDuplicateKey ? p.handleDuplicateKey : _handleDuplicateKey);
+  const handleDuplicateKey = (p && p.handleDuplicateKey ? p.handleDuplicateKey : _handleDuplicateKey);
 
   const _save = (obj: T, body?: T, version?: string, isBack?: boolean) => {
     setRunning(true);
     showLoading(p1.loading);
-    const isBackO = (isBack == null || isBack === undefined ? backOnSuccess : isBack);
+    const isBackO = (isBack == null || isBack === undefined ? true : isBack);
+    const patchable = (p ? p.patchable : true);
     if (flag.newMode === false) {
-      if (service.patch && patchable === true && body && Object.keys(body).length > 0) {
+      if (service.patch && patchable !== false && body && Object.keys(body).length > 0) {
         service.patch(body).then(result => postSave(obj, result, version, isBackO));
       } else {
         service.update(obj).then(result => postSave(obj, result, version, isBackO));
@@ -400,7 +402,7 @@ export const useBaseEditWithProps = <T, ID, S, P>(
       service.insert(obj).then(result => postSave(obj, result, version, isBackO));
     }
   };
-  const save = (p.save ? p.save : _save);
+  const save = (p && p.save ? p.save : _save);
 
   const _load = (_id: ID, callback?: (m: T, showM: (m2: T) => void) => void) => {
     const id: any = _id;
@@ -449,7 +451,7 @@ export const useBaseEditWithProps = <T, ID, S, P>(
       }
     }
   };
-  const load = (p.load ? p.load : _load);
+  const load = (p && p.load ? p.load : _load);
 
   return {
     ...baseProps,

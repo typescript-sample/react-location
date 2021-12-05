@@ -290,12 +290,12 @@ export function buildKeys(attributes: Attributes): string[] {
   return ps;
 }
 
-export function buildId<ID>(props: RouteComponentProps|ModelProps, keys?: string[]): ID|null {
+export function buildId<ID>(props: RouteComponentProps, keys?: string[]): ID|null {
   if (!props) {
     return null;
   }
   debugger;
-  const sp: RouteComponentProps = ((props as any).match ? props : props['props']);
+  const sp: any = ((props as any).match ? props : (props as any)['props']);
   if (!keys || keys.length === 0 || keys.length === 1) {
     if (keys && keys.length === 1) {
       const x = sp.match.params[keys[0]];
@@ -466,55 +466,39 @@ export const scrollToFocus = (e: any, isUseTimeOut?: boolean) => {
 export interface LoadingParameter {
   loading?: LoadingService;
 }
-export function showLoading(loading?: LoadingService|((firstTime?: boolean) => void), s?: LoadingParameter): void {
-  if (loading) {
-    if (typeof loading === 'function') {
-      loading();
-    } else {
-      loading.showLoading();
-    }
-  } else if (s && s.loading) {
-    s.loading.showLoading();
+export function showLoading(s?: LoadingService): void {
+  if (s) {
+    s.showLoading();
   }
 }
-export function hideLoading(loading?: LoadingService|(() => void), s?: LoadingParameter): void {
-  if (loading) {
-    if (typeof loading === 'function') {
-      loading();
-    } else {
-      loading.hideLoading();
-    }
-  } else if (s && s.loading) {
-    s.loading.hideLoading();
+export function hideLoading(s?: LoadingService): void {
+  if (s) {
+    s.hideLoading();
   }
 }
 export interface UIParameter {
   ui?: UIService;
 }
-export function getRemoveError(u: UIParameter, rmErr?: (el: HTMLInputElement) => void): ((el: HTMLInputElement) => void)|undefined {
+export function getRemoveError(u?: UIParameter, rmErr?: (el: HTMLInputElement) => void): ((el: HTMLInputElement) => void)|undefined {
   if (rmErr) {
     return rmErr;
   }
-  return (u.ui ? u.ui.removeError : undefined);
+  return (u && u.ui ? u.ui.removeError : undefined);
 }
-export function removeFormError(u: UIParameter, f?: HTMLFormElement, rfe?: (form: HTMLFormElement) => void): void {
-  if (f) {
-    if (rfe) {
-      rfe(f);
-    } else if (u.ui) {
-      u.ui.removeFormError(f);
-    }
+export function removeFormError(u?: UIParameter, f?: HTMLFormElement): void {
+  if (f && u && u.ui) {
+    u.ui.removeFormError(f);
   }
 }
-export function getValidateForm(u: UIParameter, vf?: (form: HTMLFormElement, locale?: Locale, focusFirst?: boolean, scroll?: boolean) => boolean): ((form: HTMLFormElement, locale?: Locale, focusFirst?: boolean, scroll?: boolean) => boolean)|undefined {
+export function getValidateForm(u?: UIParameter, vf?: (form: HTMLFormElement, locale?: Locale, focusFirst?: boolean, scroll?: boolean) => boolean): ((form: HTMLFormElement, locale?: Locale, focusFirst?: boolean, scroll?: boolean) => boolean)|undefined {
   if (vf) {
     return vf;
   }
-  return (u.ui ? u.ui.validateForm : undefined);
+  return (u && u.ui ? u.ui.validateForm : undefined);
 }
-export function getDecodeFromForm(u: UIParameter, d?: (form: HTMLFormElement, locale?: Locale, currencyCode?: string) => any): ((form: HTMLFormElement, locale?: Locale, currencyCode?: string) => any)|undefined {
+export function getDecodeFromForm(u?: UIParameter, d?: (form: HTMLFormElement, locale?: Locale, currencyCode?: string) => any): ((form: HTMLFormElement, locale?: Locale, currencyCode?: string) => any)|undefined {
   if (d) {
     return d;
   }
-  return (u.ui ? u.ui.decodeFromForm : undefined);
+  return (u && u.ui ? u.ui.decodeFromForm : undefined);
 }

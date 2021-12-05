@@ -79,7 +79,7 @@ export const useView = <T, ID, S>(
     }
     p1.showError(msg.message, msg.title);
   };
-  const handleNotFound = (p.handleNotFound ? p.handleNotFound : _handleNotFound);
+  const handleNotFound = (p && p.handleNotFound ? p.handleNotFound : _handleNotFound);
 
   const _load = (_id: ID, callback?: (m: T, showM: (m2: T) => void) => void) => {
     const id: any = _id;
@@ -118,7 +118,7 @@ export const useView = <T, ID, S>(
       });
     }
   };
-  const load = (p.load ? p.load : _load);
+  const load = (p && p.load ? p.load : _load);
 
   return {
     state,
@@ -148,12 +148,12 @@ export const useViewProps = <T, ID, S, P extends RouteComponentProps>(
     if (baseProps.refForm) {
       initForm(baseProps.refForm.current);
     }
-    const id = buildId<ID>(props, p.keys);
+    const id = buildId<ID>(props, p ? p.keys : undefined);
     if (id) {
       if (p && p.initialize) {
         p.initialize(id, baseProps.load, setState, p.callback);
       } else {
-        baseProps.load(id, p.callback);
+        baseProps.load(id, p ? p.callback : undefined);
       }
     }
   }, []);

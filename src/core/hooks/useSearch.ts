@@ -81,6 +81,7 @@ export interface SearchComponentParam<T, M extends Filter> {
   showResults?(s: M, sr: SearchResult<T>, lc: Locale): void;
   appendList?(results: T[], list: T[]|undefined, s: DispatchWithCallback<Partial<SearchComponentState<T, M>>>): void;
   setList?(list: T[], s: DispatchWithCallback<Partial<SearchComponentState<T, M>>>): void;
+  /*
   showLoading?(firstTime?: boolean): void;
   hideLoading?(): void;
   decodeFromForm?(form: HTMLFormElement, locale?: Locale, currencyCode?: string): any;
@@ -88,6 +89,7 @@ export interface SearchComponentParam<T, M extends Filter> {
   validateForm?(form: HTMLFormElement, locale?: Locale, focusFirst?: boolean, scroll?: boolean): boolean;
   removeFormError?(form: HTMLFormElement): void;
   removeError?(el: HTMLInputElement): void;
+  */
 }
 export interface HookBaseSearchParameter<T, S extends Filter, ST extends SearchComponentState<T, S>> extends SearchComponentParam<T, S> {
   refForm: any;
@@ -99,7 +101,7 @@ export interface HookBaseSearchParameter<T, S extends Filter, ST extends SearchC
   getLocale?: () => Locale;
   autoSearch?: boolean;
 }
-export interface HookPropsBaseSearchParameter<T, S extends Filter, ST, P extends ModelProps> extends HookBaseSearchParameter<T, S, ST> {
+export interface HookPropsBaseSearchParameter<T, S extends Filter, ST, P> extends HookBaseSearchParameter<T, S, ST> {
   props?: P;
   prepareCustomData?: (data: any) => void;
 }
@@ -130,18 +132,20 @@ export interface SearchComponentState<T, S> extends Pagination, Sortable {
 }
 export const pageSizes = [10, 20, 40, 60, 100, 200, 400, 800];
 
-function mergeParam<T, S extends Filter>(p: SearchComponentParam<T, S>, ui?: UIService, loading?: LoadingService): void {
-  if (!p.sequenceNo) {
-    p.sequenceNo = 'sequenceNo';
-  }
-  if (!p.pageSize) {
-    p.pageSize = 20;
-  }
-  if (!p.pageSizes) {
-    p.pageSizes = pageSizes;
-  }
-  if (!p.pageMaxSize || p.pageMaxSize <= 0) {
-    p.pageMaxSize = 7;
+function mergeParam<T, S extends Filter>(p?: SearchComponentParam<T, S>): void {
+  if (p) {
+    if (!p.sequenceNo) {
+      p.sequenceNo = 'sequenceNo';
+    }
+    if (!p.pageSize) {
+      p.pageSize = 20;
+    }
+    if (!p.pageSizes) {
+      p.pageSizes = pageSizes;
+    }
+    if (!p.pageMaxSize || p.pageMaxSize <= 0) {
+      p.pageMaxSize = 7;
+    }
   }
 }
 export const useSearch = <T, S extends Filter, ST extends SearchComponentState<T, S>>(
@@ -151,7 +155,7 @@ export const useSearch = <T, S extends Filter, ST extends SearchComponentState<T
   p2: SearchParameter,
   p?: InitSearchComponentParam<T, S, ST>,
 ) => {
-  const baseProps = useBaseSearchWithProps(undefined, refForm, initialState, search, p, p2);
+  const baseProps = useCoreSearch(undefined, refForm, initialState, search, p2, p);
 
   useEffect(() => {
     const { load, setState, component } = baseProps;
@@ -159,79 +163,49 @@ export const useSearch = <T, S extends Filter, ST extends SearchComponentState<T
       const registerEvents = (p2.ui ? p2.ui.registerEvents : undefined);
       initForm(refForm.current, registerEvents);
     }
-    if (p.initialize) {
+    if (p && p.initialize) {
       p.initialize(load, setState, component);
     } else {
-      const se: S|undefined = (p.createFilter ? p.createFilter() : undefined);
+      const se: S|undefined = (p && p.createFilter ? p.createFilter() : undefined);
       const s: any = mergeFilter2(buildFromUrl<S>(), se, component.pageSizes);
       load(s, p2.auto);
     }
   }, []);
   return { ...baseProps };
 };
-export const useSearchOneWithProps = <T, S extends Filter, ST extends SearchComponentState<T, S>, P>(p: HookPropsSearchParameter<T, S, ST, P>) => {
-  const baseProps = useBaseSearchOne(p);
-  /*
-  useEffect(() => {
-    if (!component.isFirstTime) {
-    doSearch();
-    }
-  }, [component.pageSize, component.pageIndex]);
-  */
-  useEffect(() => {
-    const { load, setState, component } = baseProps;
-    if (p.refForm) {
-      initForm(p.refForm.current, p.registerEvents);
-    }
-    if (p.initialize) {
-      p.initialize(load, setState, component);
-    } else {
-      const se: S|undefined = (p.createFilter ? p.createFilter() : undefined);
-      const s: any = mergeFilter2(buildFromUrl<S>(), se, component.pageSizes);
-      load(s, p.autoSearch);
-    }
-  }, []);
-
-  return { ...baseProps };
+export const useSearchOneProps = <T, S extends Filter, ST extends SearchComponentState<T, S>, P>(p: HookPropsSearchParameter<T, S, ST, P>) => {
+  return useSearch(p.refForm, p.initialState, p.search, p, p);
 };
-export const useBaseSearchOne = <T, S extends Filter, ST extends SearchComponentState<T, S>, P extends ModelProps>(p: HookPropsBaseSearchParameter<T, S, ST, P>) => {
-  return useBaseSearchWithProps(p.props, p.refForm, p.initialState, p.search, p, p);
+export const useSearchOne = <T, S extends Filter, ST extends SearchComponentState<T, S>>(p: HookBaseSearchParameter<T, S, ST>) => {
+  return useCoreSearch(undefined, p.refForm, p.initialState, p.search, p, p);
 };
-export const useBaseSearch = <T, S extends Filter, ST extends SearchComponentState<T, S>>(
-  refForm: any,
-  initialState: ST,
-  search: ((s: S, ctx?: any) => Promise<SearchResult<T>>) | SearchService<T, S>,
-  p1: SearchComponentParam<T, S>,
-  p2: SearchParameter) => {
-  return useBaseSearchWithProps(undefined, refForm, initialState, search, p1, p2);
-};
-export const useBaseSearchWithProps = <T, S extends Filter, ST, P>(
+export const useCoreSearch = <T, S extends Filter, ST, P>(
   props: P|undefined,
   refForm: any,
   initialState: ST,
   search: ((s: S, limit?: number, offset?: number|string, fields?: string[]) => Promise<SearchResult<T>>) | SearchService<T, S>,
-  p1: SearchComponentParam<T, S>,
-  p2: SearchParameter
+  p2: SearchParameter,
+  p1?: SearchComponentParam<T, S>
 ) => {
-  mergeParam(p1, p2.ui, p2.loading);
+  mergeParam(p1);
   const [running, setRunning] = useState<boolean>();
 
   const _getModelName = (): string => {
-    return getName('filter', p1.name);
+    return getName('filter', p1 && p1.name ? p1.name : undefined);
   };
-  const getModelName = (p1.getModelName ? p1.getModelName : _getModelName);
+  const getModelName = (p1 && p1.getModelName ? p1.getModelName : _getModelName);
 
   // const setState2: <K extends keyof S, P>(st: ((prevState: Readonly<S>, props: Readonly<P>) => (Pick<S, K> | S | null)) | (Pick<S, K> | S | null), cb?: () => void) => void;
-  const baseProps = (props ? useUpdateWithProps<ST, P>(props, initialState, getModelName, p2.getLocale, getRemoveError(p2, p1.removeError), p1.prepareCustomData) : useUpdate<ST>(initialState, getModelName, p2.getLocale, getRemoveError(p2, p1.removeError)));
+  const baseProps = (props ? useUpdateWithProps<ST, P>(props, initialState, getModelName, p2.getLocale, getRemoveError(p2), p1 ? p1.prepareCustomData : undefined) : useUpdate<ST>(initialState, getModelName, p2.getLocale, getRemoveError(p2)));
   const { state, setState } = baseProps;
   const [history, match] = [useHistory(), useRouteMatch()];
 
   const _getCurrencyCode = (): string => {
     return refForm && refForm.current ? refForm.current.getAttribute('currency-code') : null;
   };
-  const getCurrencyCode = p1.getCurrencyCode ? p1.getCurrencyCode : _getCurrencyCode;
+  const getCurrencyCode = p1 && p1.getCurrencyCode ? p1.getCurrencyCode : _getCurrencyCode;
 
-  const prepareCustomData = (p1.prepareCustomData ? p1.prepareCustomData : prepareData);
+  const prepareCustomData = (p1 && p1.prepareCustomData ? p1.prepareCustomData : prepareData);
   const updateDateState = (name: string, value: any) => {
     const modelName = getModelName();
     const currentState = (state as any)[modelName];
@@ -262,24 +236,24 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P>(
     setComponent({ fields: fs, initFields: true });
     return fs;
   };
-  const getFields = p1.getFields ? p1.getFields : _getFields;
+  const getFields = p1 && p1.getFields ? p1.getFields : _getFields;
 
   const getFilter = (se?: Searchable<T>): S => {
     if (!se) {
       se = component;
     }
-    let keys = p1.keys;
+    let keys = p1 && p1.keys ? p1.keys : undefined;
     if (!keys && typeof search !== 'function' && search.keys) {
       keys = search.keys();
     }
     const n = getModelName();
-    let fs = p1.fields;
+    let fs = p1 && p1.fields;
     if (!fs || fs.length <= 0) {
       fs = getFields();
     }
     const lc = (p2.getLocale ? p2.getLocale() : enLocale);
     const cc = getCurrencyCode();
-    const obj3 = getModel<T, S>(state, n, se, fs, se.excluding, keys, se.list, refForm.current, getDecodeFromForm(p2, p1.decodeFromForm), lc, cc);
+    const obj3 = getModel<T, S>(state, n, se, fs, se.excluding, keys, se.list, refForm.current, getDecodeFromForm(p2), lc, cc);
     return obj3;
   };
   const _setFilter = (s: S): void => {
@@ -289,7 +263,7 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P>(
     setState(objSet);
   };
 
-  const setFilter = p1.setFilter ? p1.setFilter : _setFilter;
+  const setFilter = p1 && p1.setFilter ? p1.setFilter : _setFilter;
 
   const _load = (s: S, auto?: boolean): void => {
     const com = Object.assign({}, component);
@@ -303,10 +277,10 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P>(
       }, 0);
     }
   };
-  const load = p1.load ? p1.load : _load;
+  const load = p1 && p1.load ? p1.load : _load;
 
   const doSearch = (se: Searchable<T>, isFirstLoad?: boolean) => {
-    removeFormError(p2, refForm.current, p1.removeFormError);
+    removeFormError(p2, refForm.current);
     const s = getFilter(se);
     const isStillRunning = running;
     validateSearch(s, () => {
@@ -314,8 +288,8 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P>(
         return;
       }
       setRunning(true);
-      showLoading(p1.showLoading, p2);
-      if (!p1.ignoreUrlParam) {
+      showLoading(p2.loading);
+      if (p1 && !p1.ignoreUrlParam) {
         addParametersIntoUrl(s, isFirstLoad);
       }
       const lc = p2.getLocale ? p2.getLocale() : enLocale;
@@ -328,9 +302,9 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P>(
   };
 
   const _validateSearch = (se: S, callback: () => void) => {
-    validate(se, callback, refForm.current, (p2.getLocale ? p2.getLocale() : undefined), getValidateForm(p2, p1.validateForm));
+    validate(se, callback, refForm.current, (p2.getLocale ? p2.getLocale() : undefined), getValidateForm(p2));
   };
-  const validateSearch = p1.validateSearch ? p1.validateSearch : _validateSearch;
+  const validateSearch = p1 && p1.validateSearch ? p1.validateSearch : _validateSearch;
 
   const pageSizeChanged = (event: any) => {
     const size = parseInt(event.currentTarget.value, 10);
@@ -422,12 +396,12 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P>(
     setComponent({ pageIndex: component.tmpPageIndex });
     error(err, p2.resource.value, p2.showError);
   };
-  const appendList = (p1.appendList ? p1.appendList : appendListOfState);
-  const setList = (p1.setList ? p1.setList : setListOfState);
+  const appendList = (p1 && p1.appendList ? p1.appendList : appendListOfState);
+  const setList = (p1 && p1.setList ? p1.setList : setListOfState);
   const _showResults = (s: S, sr: SearchResult<T>, lc: Locale) => {
     const results = sr.list;
     if (results && results.length > 0) {
-      formatResults(results, component.pageIndex, component.pageSize, component.initPageSize, p1.sequenceNo, p1.format, lc);
+      formatResults(results, component.pageIndex, component.pageSize, component.initPageSize, p1 ? p1.sequenceNo : undefined, p1 ? p1.format : undefined, lc);
     }
     const am = component.appendMode;
     const pi = (s.page && s.page >= 1 ? s.page : 1);
@@ -453,13 +427,13 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P>(
       }
     }
     setRunning(false);
-    hideLoading(p1.hideLoading, p2);
+    hideLoading(p2.loading);
     if (component.triggerSearch) {
       setComponent({ triggerSearch: false });
       resetAndSearch();
     }
   };
-  const showResults = (p1.showResults ? p1.showResults : _showResults);
+  const showResults = (p1 && p1.showResults ? p1.showResults : _showResults);
 
   const showMore = (event: any) => {
     event.preventDefault();
@@ -505,6 +479,6 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P>(
     showResults,
     getFields,
     getModelName,
-    format: p1.format
+    format: p1 ? p1.format : undefined
   };
 };
