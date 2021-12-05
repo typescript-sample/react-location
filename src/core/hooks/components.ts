@@ -3,7 +3,7 @@ import {RouteComponentProps} from 'react-router';
 import {clone, diff, makeDiff} from 'reflectx';
 import {addParametersIntoUrl, append, buildMessage, changePage, changePageSize, formatResultsByComponent, getFieldsFromForm, getModel, handleAppend, handleSortEvent, initFilter, mergeFilter as mergeFilter2, more, reset, Searchable, showPaging, validate} from 'search-core';
 import {BaseDiffState, createDiffStatus, createEditStatus, DiffApprService, DiffParameter, DiffState, DiffStatusConfig, hideLoading, showLoading} from './core';
-import {Attributes, buildId, EditStatusConfig, error, ErrorMessage, Filter, getCurrencyCode, getModelName as getModelName2, HistoryProps, initForm, LoadingService, Locale, message, messageByHttpStatus, ModelHistoryProps, ModelProps, removePhoneFormat, ResourceService, SearchParameter, SearchResult, SearchService, SearchState, StringMap, UIService, ViewParameter, ViewService} from './core';
+import {Attributes, buildId, EditStatusConfig, error, ErrorMessage, Filter, getCurrencyCode, getModelName as getModelName2, initForm, LoadingService, Locale, message, messageByHttpStatus, removePhoneFormat, ResourceService, SearchParameter, SearchResult, SearchService, SearchState, StringMap, UIService, ViewParameter, ViewService} from './core';
 import {formatDiffModel, getDataFields} from './diff';
 import {build, createModel as createModel2, EditParameter, GenericService, handleStatus, handleVersion, initPropertyNullInModel, ResultInfo} from './edit';
 import {focusFirstError, readOnly} from './formutil';
@@ -133,7 +133,7 @@ export class ViewComponent<T, ID, P extends RouteComponentProps, S> extends Reac
   }
 }
 
-export class BaseComponent<P extends ModelProps, S> extends React.Component<P, S> {
+export class BaseComponent<P, S> extends React.Component<P, S> {
   constructor(props: P,
       protected getLocale?: () => Locale,
       private removeErr?: (ctrl: HTMLInputElement) => void) {
@@ -213,8 +213,8 @@ export class BaseComponent<P extends ModelProps, S> extends React.Component<P, S
     const l = localeOf(lc, this.getLocale);
     const props = this.props;
     handleEvent(e, this.removeErr);
-    if (props.setGlobalState) {
-      handleProps(e, props, ctrl, modelName, l, this.prepareCustomData);
+    if ((props as any).setGlobalState) {
+      handleProps(e, props as any, ctrl, modelName, l, this.prepareCustomData);
     } else {
       const objSet: any = buildState(e, this.state, ctrl, modelName, l);
       if (objSet) {
@@ -238,7 +238,7 @@ export class BaseComponent<P extends ModelProps, S> extends React.Component<P, S
     }
   }
 }
-export interface MessageOnlyState extends ModelProps {
+export interface MessageOnlyState {
   message?: string;
 }
 export class MessageComponent<S extends MessageOnlyState, P> extends BaseComponent<P, S> {
@@ -291,7 +291,7 @@ export class MessageComponent<S extends MessageOnlyState, P> extends BaseCompone
     this.setState({ message: '' });
   }
 }
-export class BaseSearchComponent<T, S extends Filter, P extends ModelHistoryProps, I extends SearchState<T, S>> extends BaseComponent<P, I> implements Searchable {
+export class BaseSearchComponent<T, S extends Filter, P extends RouteComponentProps, I extends SearchState<T, S>> extends BaseComponent<P, I> implements Searchable {
   constructor(props: P,
       protected resourceService: ResourceService,
       protected showMessage: (msg: string) => void,
@@ -616,7 +616,7 @@ export class BaseSearchComponent<T, S extends Filter, P extends ModelHistoryProp
     this.doSearch();
   }
 }
-export class SearchComponent<T, S extends Filter, P extends ModelHistoryProps, I extends SearchState<T, S>> extends BaseSearchComponent<T, S, P, I> {
+export class SearchComponent<T, S extends Filter, P extends RouteComponentProps, I extends SearchState<T, S>> extends BaseSearchComponent<T, S, P, I> {
   constructor(props: P, sv: ((s: S, ctx?: any) => Promise<SearchResult<T>>) | SearchService<T, S>,
       param: ResourceService|SearchParameter,
       showMessage?: (msg: string, option?: string) => void,
@@ -702,7 +702,7 @@ export class SearchComponent<T, S extends Filter, P extends ModelHistoryProps, I
   }
 }
 
-export abstract class BaseEditComponent<T, P extends ModelHistoryProps, S> extends BaseComponent<P, S> {
+export abstract class BaseEditComponent<T, P extends RouteComponentProps, S> extends BaseComponent<P, S> {
   constructor(props: P,
       protected resourceService: ResourceService,
       protected showMessage: (msg: string) => void,
@@ -1098,7 +1098,7 @@ export class EditComponent<T, ID, P extends RouteComponentProps, S> extends Base
   }
 }
 
-export class BaseDiffApprComponent<T, ID, P extends HistoryProps, S extends BaseDiffState> extends React.Component<P, S & any> {
+export class BaseDiffApprComponent<T, ID, P extends RouteComponentProps, S extends BaseDiffState> extends React.Component<P, S & any> {
   constructor(props: P, protected keys: string[], protected resourceService: ResourceService,
       protected showMessage: (msg: string, option?: string) => void,
       protected showError: (m: string, title?: string, detail?: string, callback?: () => void) => void,

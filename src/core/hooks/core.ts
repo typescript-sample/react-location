@@ -1,13 +1,6 @@
-import * as H from 'history';
 import {RouteComponentProps} from 'react-router';
-import {match} from 'react-router-dom';
 import {focusFirstElement} from './formutil';
 
-export interface HistoryProps {
-  location: H.Location;
-  history: H.History;
-  match?: match;
-}
 export interface ModelMap {
   [key: string]: any;
 }
@@ -99,9 +92,6 @@ export interface SearchState<T, S extends Filter> {
 export interface SearchService<T, S extends Filter> {
   keys?(): string[];
   search(s: S, limit?: number, offset?: number|string, fields?: string[]): Promise<SearchResult<T>>;
-}
-export interface ModelHistoryProps extends HistoryProps, ModelProps {
-
 }
 export interface ViewParameter {
   resource: ResourceService;

@@ -1,14 +1,14 @@
-import {UserFilter} from 'onecore';
+import { UserFilter } from 'onecore';
 import * as React from 'react';
 import Modal from 'react-modal';
 // import {HistoryProps, SearchComponent, SearchState} from 'react-onex';
 import PageSizeSelect from 'react-page-size-select';
 import Pagination from 'react-pagination-x';
-import {RouteComponentProps} from 'react-router';
-import { HistoryProps, SearchComponent, SearchState } from 'src/core/hooks';
-import {initForm, inputSearch, registerEvents, storage} from 'uione';
-import {context} from '../app';
-import {User} from '../model/User';
+import { RouteComponentProps } from 'react-router';
+import { SearchComponent, SearchState } from 'src/core/hooks';
+import { initForm, inputSearch, registerEvents, storage } from 'uione';
+import { context } from '../app';
+import { User } from '../model/User';
 
 interface InternalState extends SearchState<User, UserFilter> {
   users: User[];
@@ -72,12 +72,12 @@ export class UsersLookup extends SearchComponent<User, UserFilter, Props, Intern
   protected clearUserId = () => {
     const m = this.state.model;
     m.userId = '';
-    this.setState({model: m});
+    this.setState({ model: m });
   }
 
   onChangeText = (event) => {
-    const {model} = this.state;
-    this.setState({model: {...model, ...{[event.target.name]: event.target.value} as any}});
+    const { model } = this.state;
+    this.setState({ model: { ...model, ...{ [event.target.name]: event.target.value } as any } });
   }
 
   onSearch = (e) => {
@@ -103,24 +103,24 @@ export class UsersLookup extends SearchComponent<User, UserFilter, Props, Intern
         <div className='view-container'>
           <header>
             <h2>{resource.users_lookup}</h2>
-            <button type='button' id='btnClose' name='btnClose' className='btn-close' onClick={this.onModelClose}/>
+            <button type='button' id='btnClose' name='btnClose' className='btn-close' onClick={this.onModelClose} />
           </header>
           <div>
             <form id='usersLookupForm' name='usersLookupForm' noValidate={true} ref={this.ref}>
               <section className='row search-group'>
                 <label className='col s12 m6 search-input'>
-                  <PageSizeSelect pageSize={this.pageSize} pageSizes={this.pageSizes} onPageSizeChanged={this.pageSizeChanged}/>
+                  <PageSizeSelect pageSize={this.pageSize} pageSizes={this.pageSizes} onPageSizeChanged={this.pageSizeChanged} />
                   <input type='text'
                     id='userId'
                     name='userId'
                     onChange={this.onChangeText}
                     value={model.userId}
                     maxLength={40}
-                    placeholder={resource.user_lookup}/>
-                  <button type='button' hidden={!model.userId} className='btn-remove-text' onClick={this.clearUserId}/>
-                  <button type='submit' className='btn-search' onClick={this.onSearch}/>
+                    placeholder={resource.user_lookup} />
+                  <button type='button' hidden={!model.userId} className='btn-remove-text' onClick={this.clearUserId} />
+                  <button type='submit' className='btn-search' onClick={this.onSearch} />
                 </label>
-                <Pagination className='col s12 m6' totalRecords={this.itemTotal} itemsPerPage={this.pageSize} maxSize={this.pageMaxSize} currentPage={this.pageIndex} onPageChanged={this.pageChanged} initPageSize={this.initPageSize}/>
+                <Pagination className='col s12 m6' totalRecords={this.itemTotal} itemsPerPage={this.pageSize} maxSize={this.pageMaxSize} currentPage={this.pageIndex} onPageChanged={this.pageChanged} initPageSize={this.initPageSize} />
               </section>
             </form>
             <form className='list-result'>

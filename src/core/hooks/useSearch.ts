@@ -1,8 +1,9 @@
 import {useEffect, useState} from 'react';
+import {RouteComponentProps} from 'react-router';
 import {useHistory, useRouteMatch} from 'react-router-dom';
 import {clone} from 'reflectx';
 import {addParametersIntoUrl, append, buildMessage, Filter, formatResults, getFieldsFromForm, getModel, handleAppend, handleSort, initFilter, mergeFilter as mergeFilter2, Pagination, removeSortStatus, showPaging, Sortable, validate} from 'search-core';
-import {error, getDecodeFromForm, getName, getRemoveError, getValidateForm, hideLoading, initForm, LoadingService, Locale, ModelProps, removeFormError, ResourceService, SearchParameter, SearchResult, SearchService, showLoading, UIService} from './core';
+import {error, getDecodeFromForm, getName, getRemoveError, getValidateForm, hideLoading, initForm, Locale, removeFormError, ResourceService, SearchParameter, SearchResult, SearchService, showLoading} from './core';
 import {DispatchWithCallback, useMergeState} from './merge';
 import {buildFromUrl} from './route';
 import {enLocale} from './state';
@@ -52,7 +53,7 @@ export interface InitSearchComponentParam<T, M extends Filter, S> extends Search
   createFilter?: () => M;
   initialize?: (ld: (s: M, auto?: boolean) => void, setState2: DispatchWithCallback<Partial<S>>, com?: SearchComponentState<T, M>) => void;
 }
-export interface HookPropsSearchParameter<T, S extends Filter, ST, P extends ModelProps> extends HookPropsBaseSearchParameter<T, S, ST, P> {
+export interface HookPropsSearchParameter<T, S extends Filter, ST, P extends RouteComponentProps> extends HookPropsBaseSearchParameter<T, S, ST, P> {
   createFilter?: () => S;
   initialize?: (ld: (s: S, auto?: boolean) => void, setState2: DispatchWithCallback<Partial<ST>>, com?: SearchComponentState<T, S>) => void;
 }
@@ -173,7 +174,7 @@ export const useSearch = <T, S extends Filter, ST extends SearchComponentState<T
   }, []);
   return { ...baseProps };
 };
-export const useSearchOneProps = <T, S extends Filter, ST extends SearchComponentState<T, S>, P>(p: HookPropsSearchParameter<T, S, ST, P>) => {
+export const useSearchOneProps = <T, S extends Filter, ST extends SearchComponentState<T, S>, P extends RouteComponentProps>(p: HookPropsSearchParameter<T, S, ST, P>) => {
   return useSearch(p.refForm, p.initialState, p.search, p, p);
 };
 export const useSearchOne = <T, S extends Filter, ST extends SearchComponentState<T, S>>(p: HookBaseSearchParameter<T, S, ST>) => {

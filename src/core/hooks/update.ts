@@ -1,4 +1,4 @@
-import {getModelName as getModelName2, Locale, ModelProps, removePhoneFormat} from './core';
+import {getModelName as getModelName2, Locale, removePhoneFormat} from './core';
 import {useMergeState} from './merge';
 import {buildFlatState, buildState, handleEvent, handleProps, localeOf} from './state';
 
