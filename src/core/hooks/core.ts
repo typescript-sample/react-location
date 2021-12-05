@@ -1,5 +1,5 @@
 import * as H from 'history';
-import { string } from 'prop-types';
+import {RouteComponentProps} from 'react-router';
 import {match} from 'react-router-dom';
 import {focusFirstElement} from './formutil';
 
@@ -290,11 +290,12 @@ export function buildKeys(attributes: Attributes): string[] {
   return ps;
 }
 
-export function buildId<ID>(props: any, keys?: string[]): ID|null {
+export function buildId<ID>(props: RouteComponentProps|ModelProps, keys?: string[]): ID|null {
   if (!props) {
     return null;
   }
-  const sp = (props.match ? props : props['props']);
+  debugger;
+  const sp: RouteComponentProps = ((props as any).match ? props : props['props']);
   if (!keys || keys.length === 0 || keys.length === 1) {
     if (keys && keys.length === 1) {
       const x = sp.match.params[keys[0]];

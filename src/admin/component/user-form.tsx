@@ -2,7 +2,8 @@ import {ValueText} from 'onecore';
 import * as React from 'react';
 import 'react-day-picker/lib/style.css';
 import {createModel, DispatchWithCallback, error, ModelProps} from 'react-onex';
-import {EditComponentParam, useEdit} from 'src/core/hooks/useEdit';
+import {RouteComponentProps} from 'react-router';
+import {EditComponentParam, useEditProps} from 'src/core/hooks/useEdit';
 import {formatter} from 'ui-plus';
 import {emailOnBlur, Gender, inputEdit, phoneOnBlur, Status, storage} from 'uione';
 import '../../assets/css//datepicker.css';
@@ -47,9 +48,9 @@ const param: EditComponentParam<User, number, InternalState> = {
   createModel: createUser,
   initialize
 };
-export const UserForm = (props: ModelProps) => {
+export const UserForm = (props: RouteComponentProps) => {
   const refForm = React.useRef();
-  const {state, setState, back, flag, updateState, saveOnClick, updatePhoneState, resource} = useEdit<User, number, InternalState, ModelProps>(props, refForm, initialState, context.getUserService(), inputEdit(), param);
+  const {state, setState, back, flag, updateState, saveOnClick, updatePhoneState, resource} = useEditProps<User, number, InternalState, RouteComponentProps>(props, refForm, initialState, context.getUserService(), inputEdit(), param);
   const user = state.user;
   return (
     <div className='view-container'>

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {RouteComponentProps} from 'react-router';
 import {clone, diff, makeDiff} from 'reflectx';
 import {addParametersIntoUrl, append, buildMessage, changePage, changePageSize, formatResultsByComponent, getFieldsFromForm, getModel, handleAppend, handleSortEvent, initFilter, mergeFilter as mergeFilter2, more, reset, Searchable, showPaging, validate} from 'search-utilities';
 import {BaseDiffState, createDiffStatus, createEditStatus, DiffApprService, DiffParameter, DiffState, DiffStatusConfig, hideLoading, showLoading} from './core';
@@ -10,7 +11,7 @@ import {getAutoSearch, getConfirmFunc, getDiffStatusFunc, getEditStatusFunc, get
 import {buildFromUrl} from './route';
 import {buildFlatState, buildState, enLocale, handleEvent, handleProps, localeOf} from './state';
 
-export class ViewComponent<T, ID, P extends HistoryProps, S> extends React.Component<P, S> {
+export class ViewComponent<T, ID, P extends RouteComponentProps, S> extends React.Component<P, S> {
   constructor(props: P, sv: ((id: ID, ctx?: any) => Promise<T>)|ViewService<T, ID>,
       param: ResourceService|ViewParameter,
       showError?: (msg: string, title?: string, detail?: string, callback?: () => void) => void,
@@ -1216,8 +1217,7 @@ export class BaseDiffApprComponent<T, ID, P extends HistoryProps, S extends Base
     this.showError(msg.message, msg.title);
   }
 }
-
-export class DiffApprComponent<T, ID, P extends HistoryProps, S extends DiffState<T>> extends BaseDiffApprComponent<T, ID, P, S> {
+export class DiffApprComponent<T, ID, P extends RouteComponentProps, S extends DiffState<T>> extends BaseDiffApprComponent<T, ID, P, S> {
   constructor(props: P, protected service: DiffApprService<T, ID>,
       param: ResourceService|DiffParameter,
       showMessage?: (msg: string, option?: string) => void,

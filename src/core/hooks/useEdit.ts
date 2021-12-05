@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
+import {RouteComponentProps} from 'react-router';
 import {clone, makeDiff} from 'reflectx';
-import {Attributes, buildId, createEditStatus, EditPermission, EditStatusConfig, getModelName as getModelName2, hideLoading, initForm, LoadingService, Locale, message, messageByHttpStatus, ModelProps, ResourceService, showLoading, UIService} from './core';
+import {Attributes, buildId, createEditStatus, EditStatusConfig, getModelName as getModelName2, hideLoading, initForm, LoadingService, Locale, message, messageByHttpStatus, ModelProps, ResourceService, showLoading, UIService} from './core';
 import {build, createModel as createModel2, EditParameter, GenericService, handleStatus, handleVersion, initPropertyNullInModel, ResultInfo} from './edit';
 import {focusFirstError, readOnly as setReadOnly} from './formutil';
 import {DispatchWithCallback, useMergeState} from './merge';
@@ -59,15 +60,15 @@ export interface EditComponentParam<T, ID, S> extends BaseEditComponentParam<T, 
   initialize?: (id: ID, ld: (i: ID, cb?: (m: T, showF: (model: T) => void) => void) => void, setState2: DispatchWithCallback<Partial<S>>, callback?: (m: T, showF: (model: T) => void) => void) => void;
   callback?: (m: T, showF: (model: T) => void) => void;
 }
-export interface HookPropsEditParameter<T, ID, S, P extends ModelProps> extends HookPropsBaseEditParameter<T, ID, S, P> {
+export interface HookPropsEditParameter<T, ID, S, P extends RouteComponentProps|ModelProps> extends HookPropsBaseEditParameter<T, ID, S, P> {
   initialize?: (id: ID, ld: (i: ID, cb?: (m: T, showF: (model: T) => void) => void) => void, setState2: DispatchWithCallback<Partial<S>>, callback?: (m: T, showF: (model: T) => void) => void) => void;
   callback?: (m: T, showF: (model: T) => void) => void;
 }
-export interface HookPropsBaseEditParameter<T, ID, S, P extends ModelProps> extends HookBaseEditParameter<T, ID, S> {
+export interface HookPropsBaseEditParameter<T, ID, S, P extends RouteComponentProps|ModelProps> extends HookBaseEditParameter<T, ID, S> {
   props?: P;
   prepareCustomData?: (data: any) => void;
 }
-export const useBaseEdit = <T, ID, S>(
+export const useEdit = <T, ID, S>(
   refForm: any,
   initialState: S,
   service: GenericService<T, ID, number|ResultInfo<T>>,
@@ -76,7 +77,7 @@ export const useBaseEdit = <T, ID, S>(
   ) => {
   return useBaseEditWithProps(undefined, refForm, initialState, service, p1, p2);
 };
-export const useEdit = <T, ID, S, P extends ModelProps>(
+export const useEditProps = <T, ID, S, P extends RouteComponentProps>(
   props: P,
   refForm: any,
   initialState: S,
@@ -114,40 +115,13 @@ export const useEdit = <T, ID, S, P extends ModelProps>(
   }, []);
   return {...baseProps};
 };
-export const useEditOne = <T, ID, S, P extends ModelProps>(p: HookPropsEditParameter<T, ID, S, P>) => {
-  const baseProps = useBaseEditOneWithProps(p);
-  useEffect(() => {
-    if (baseProps.refForm) {
-      const registerEvents = (baseProps.ui ? baseProps.ui.registerEvents : undefined);
-      initForm(baseProps.refForm.current, registerEvents);
-    }
-    const n = baseProps.getModelName(p.refForm.current);
-    const obj: any = {};
-    obj[n] = baseProps.createNewModel();
-    baseProps.setState(obj);
-    if (!p.keys && p.service && p.service.metadata) {
-      const metadata = (p.metadata ? p.metadata : p.service.metadata());
-      const meta = build(metadata);
-      const keys = (p.keys ? p.keys : (meta ? meta.keys : undefined));
-      const version = (p.version ? p.version : (meta ? meta.version : undefined));
-      p.keys = keys;
-      p.version = version;
-    }
-    const id = buildId<ID>(p.props, p.keys);
-    if (id) {
-      if (p && p.initialize) {
-        p.initialize(id, baseProps.load, baseProps.setState, p.callback);
-      } else {
-        baseProps.load(id, p.callback);
-      }
-    }
-  }, []);
-  return {...baseProps};
+export const useEditOneProps = <T, ID, S, P extends RouteComponentProps>(p: HookPropsEditParameter<T, ID, S, P>) => {
+  return useEditProps(p.props, p.refForm, p.initialState, p.service, p, p);
 };
-export const useBaseEditOneWithProps = <T, ID, S, P extends ModelProps>(p: HookPropsBaseEditParameter<T, ID, S, P>) => {
-  return useBaseEditWithProps(p.props, p.refForm, p.initialState, p.service, p, p);
+export const useEditOne = <T, ID, S>(p: HookBaseEditParameter<T, ID, S>) => {
+  return useEdit(p.refForm, p.initialState, p.service, p, p);
 };
-export const useBaseEditWithProps = <T, ID, S, P extends ModelProps>(
+export const useBaseEditWithProps = <T, ID, S, P>(
   props: P|undefined,
   refForm: any,
   initialState: S,
@@ -182,9 +156,9 @@ export const useBaseEditWithProps = <T, ID, S, P extends ModelProps>(
   const updateDateState = (name: string, value: any) => {
     const modelName = getModelName(refForm.current);
     const currentState = (state as any)[modelName];
-    if (props && props.setGlobalState) {
-      const data = props.shouldBeCustomized ? prepareCustomData({ [name]: value }) : { [name]: value };
-      props.setGlobalState({ [modelName]: { ...currentState, ...data } });
+    if (props && (props as any).setGlobalState) {
+      const data = (props as any).shouldBeCustomized ? prepareCustomData({ [name]: value }) : { [name]: value };
+      (props as any).setGlobalState({ [modelName]: { ...currentState, ...data } });
     } else {
       setState({[modelName]: {...currentState, [name]: value}} as T);
     }

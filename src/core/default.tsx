@@ -385,6 +385,6 @@ export default class DefaultWrapper extends BaseComponent<ModelHistoryProps, Int
   }
 }
 
-export const WithDefaultProps = (Component: any) => (props: HistoryProps) => {
+export const withDefaultProps = (Component: any) => (props: HistoryProps) => {
   return <Component props={props} history={props.history} />;
 };

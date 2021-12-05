@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import {useHistory, useRouteMatch} from 'react-router-dom';
 import {clone} from 'reflectx';
 import {addParametersIntoUrl, append, buildMessage, Filter, formatResults, getFieldsFromForm, getModel, handleAppend, handleSort, initFilter, mergeFilter as mergeFilter2, Pagination, removeSortStatus, showPaging, Sortable, validate} from 'search-utilities';
-import {error, getDecodeFromForm, getName, getRemoveError, getValidateForm, hideLoading, initForm, LoadingService, Locale, ModelProps, removeFormError, ResourceService, SearchParameter, SearchPermission, SearchResult, SearchService, showLoading, UIService} from './core';
+import {error, getDecodeFromForm, getName, getRemoveError, getValidateForm, hideLoading, initForm, LoadingService, Locale, ModelProps, removeFormError, ResourceService, SearchParameter, SearchResult, SearchService, showLoading, UIService} from './core';
 import {DispatchWithCallback, useMergeState} from './merge';
 import {buildFromUrl} from './route';
 import {enLocale} from './state';
@@ -205,7 +205,7 @@ export const useBaseSearch = <T, S extends Filter, ST extends SearchComponentSta
   p2: SearchParameter) => {
   return useBaseSearchWithProps(undefined, refForm, initialState, search, p1, p2);
 };
-export const useBaseSearchWithProps = <T, S extends Filter, ST, P extends ModelProps>(
+export const useBaseSearchWithProps = <T, S extends Filter, ST, P>(
   props: P|undefined,
   refForm: any,
   initialState: ST,
@@ -235,9 +235,9 @@ export const useBaseSearchWithProps = <T, S extends Filter, ST, P extends ModelP
   const updateDateState = (name: string, value: any) => {
     const modelName = getModelName();
     const currentState = (state as any)[modelName];
-    if (props && props.setGlobalState) {
-      const data = props.shouldBeCustomized ? prepareCustomData({ [name]: value }) : { [name]: value };
-      props.setGlobalState({ [modelName]: { ...currentState, ...data } });
+    if (props && (props as any).setGlobalState) {
+      const data = (props as any).shouldBeCustomized ? prepareCustomData({ [name]: value }) : { [name]: value };
+      (props as any).setGlobalState({ [modelName]: { ...currentState, ...data } });
     } else {
       setState({ [modelName]: { ...currentState, [name]: value } } as T);
     }

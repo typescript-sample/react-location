@@ -11,7 +11,7 @@ export const useUpdate = <T>(initialState: T, getName?: ((f?: HTMLFormElement|nu
 };
 function prepareData(data: any): void {
 }
-export const useUpdateWithProps = <T, P extends ModelProps>(props: P|undefined, initialState: T, getName?: ((f?: HTMLFormElement|null) => string) | string, getLocale?: (() => Locale) | Locale, removeErr?: (ctrl: HTMLInputElement) => void, prepareCustomData?: (d: any) => void) => {
+export const useUpdateWithProps = <T, P>(props: P|undefined, initialState: T, getName?: ((f?: HTMLFormElement|null) => string) | string, getLocale?: (() => Locale) | Locale, removeErr?: (ctrl: HTMLInputElement) => void, prepareCustomData?: (d: any) => void) => {
   if (!prepareCustomData) {
     prepareCustomData = prepareData;
   }
@@ -51,7 +51,7 @@ export const useUpdateWithProps = <T, P extends ModelProps>(props: P|undefined, 
     }
     const l = localeOf(lc, getLocale);
     handleEvent(e, removeErr);
-    if (props && props.setGlobalState) {
+    if (props && (props as any).setGlobalState) {
       handleProps<P>(e, props, ctrl, mn, l, prepareCustomData);
     } else {
       const objSet = buildState(e, state, ctrl, mn, l);

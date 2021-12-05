@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { DispatchWithCallback } from 'react-onex';
+import {RouteComponentProps} from 'react-router';
 import { useHistory, useParams } from 'react-router-dom';
 import { createModel, EditComponent, HistoryProps, ModelProps } from 'src/core/hooks';
-import {EditComponentParam, useEdit} from 'src/core/hooks/useEdit';
+import {EditComponentParam, useEditProps} from 'src/core/hooks/useEdit';
 // import {EditComponent, HistoryProps} from 'react-onex';
 import {error, handleError, inputEdit, Status, storage} from 'uione';
 import {context} from '../app';
@@ -123,10 +124,10 @@ const param: EditComponentParam<Role, number, InternalState> = {
   createModel: createRole,
   initialize
 };
-export function RoleForm(props: ModelProps) {
+export function RoleForm(props: RouteComponentProps) {
   const refForm = React.useRef();
   const history = useHistory();
-  const { state, setState, back, flag, updateState, saveOnClick, resource } = useEdit<Role, number, InternalState, ModelProps>(props, refForm, initialState, context.getRoleService(), inputEdit(), param);
+  const { state, setState, back, flag, updateState, saveOnClick, resource } = useEditProps<Role, number, InternalState, RouteComponentProps>(props, refForm, initialState, context.getRoleService(), inputEdit(), param);
   React.useEffect(() => {
     showModel(state.role);
   }, [state.role]);
