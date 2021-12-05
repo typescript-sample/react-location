@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {RouteComponentProps} from 'react-router';
 import {clone, diff, makeDiff} from 'reflectx';
-import {addParametersIntoUrl, append, buildMessage, changePage, changePageSize, formatResultsByComponent, getFieldsFromForm, getModel, handleAppend, handleSortEvent, initFilter, mergeFilter as mergeFilter2, more, reset, Searchable, showPaging, validate} from 'search-utilities';
+import {addParametersIntoUrl, append, buildMessage, changePage, changePageSize, formatResultsByComponent, getFieldsFromForm, getModel, handleAppend, handleSortEvent, initFilter, mergeFilter as mergeFilter2, more, reset, Searchable, showPaging, validate} from 'search-core';
 import {BaseDiffState, createDiffStatus, createEditStatus, DiffApprService, DiffParameter, DiffState, DiffStatusConfig, hideLoading, showLoading} from './core';
 import {Attributes, buildId, EditStatusConfig, error, ErrorMessage, Filter, getCurrencyCode, getModelName as getModelName2, HistoryProps, initForm, LoadingService, Locale, message, messageByHttpStatus, ModelHistoryProps, ModelProps, removePhoneFormat, ResourceService, SearchParameter, SearchResult, SearchService, SearchState, StringMap, UIService, ViewParameter, ViewService} from './core';
 import {formatDiffModel, getDataFields} from './diff';
@@ -241,7 +241,7 @@ export class BaseComponent<P extends ModelProps, S> extends React.Component<P, S
 export interface MessageOnlyState extends ModelProps {
   message?: string;
 }
-export class MessageComponent<P extends MessageOnlyState, S extends MessageOnlyState> extends BaseComponent<P, S> {
+export class MessageComponent<S extends MessageOnlyState, P> extends BaseComponent<P, S> {
   constructor(props: P,
     getLocale?: () => Locale,
     removeErr?: (ctrl: HTMLInputElement) => void) {

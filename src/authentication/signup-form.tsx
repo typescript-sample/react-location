@@ -1,8 +1,8 @@
 import * as React from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
-import {MessageComponent, MessageState} from 'react-message-component';
-import {HistoryProps, navigate} from 'react-onex';
+import { RouteComponentProps } from 'react-router';
 import {isEmail, isValidUsername, SignupInfo, SignupService, strongPassword, validate, validateAndSignup} from 'signup-component';
+import { MessageComponent, MessageState } from 'src/core/hooks';
 import {handleError, initForm, registerEvents, storage} from 'uione';
 import logo from '../assets/images/logo.png';
 import {context} from './app';
@@ -14,7 +14,7 @@ interface SignupState extends MessageState {
   passwordRequired: boolean;
 }
 
-export class SignupForm extends MessageComponent<HistoryProps, SignupState> {
+export class SignupForm extends MessageComponent<SignupState, RouteComponentProps> {
   constructor(props) {
     super(props);
     this.signin = this.signin.bind(this);
@@ -46,7 +46,7 @@ export class SignupForm extends MessageComponent<HistoryProps, SignupState> {
   }
 
   signin() {
-    navigate(this.props.history, 'connect/signin');
+    this.props.history.push('connect/signin');
   }
 
   async signup(event: any) {

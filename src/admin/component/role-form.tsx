@@ -1,13 +1,12 @@
 import * as React from 'react';
-import { DispatchWithCallback } from 'react-onex';
-import {RouteComponentProps} from 'react-router';
-import { useHistory, useParams } from 'react-router-dom';
-import { createModel, EditComponent, HistoryProps, ModelProps } from 'src/core/hooks';
-import {EditComponentParam, useEditProps} from 'src/core/hooks/useEdit';
+import { DispatchWithCallback } from 'react-hook-core';
+import { RouteComponentProps } from 'react-router';
+import { useHistory } from 'react-router-dom';
+import { createModel, EditComponentParam, useEditProps } from 'src/core/hooks';
 // import {EditComponent, HistoryProps} from 'react-onex';
-import {error, handleError, inputEdit, Status, storage} from 'uione';
-import {context} from '../app';
-import {Privilege, Role} from '../model/Role';
+import { error, handleError, inputEdit, Status, storage } from 'uione';
+import { context } from '../app';
+import { Privilege, Role } from '../model/Role';
 
 interface InternalState {
   role: Role;
@@ -141,14 +140,14 @@ export function RoleForm(props: RouteComponentProps) {
     } else {
       role.privileges = role.privileges.map(p => p.split(' ', 1)[0]);
     }
-    setState({role}, () => isCheckedAll(role.privileges, all, setState));
+    setState({ role }, () => isCheckedAll(role.privileges, all, setState));
   }
   const handleCheckAll = (event: any) => {
     const { role, all } = state;
     event.persist();
     const checkedAll = event.target.checked;
     role.privileges = (checkedAll ? all : []);
-    setState({role, checkedAll});
+    setState({ role, checkedAll });
   };
   const handleCheck = (event: any) => {
     const { role, all, allPrivileges } = state;
@@ -258,28 +257,28 @@ export function RoleForm(props: RouteComponentProps) {
                 placeholder={resource.remark} />
             </label>
             <div className='col s12 m6 radio-section'>
-            {resource.status}
-            <div className='radio-group'>
-              <label>
-                <input
-                  type='radio'
-                  id='active'
-                  name='status'
-                  onChange={(e) => updateState(e, () => setState)}
-                  value='A' checked={state.role.status === 'A'} />
-                {resource.active}
-              </label>
-              <label>
-                <input
-                  type='radio'
-                  id='inactive'
-                  name='status'
-                  onChange={(e) => updateState(e, () => setState)}
-                  value='I' checked={state.role.status === 'I'} />
-                {resource.inactive}
-              </label>
+              {resource.status}
+              <div className='radio-group'>
+                <label>
+                  <input
+                    type='radio'
+                    id='active'
+                    name='status'
+                    onChange={(e) => updateState(e, () => setState)}
+                    value='A' checked={state.role.status === 'A'} />
+                  {resource.active}
+                </label>
+                <label>
+                  <input
+                    type='radio'
+                    id='inactive'
+                    name='status'
+                    onChange={(e) => updateState(e, () => setState)}
+                    value='I' checked={state.role.status === 'I'} />
+                  {resource.inactive}
+                </label>
+              </div>
             </div>
-          </div>
           </section>
           <h4>
             <label>
@@ -305,7 +304,7 @@ export function RoleForm(props: RouteComponentProps) {
           </h4>
           <section className='row hr-height-1'>
             {
-            renderForms(state.role, state.shownPrivileges, '', state.keyword !== '', state.allPrivileges)}
+              renderForms(state.role, state.shownPrivileges, '', state.keyword !== '', state.allPrivileges)}
           </section>
         </div>
         <footer>

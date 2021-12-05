@@ -1,14 +1,14 @@
-import {ValueText} from 'onecore';
+import { ValueText } from 'onecore';
 import * as React from 'react';
 import 'react-day-picker/lib/style.css';
-import {createModel, DispatchWithCallback, error, ModelProps} from 'react-onex';
-import {RouteComponentProps} from 'react-router';
-import {EditComponentParam, useEditProps} from 'src/core/hooks/useEdit';
-import {formatter} from 'ui-plus';
-import {emailOnBlur, Gender, inputEdit, phoneOnBlur, Status, storage} from 'uione';
+import { createModel, DispatchWithCallback, error } from 'react-hook-core';
+import { RouteComponentProps } from 'react-router';
+import { EditComponentParam, useEditProps } from 'src/core/hooks/useEdit';
+import { formatter } from 'ui-plus';
+import { emailOnBlur, Gender, inputEdit, phoneOnBlur, Status, storage } from 'uione';
 import '../../assets/css//datepicker.css';
-import {context} from '../app';
-import {User} from '../model/User';
+import { context } from '../app';
+import { User } from '../model/User';
 
 interface InternalState {
   user: User;
@@ -25,17 +25,17 @@ const createUser = (): User => {
 const initialize = (id: number, load: (id: number) => void, set: DispatchWithCallback<Partial<InternalState>>) => {
   const masterDataService = context.getMasterDataService();
   Promise.all([
-   masterDataService.getTitles(),
-   masterDataService.getPositions()
+    masterDataService.getTitles(),
+    masterDataService.getPositions()
   ]).then(values => {
     const [titleList, positionList] = values;
-    set({titleList, positionList}, () => load(id));
+    set({ titleList, positionList }, () => load(id));
   }).catch(err => error(err, storage.resource().value, storage.alert));
 };
 const updateTitle = (title: string, user: User, set: DispatchWithCallback<Partial<InternalState>>) => {
   user.title = title;
   user.gender = (user.title === 'Mr' ? Gender.Male : Gender.Female);
-  set({user});
+  set({ user });
 };
 
 const initialState: InternalState = {
@@ -50,7 +50,7 @@ const param: EditComponentParam<User, number, InternalState> = {
 };
 export const UserForm = (props: RouteComponentProps) => {
   const refForm = React.useRef();
-  const {state, setState, back, flag, updateState, saveOnClick, updatePhoneState, resource} = useEditProps<User, number, InternalState, RouteComponentProps>(props, refForm, initialState, context.getUserService(), inputEdit(), param);
+  const { state, setState, back, flag, updateState, saveOnClick, updatePhoneState, resource } = useEditProps<User, number, InternalState, RouteComponentProps>(props, refForm, initialState, context.getUserService(), inputEdit(), param);
   const user = state.user;
   return (
     <div className='view-container'>
@@ -92,7 +92,7 @@ export const UserForm = (props: RouteComponentProps) => {
               onChange={e => updateTitle(e.target.value, state.user, setState)}>
               <option selected={true} value=''>{resource.please_select}</option>
               )
-                {state.titleList.map((item, index) => (
+              {state.titleList.map((item, index) => (
                 <option key={index} value={item.value}>{item.text}</option>)
               )}
             </select>

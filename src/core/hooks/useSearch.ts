@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {useHistory, useRouteMatch} from 'react-router-dom';
 import {clone} from 'reflectx';
-import {addParametersIntoUrl, append, buildMessage, Filter, formatResults, getFieldsFromForm, getModel, handleAppend, handleSort, initFilter, mergeFilter as mergeFilter2, Pagination, removeSortStatus, showPaging, Sortable, validate} from 'search-utilities';
+import {addParametersIntoUrl, append, buildMessage, Filter, formatResults, getFieldsFromForm, getModel, handleAppend, handleSort, initFilter, mergeFilter as mergeFilter2, Pagination, removeSortStatus, showPaging, Sortable, validate} from 'search-core';
 import {error, getDecodeFromForm, getName, getRemoveError, getValidateForm, hideLoading, initForm, LoadingService, Locale, ModelProps, removeFormError, ResourceService, SearchParameter, SearchResult, SearchService, showLoading, UIService} from './core';
 import {DispatchWithCallback, useMergeState} from './merge';
 import {buildFromUrl} from './route';

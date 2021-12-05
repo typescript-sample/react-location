@@ -294,7 +294,6 @@ export function buildId<ID>(props: RouteComponentProps, keys?: string[]): ID|nul
   if (!props) {
     return null;
   }
-  debugger;
   const sp: any = ((props as any).match ? props : (props as any)['props']);
   if (!keys || keys.length === 0 || keys.length === 1) {
     if (keys && keys.length === 1) {

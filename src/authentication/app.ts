@@ -1,15 +1,9 @@
-import {Authenticator, AuthInfo} from 'authentication-component';
-import {AuthenticationClient} from 'authentication-component';
-import {OAuth2Client} from 'authentication-component';
-import {OAuth2Service} from 'authentication-component';
+import { AuthenticationClient, Authenticator, AuthInfo, OAuth2Client, OAuth2Service } from 'authentication-component';
 import axios from 'axios';
-import {HttpRequest} from 'axios-core';
-import {PasswordService} from 'password-component';
-import {PasswordWebClient} from 'password-component';
-import {SignupInfo} from 'signup-component';
-import {SignupService} from 'signup-component';
-import {SignupClient} from 'signup-component';
-import {options, storage} from 'uione';
+import { HttpRequest } from 'axios-core';
+import { PasswordService, PasswordWebClient } from 'password-component';
+import { SignupClient, SignupInfo, SignupService } from 'signup-component';
+import { options, storage } from 'uione';
 // axios.defaults.withCredentials = true;
 
 export interface Config {

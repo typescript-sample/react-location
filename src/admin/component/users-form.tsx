@@ -1,10 +1,10 @@
 import { UserFilter, ValueText } from 'onecore';
 import * as React from 'react';
-import { buildFromUrl, DispatchWithCallback, ModelProps } from 'react-onex';
+import { buildFromUrl, DispatchWithCallback } from 'react-hook-core';
 import PageSizeSelect from 'react-page-size-select';
 import Pagination from 'react-pagination-x';
 import { useHistory } from 'react-router-dom';
-import { mergeFilter } from 'search-utilities';
+import { mergeFilter } from 'search-core';
 import { pageSizes, SearchComponentState, useSearch } from 'src/core/hooks/useSearch';
 import UserCarousel from 'src/users_carousel/app';
 import { handleError, inputSearch } from 'uione';

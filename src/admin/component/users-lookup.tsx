@@ -4,6 +4,7 @@ import Modal from 'react-modal';
 // import {HistoryProps, SearchComponent, SearchState} from 'react-onex';
 import PageSizeSelect from 'react-page-size-select';
 import Pagination from 'react-pagination-x';
+import {RouteComponentProps} from 'react-router';
 import { HistoryProps, SearchComponent, SearchState } from 'src/core/hooks';
 import {initForm, inputSearch, registerEvents, storage} from 'uione';
 import {context} from '../app';
@@ -14,7 +15,7 @@ interface InternalState extends SearchState<User, UserFilter> {
   availableUsers: User[];
   textSearch?: string;
 }
-interface Props extends HistoryProps {
+interface Props extends RouteComponentProps {
   isOpenModel?: boolean;
   roleAssignToUsers?: User[];
   onModelClose?: (e: any) => void;

@@ -1,10 +1,10 @@
 import { RoleFilter, ValueText } from 'onecore';
 import * as React from 'react';
-import { buildFromUrl, DispatchWithCallback } from 'react-onex';
+import { buildFromUrl, DispatchWithCallback } from 'react-hook-core';
 import PageSizeSelect from 'react-page-size-select';
 import Pagination from 'react-pagination-x';
 import { useHistory } from 'react-router-dom';
-import { mergeFilter } from 'search-utilities';
+import { mergeFilter } from 'search-core';
 import { pageSizes, SearchComponentState, useSearch } from 'src/core/hooks/useSearch';
 import { handleError, inputSearch } from 'uione';
 import { context } from '../app';

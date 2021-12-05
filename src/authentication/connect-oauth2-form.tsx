@@ -1,9 +1,9 @@
 import * as React from 'react';
-import {MessageComponent, MessageState} from 'react-message-component';
-import {HistoryProps} from 'react-onex';
+import { RouteComponentProps } from 'react-router';
+import { MessageComponent, MessageState } from 'src/core/hooks';
 
-export class ConnectOauth2Form extends MessageComponent<HistoryProps, MessageState> {
-  constructor(props) {
+export class ConnectOauth2Form extends MessageComponent<MessageState, RouteComponentProps> {
+  constructor(props: RouteComponentProps) {
     super(props);
   }
 
@@ -19,7 +19,7 @@ export class ConnectOauth2Form extends MessageComponent<HistoryProps, MessageSta
 
   render() {
     return (
-      <div>{}</div>
+      <div>{ }</div>
     );
   }
 }

@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { HttpRequest } from 'axios-core';
 import * as React from 'react';
-import { BaseComponent, HistoryProps, ModelHistoryProps, navigate } from 'react-onex';
+import { BaseComponent, ModelHistoryProps, navigate } from 'react-hook-core';
 import PageSizeSelect from 'react-page-size-select';
+import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
-import { getLocale, handleError, Privilege, removeError, storage } from 'uione';
+import { getLocale, Privilege, removeError, storage } from 'uione';
 import { options } from 'uione';
 import { isArray } from 'util';
 import logoTitle from '../assets/images/logo-title.png';
@@ -385,6 +386,6 @@ export default class DefaultWrapper extends BaseComponent<ModelHistoryProps, Int
   }
 }
 
-export const withDefaultProps = (Component: any) => (props: HistoryProps) => {
+export const withDefaultProps = (Component: any) => (props: RouteComponentProps) => {
   return <Component props={props} history={props.history} />;
 };

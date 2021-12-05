@@ -1,12 +1,11 @@
-import {PasswordChange, strongPassword, validateAndChangePassword, validateChange} from 'password-component';
-import {PasswordService} from 'password-component';
+import { PasswordChange, strongPassword, validateAndChangePassword, validateChange } from 'password-component';
+import { PasswordService } from 'password-component';
 import * as React from 'react';
-import {HistoryProps, ModelProps, navigate} from 'react-onex';
-// import {MessageComponent, MessageState} from 'react-message-component';
-import {MessageComponent, MessageOnlyState} from 'src/core/hooks/components';
-import {handleError, initForm, loading, registerEvents, resource as getResource, storage} from 'uione';
+import { RouteComponentProps } from 'react-router';
+import { MessageComponent, MessageOnlyState, navigate } from 'src/core/hooks';
+import { handleError, initForm, loading, registerEvents, resource as getResource, storage } from 'uione';
 import logo from '../assets/images/logo.png';
-import {context} from './app';
+import { context } from './app';
 
 export interface ChangePasswordState extends MessageOnlyState {
   user: PasswordChange;
@@ -14,8 +13,8 @@ export interface ChangePasswordState extends MessageOnlyState {
   hiddenPasscode: boolean;
 }
 
-export class ChangePasswordForm extends MessageComponent<HistoryProps & ModelProps, ChangePasswordState> {
-  constructor(props: HistoryProps & ModelProps) {
+export class ChangePasswordForm extends MessageComponent<ChangePasswordState, RouteComponentProps> {
+  constructor(props: RouteComponentProps) {
     super(props);
     this.signin = this.signin.bind(this);
     this.changePassword = this.changePassword.bind(this);
@@ -51,7 +50,7 @@ export class ChangePasswordForm extends MessageComponent<HistoryProps & ModelPro
       this.passwordService.changePassword, user, this.state.confirmPassword,
       getResource(), this.showMessage, this.showError, this.hideMessage,
       validateChange, handleError, strongPassword, loading());
-    this.setState({user});
+    this.setState({ user });
   }
 
   render() {
@@ -62,59 +61,59 @@ export class ChangePasswordForm extends MessageComponent<HistoryProps & ModelPro
       <div className='view-container central-full'>
         <form id='changePasswordForm' name='changePasswordForm' noValidate={true} autoComplete='off' ref={this.ref}>
           <div>
-            <img className='logo' src={logo}/>
+            <img className='logo' src={logo} />
             <h2>{resource.change_password}</h2>
             <div className={'message ' + this.alertClass}>
               {this.state.message}
-              <span onClick={this.hideMessage} hidden={!this.state.message || this.state.message === ''}/>
+              <span onClick={this.hideMessage} hidden={!this.state.message || this.state.message === ''} />
             </div>
             <label hidden={!hiddenPasscode}>
               {resource.username}
               <input type='text'
-                     id='username' name='username'
-                     value={user.username}
-                     onChange={this.updateState}
-                     maxLength={255}
-                     placeholder={resource.placeholder_username}/>
+                id='username' name='username'
+                value={user.username}
+                onChange={this.updateState}
+                maxLength={255}
+                placeholder={resource.placeholder_username} />
             </label>
             <label hidden={!hiddenPasscode}>
               {resource.current_password}
               <input type='password' className='form-control'
-                     id='currentPassword' name='currentPassword'
-                     value={user.currentPassword}
-                     onChange={this.updateState}
-                     maxLength={255}
-                     placeholder={resource.placeholder_current_password}/>
+                id='currentPassword' name='currentPassword'
+                value={user.currentPassword}
+                onChange={this.updateState}
+                maxLength={255}
+                placeholder={resource.placeholder_current_password} />
             </label>
             <label hidden={!hiddenPasscode}>
               {resource.new_password}
               <input type='password' className='form-control'
-                     id='password' name='password'
-                     value={user.password}
-                     onChange={this.updateState}
-                     maxLength={255}
-                     placeholder={resource.placeholder_new_password}/>
+                id='password' name='password'
+                value={user.password}
+                onChange={this.updateState}
+                maxLength={255}
+                placeholder={resource.placeholder_new_password} />
             </label>
             <label hidden={!hiddenPasscode}>
               {resource.confirm_password}
               <input type='password' className='form-control'
-                     id='confirmPassword' name='confirmPassword'
-                     value={this.state.confirmPassword}
-                     onChange={this.updateFlatState}
-                     maxLength={255}
-                     placeholder={resource.placeholder_confirm_password}/>
+                id='confirmPassword' name='confirmPassword'
+                value={this.state.confirmPassword}
+                onChange={this.updateFlatState}
+                maxLength={255}
+                placeholder={resource.placeholder_confirm_password} />
             </label>
             <label hidden={hiddenPasscode}>
               {resource.passcode}
               <input type='password' className='form-control'
-                     id='passcode' name='passcode'
-                     value={user.passcode}
-                     onChange={this.updateState}
-                     maxLength={255}
-                     placeholder={resource.placeholder_passcode}/>
+                id='passcode' name='passcode'
+                value={user.passcode}
+                onChange={this.updateState}
+                maxLength={255}
+                placeholder={resource.placeholder_passcode} />
             </label>
             <button type='submit' id='btnChangePassword' name='btnChangePassword'
-                    onClick={this.changePassword}>{resource.button_change_password}</button>
+              onClick={this.changePassword}>{resource.button_change_password}</button>
             <a id='btnSignin' onClick={this.signin}>{resource.button_signin}</a>
           </div>
         </form>

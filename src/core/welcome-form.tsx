@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { ModelHistoryProps } from 'react-onex';
+import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Privilege, privileges, storage, StringMap } from 'uione';
 import './welcome-form.css';
 
-export class WelcomeForm extends React.Component<ModelHistoryProps, any> {
-  constructor(props: ModelHistoryProps) {
+export class WelcomeForm extends React.Component<RouteComponentProps, any> {
+  constructor(props: RouteComponentProps) {
     super(props);
     this.resource = storage.resource().resource();
     this.state = {

@@ -1,7 +1,7 @@
 import {PasswordService, strongPassword, validateAndForgotPassword, validateContact} from 'password-component';
 import * as React from 'react';
-import {MessageComponent, MessageState} from 'react-message-component';
-import {HistoryProps, navigate} from 'react-onex';
+import { RouteComponentProps } from 'react-router';
+import { MessageComponent, MessageState } from 'src/core/hooks';
 import {handleError, initForm, registerEvents, storage} from 'uione';
 import logo from '../assets/images/logo.png';
 import {context} from './app';
@@ -10,8 +10,8 @@ interface ContactInternalState extends MessageState {
   contact: string;
 }
 
-export class ForgotPasswordForm extends MessageComponent<HistoryProps, ContactInternalState> {
-  constructor(props) {
+export class ForgotPasswordForm extends MessageComponent<ContactInternalState, RouteComponentProps> {
+  constructor(props: RouteComponentProps) {
     super(props);
     this.signin = this.signin.bind(this);
     this.resetPassword = this.resetPassword.bind(this);
@@ -29,11 +29,11 @@ export class ForgotPasswordForm extends MessageComponent<HistoryProps, ContactIn
   }
 
   signin() {
-    navigate(this.props.history, 'signin');
+    this.props.history.push('signin');
   }
 
   resetPassword() {
-    navigate(this.props.history, 'reset-password');
+    this.props.history.push('reset-password');
   }
 
   async forgotPassword(event: any) {

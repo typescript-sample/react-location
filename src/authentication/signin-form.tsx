@@ -3,8 +3,8 @@ import {Authenticator, AuthInfo, AuthResult, Status} from 'authentication-compon
 import {DefaultCookieService} from 'cookie-core';
 import {Base64} from 'js-base64';
 import * as React from 'react';
-import {MessageComponent, MessageState} from 'react-message-component';
-import {HistoryProps, navigate} from 'react-onex';
+import { RouteComponentProps } from 'react-router';
+import { MessageComponent, MessageState } from 'src/core/hooks';
 import {alertInfo} from 'ui-alert';
 import {handleError, message, storage} from 'uione';
 import {initForm, registerEvents} from 'uione';
@@ -36,7 +36,7 @@ interface SigninState extends MessageState {
 
 const cookie = new DefaultCookieService(document);
 
-export class SigninForm extends MessageComponent<HistoryProps, SigninState> {
+export class SigninForm extends MessageComponent<SigninState, RouteComponentProps> {
   constructor(props) {
     super(props);
     this.signin = this.signin.bind(this);
@@ -63,11 +63,11 @@ export class SigninForm extends MessageComponent<HistoryProps, SigninState> {
   }
 
   forgotPassword() {
-    navigate(this.props.history, '/auth/forgot-password');
+    this.props.history.push('/auth/forgot-password');
   }
 
   signup() {
-    navigate(this.props.history, '/auth/signup');
+    this.props.history.push('/auth/signup');
   }
 
   protected updateRemember = (e: any) => {

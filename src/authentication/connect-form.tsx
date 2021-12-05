@@ -1,12 +1,12 @@
-import {getMessage, Status} from 'authentication-component';
-import {OAuth2Info} from 'authentication-component';
+import { getMessage, Status } from 'authentication-component';
+import { OAuth2Info } from 'authentication-component';
 import * as React from 'react';
-import {MessageComponent, MessageState} from 'react-message-component';
-import {HistoryProps} from 'react-onex';
-import {alertInfo} from 'ui-alert';
-import {handleError, storage} from 'uione';
+import { RouteComponentProps } from 'react-router';
+import { MessageComponent, MessageState } from 'src/core/hooks';
+import { alertInfo } from 'ui-alert';
+import { handleError, storage } from 'uione';
 import logo from '../assets/images/logo.png';
-import {context} from './app';
+import { context } from './app';
 
 const status: Status = {
   success: 0,
@@ -32,8 +32,8 @@ export interface ConnectState extends MessageState {
   componentRef: any;
 }
 
-export class ConnectForm extends MessageComponent<HistoryProps, ConnectState> {
-  constructor(props) {
+export class ConnectForm extends MessageComponent<ConnectState, RouteComponentProps> {
+  constructor(props: RouteComponentProps) {
     super(props);
     this.state = {
       connectType: '',
@@ -61,12 +61,15 @@ export class ConnectForm extends MessageComponent<HistoryProps, ConnectState> {
       connectType = 'signup';
     }
 
-    const connectTypePretty = connectType === 'signup' ? 'Sign up' :  'Sign in';
-    this.setState({connectType, connectTypePretty});
+    const connectTypePretty = connectType === 'signup' ? 'Sign up' : 'Sign in';
+    this.setState({ connectType, connectTypePretty });
   }
 
   protected content() {
     this.props.history.push('/content/drive');
+  }
+  protected back() {
+    this.props.history.goBack();
   }
 
   async connect(signInType?: string) {
@@ -102,7 +105,7 @@ export class ConnectForm extends MessageComponent<HistoryProps, ConnectState> {
         const u = 'http://localhost:3001/auth/connect/oauth2';
         redirectUrl = encodeURIComponent(u);
         url = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=' + integrationConfiguration.clientId + '&response_type=code&redirect_uri='
-            + redirectUrl + '&response_mode=query&scope=https%3A%2F%2Fgraph.microsoft.com%2FFiles.ReadWrite.All%20onedrive.readwrite%20onedrive.appfolder%20offline_access&state=12345&grant_type=authorization_Code';
+          + redirectUrl + '&response_mode=query&scope=https%3A%2F%2Fgraph.microsoft.com%2FFiles.ReadWrite.All%20onedrive.readwrite%20onedrive.appfolder%20offline_access&state=12345&grant_type=authorization_Code';
       } else if (signInType === SourceType.dropbox) {
         url = 'https://www.dropbox.com/oauth2/authorize?client_id=' + integrationConfiguration.clientId + '&response_type=code&redirect_uri=' + redirectUrl;
       }
@@ -167,41 +170,41 @@ export class ConnectForm extends MessageComponent<HistoryProps, ConnectState> {
       <div className='view-container central-full' ref={this.state.componentRef}>
         <form id='connectForm' name='connectForm' noValidate={true} autoComplete='off'>
           <div>
-            <img className='logo' src={logo}/>
+            <img className='logo' src={logo} />
             <h2>{connectTypePretty}</h2>
             <div className={'message ' + this.alertClass}>
               {this.state.message}
-              <span onClick={this.hideMessage} hidden={!this.state.message || this.state.message === ''}/>
+              <span onClick={this.hideMessage} hidden={!this.state.message || this.state.message === ''} />
             </div>
             <button type='button' onClick={() => this.connect('linkedIn')}>
-              <i className='fa fa-linkedin pull-left'/>
+              <i className='fa fa-linkedin pull-left' />
               {resource.connect_linkedin}</button>
             <button type='button' onClick={() => this.connect('google')}>
-              <i className='fa fa-google pull-left'/>
+              <i className='fa fa-google pull-left' />
               {resource.connect_google}
             </button>
             <button type='button' onClick={() => this.connect('facebook')}>
-              <i className='fa fa-facebook pull-left'/>
+              <i className='fa fa-facebook pull-left' />
               {resource.connect_facebook}
             </button>
             <button type='button' onClick={() => this.connect('twitter')}>
-              <i className='fa fa-twitter pull-left'/>
+              <i className='fa fa-twitter pull-left' />
               {resource.connect_twitter}
             </button>
             <button type='button' onClick={() => this.connect('amazon')}>
-              <i className='fa fa-amazon pull-left'/>
+              <i className='fa fa-amazon pull-left' />
               {resource.connect_amazon}
             </button>
             <button type='button' onClick={() => this.connect('microsoft')}>
-              <i className='fa fa-windows pull-left'/>
+              <i className='fa fa-windows pull-left' />
               {resource.connect_microsoft}
             </button>
             <button type='button' onClick={() => this.connect('dropbox')}>
-              <i className='fa fa-dropbox pull-left'/>
+              <i className='fa fa-dropbox pull-left' />
               {resource.connect_dropbox}
             </button>
             <button type='submit' onClick={() => this.connect()}>
-              <i className='fa fa-envelope-o pull-left'/>
+              <i className='fa fa-envelope-o pull-left' />
               {resource.connect_username}
             </button>
             <button type='button' className='btn-cancel' id='btnCancel' name='btnCancel' onClick={this.back}>

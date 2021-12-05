@@ -1,13 +1,13 @@
 import * as React from 'react';
-import {Route, RouteComponentProps, Switch, withRouter} from 'react-router-dom';
-import {ChangePasswordForm} from './change-password-form';
-import {ConnectForm} from './connect-form';
-import {ConnectOauth2Form} from './connect-oauth2-form';
-import {ForgotPasswordForm} from './forgot-password-form';
-import {ResetPasswordForm} from './reset-password-form';
+import { Route, RouteComponentProps, Switch, withRouter } from 'react-router-dom';
+import { ChangePasswordForm } from './change-password-form';
+import { ConnectForm } from './connect-form';
+import { ConnectOauth2Form } from './connect-oauth2-form';
+import { ForgotPasswordForm } from './forgot-password-form';
+import { ResetPasswordForm } from './reset-password-form';
 // import {SigninForm} from './signin-form';
 import SigninForm from './sigin-form-hooks';
-import {SignupForm} from './signup-form';
+import { SignupForm } from './signup-form';
 
 interface StateProps {
   anyProps?: any;
