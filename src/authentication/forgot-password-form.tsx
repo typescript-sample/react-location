@@ -4,7 +4,7 @@ import {MessageComponent, MessageState} from 'react-message-component';
 import {HistoryProps, navigate} from 'react-onex';
 import {handleError, initForm, registerEvents, storage} from 'uione';
 import logo from '../assets/images/logo.png';
-import {context} from './app';
+import {context} from './service';
 
 interface ContactInternalState extends MessageState {
   contact: string;

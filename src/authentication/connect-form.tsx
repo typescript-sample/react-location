@@ -6,7 +6,7 @@ import {HistoryProps} from 'react-onex';
 import {alertInfo} from 'ui-alert';
 import {handleError, storage} from 'uione';
 import logo from '../assets/images/logo.png';
-import {context} from './app';
+import {context} from './service';
 
 const status: Status = {
   success: 0,

@@ -6,7 +6,7 @@ import {HistoryProps, navigate} from 'react-onex';
 import {alertError} from 'ui-alert';
 import {handleError, initForm, registerEvents, storage} from 'uione';
 import logo from '../assets/images/logo.png';
-import {context} from './app';
+import {context} from './service';
 
 interface ResetPasswordState extends MessageState {
   user: PasswordReset;

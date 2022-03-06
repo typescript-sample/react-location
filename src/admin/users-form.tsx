@@ -8,10 +8,10 @@ import { mergeSearchModel } from 'search-utilities';
 import { pageSizes, SearchComponentState, useSearch } from 'src/core/hooks/useSearch';
 import UserCarousel from 'src/users_carousel/app';
 import { handleError, inputSearch, storage } from 'uione';
-import femaleIcon from '../../assets/images/female.png';
-import maleIcon from '../../assets/images/male.png';
-import { context } from '../app';
-import { User } from '../model/User';
+import femaleIcon from '../assets/images/female.png';
+import maleIcon from '../assets/images/male.png';
+import { context } from './app';
+import { User } from './model/User';
 
 interface UserSearch extends SearchComponentState<User, UserSM> {
   statusList: ValueText[];

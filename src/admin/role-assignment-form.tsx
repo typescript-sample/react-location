@@ -4,12 +4,12 @@ import * as React from 'react';
 import {DispatchWithCallback, error, useRouter} from 'react-onex';
 import {useHistory, useLocation} from 'react-router-dom';
 import {handleError, inputEdit, resource as getResource, storage} from 'uione';
-import femaleIcon from '../../assets/images/female.png';
-import maleIcon from '../../assets/images/male.png';
-import {buildId, message} from '../../core/hooks';
-import {context} from '../app';
-import {Role} from '../model/Role';
-import {User} from '../model/User';
+import femaleIcon from '../assets/images/female.png';
+import maleIcon from '../assets/images/male.png';
+import {buildId, message} from '../core/hooks';
+import {context} from './app';
+import {Role} from './model/Role';
+import {User} from './model/User';
 import {UsersLookup} from './users-lookup';
 
 interface InternalState {

@@ -8,7 +8,7 @@ import {HistoryProps, navigate} from 'react-onex';
 import {alertInfo} from 'ui-alert';
 import {handleError, message, storage} from 'uione';
 import {initForm, registerEvents} from 'uione';
-import {context} from './app';
+import {context} from './service';
 import './signin.css';
 
 export const map = {

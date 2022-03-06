@@ -12,7 +12,7 @@ import {toast} from 'ui-toast';
 import {storage} from 'uione';
 import {resources as vresources} from 'validation-util';
 import {DefaultCsvService, resources} from 'web-clients';
-import authenticationRoutes from './authentication/routes';
+import authenticationRoutes from './authentication';
 import config from './config';
 import NotFoundPage from './core/containers/400/page';
 import UnAuthorizedPage from './core/containers/401/page';
@@ -23,7 +23,7 @@ import {resources as locales} from './core/resources';
 import {WelcomeForm} from './core/welcome-form';
 import UploadFile from './uploads/app';
 
-const adminRoutes = LazyLoadModule({ loader: () => import(`./admin/routes`), loading: Loading });
+const adminRoutes = LazyLoadModule({ loader: () => import(`./admin`), loading: Loading });
 
 interface StateProps {
   anyProps?: any;

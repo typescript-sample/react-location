@@ -5,9 +5,9 @@ import {createModel, DispatchWithCallback, error, ModelProps} from 'react-onex';
 import {EditComponentParam, useEdit} from 'src/core/hooks/useEdit';
 import {formatter} from 'ui-plus';
 import {emailOnBlur, Gender, inputEdit, phoneOnBlur, Status, storage} from 'uione';
-import '../../assets/css//datepicker.css';
-import {context} from '../app';
-import {User} from '../model/User';
+import '../assets/css/datepicker.css';
+import {context} from './app';
+import {User} from './model/User';
 
 interface InternalState {
   user: User;

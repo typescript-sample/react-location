@@ -3,12 +3,12 @@ import * as React from 'react';
 import {Redirect, Route, RouteComponentProps, withRouter} from 'react-router-dom';
 import {alert, authenticated, resource} from 'uione';
 import {WithDefaultProps} from '../core/default';
-import AuditForm from './component/audit-form';
-import {RoleAssignmentForm} from './component/role-assignment-form';
-import {RoleForm} from './component/role-form';
-import RolesForm from './component/roles-form';
-import {UserForm} from './component/user-form';
-import {UsersForm} from './component/users-form';
+import AuditForm from './audit-form';
+import {RoleAssignmentForm} from './role-assignment-form';
+import {RoleForm} from './role-form';
+import RolesForm from './roles-form';
+import {UserForm} from './user-form';
+import {UsersForm} from './users-form';
 
 interface AppProps {
   history?: H.History;

@@ -5,7 +5,7 @@ import {HistoryProps, navigate} from 'react-onex';
 import {isEmail, isValidUsername, SignupInfo, SignupService, strongPassword, validate, validateAndSignup} from 'signup-component';
 import {handleError, initForm, registerEvents, storage} from 'uione';
 import logo from '../assets/images/logo.png';
-import {context} from './app';
+import {context} from './service';
 
 interface SignupState extends MessageState {
   user: SignupInfo;
