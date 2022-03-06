@@ -1,11 +1,14 @@
 import axios from 'axios';
 import { HttpRequest } from 'axios-core';
 import { options, storage } from 'uione';
-import { AuditClient } from './service/client/AuditClient';
-import { MasterDataClient } from './service/client/MasterDataClient';
-import { RoleClient } from './service/client/RoleClient';
-import { UserClient } from './service/client/UserClient';
-import { MasterDataService } from './service/MasterDataService';
+import { AuditClient } from './audit-log';
+import { MasterDataClient, MasterDataService } from './master-data';
+import { RoleClient } from './role';
+import { UserClient } from './user';
+
+export * from './role';
+export * from './user';
+export * from './audit-log';
 
 const httpRequest = new HttpRequest(axios, options);
 export interface Config {

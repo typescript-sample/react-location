@@ -7,9 +7,9 @@ import {handleError, inputEdit, resource as getResource, storage} from 'uione';
 import femaleIcon from '../assets/images/female.png';
 import maleIcon from '../assets/images/male.png';
 import {buildId, message} from '../core/hooks';
-import {context} from './app';
-import {Role} from './model/Role';
-import {User} from './model/User';
+import {context} from './service';
+import {Role} from './service';
+import {User} from './service';
 import {UsersLookup} from './users-lookup';
 
 interface InternalState {

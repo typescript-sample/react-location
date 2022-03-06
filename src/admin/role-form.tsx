@@ -5,8 +5,8 @@ import { createModel, EditComponent, HistoryProps, ModelProps } from 'src/core/h
 import {EditComponentParam, useEdit} from 'src/core/hooks/useEdit';
 // import {EditComponent, HistoryProps} from 'react-onex';
 import {error, handleError, inputEdit, Status, storage} from 'uione';
-import {context} from './app';
-import {Privilege, Role} from './model/Role';
+import {context} from './service';
+import {Privilege, Role} from './service';
 
 interface InternalState {
   role: Role;

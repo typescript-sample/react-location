@@ -3,7 +3,7 @@ import * as React from 'react';
 import {Redirect, Route, RouteComponentProps, withRouter} from 'react-router-dom';
 import {alert, authenticated, resource} from 'uione';
 import {WithDefaultProps} from '../core/default';
-import AuditForm from './audit-form';
+import AuditForm from './audit-logs-form';
 import {RoleAssignmentForm} from './role-assignment-form';
 import {RoleForm} from './role-form';
 import RolesForm from './roles-form';

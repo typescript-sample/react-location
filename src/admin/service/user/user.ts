@@ -1,4 +1,21 @@
-import {Model} from 'onecore';
+import {GenericSearchDiffApprService, Model, ResultInfo, Tracking, UserSM} from 'onecore';
+
+export interface User extends Tracking {
+  userId: string;
+  username: string;
+  email: string;
+  displayName: string;
+  imageURL?: string;
+  status: string;
+  gender?: string;
+  phone?: string;
+  title?: string;
+  position?: string;
+  roles?: string[];
+}
+export interface UserService extends GenericSearchDiffApprService<User, number, number | ResultInfo<User>, UserSM> {
+  loadUserByRoleID(id: number): Promise<User[]>;
+}
 
 export const userModel: Model = {
   name: 'user',

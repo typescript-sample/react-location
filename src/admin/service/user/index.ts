@@ -1,9 +1,9 @@
 import {ResultInfo, UserSM} from 'onecore';
 import {GenericSearchDiffApprClient, json, resources} from 'web-clients';
 import {HttpRequest} from 'web-clients';
-import {userModel} from '../../metadata/UserModel';
-import {User} from '../../model/User';
-import {UserService} from '../UserService';
+import {User, userModel, UserService} from './user';
+
+export * from './user';
 
 export class UserClient extends GenericSearchDiffApprClient<User, number, number|ResultInfo<User>, UserSM> implements UserService {
   constructor(http: HttpRequest, url: string) {

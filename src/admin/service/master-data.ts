@@ -1,6 +1,11 @@
 import {ValueText} from 'onecore';
-import {MasterDataService} from '../MasterDataService';
 
+export interface MasterDataService {
+  getStatus(): Promise<ValueText[]>;
+  getTitles(): Promise<ValueText[]>;
+  getPositions(): Promise<ValueText[]>;
+  getGenders(): Promise<ValueText[]>;
+}
 export class MasterDataClient implements MasterDataService {
   private status = [
     {
